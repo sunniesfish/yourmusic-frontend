@@ -51,12 +51,12 @@ export type MutationCheckPasswordArgs = {
 
 
 export type MutationConvertToSpotifyPlaylistArgs = {
-  playlistJSON: PlaylistJsonInput;
+  listJSON: Array<PlaylistJsonInput>;
 };
 
 
 export type MutationConvertToYoutubePlaylistArgs = {
-  playlistJSON: PlaylistJsonInput;
+  listJSON: Array<PlaylistJsonInput>;
 };
 
 
@@ -107,7 +107,7 @@ export type MutationUpdateUserArgs = {
 export type Playlist = {
   __typename?: 'Playlist';
   id: Scalars['ID']['output'];
-  listJson: Scalars['String']['output'];
+  listJson: Array<PlaylistJson>;
   name: Scalars['String']['output'];
   user: User;
 };
@@ -130,6 +130,7 @@ export type PlaylistJsonInput = {
 export type Query = {
   __typename?: 'Query';
   playlist: Playlist;
+  playlists: Array<Playlist>;
   statistic: Statistic;
   user: User;
 };
@@ -208,14 +209,14 @@ export type SavePlaylistMutationVariables = Exact<{
 }>;
 
 
-export type SavePlaylistMutation = { __typename?: 'Mutation', savePlaylist: { __typename?: 'Playlist', id: string, name: string, listJson: string, user: { __typename?: 'User', id: string, name: string, profileImg?: string | null } } };
+export type SavePlaylistMutation = { __typename?: 'Mutation', savePlaylist: { __typename?: 'Playlist', id: string, name: string, listJson: Array<{ __typename?: 'PlaylistJSON', title?: string | null, artist?: string | null, album?: string | null, thumbnail?: string | null }>, user: { __typename?: 'User', id: string, name: string, profileImg?: string | null } } };
 
 export type RemovePlaylistMutationVariables = Exact<{
   id: Scalars['Int']['input'];
 }>;
 
 
-export type RemovePlaylistMutation = { __typename?: 'Mutation', removePlaylist: { __typename?: 'Playlist', id: string, name: string, listJson: string } };
+export type RemovePlaylistMutation = { __typename?: 'Mutation', removePlaylist: { __typename?: 'Playlist', id: string, name: string, listJson: Array<{ __typename?: 'PlaylistJSON', title?: string | null, artist?: string | null, album?: string | null, thumbnail?: string | null }> } };
 
 export type ReadPlaylistMutationVariables = Exact<{
   link: Scalars['String']['input'];
@@ -225,14 +226,14 @@ export type ReadPlaylistMutationVariables = Exact<{
 export type ReadPlaylistMutation = { __typename?: 'Mutation', readPlaylist: Array<{ __typename?: 'PlaylistJSON', title?: string | null, artist?: string | null, album?: string | null, thumbnail?: string | null }> };
 
 export type ConvertToSpotifyPlaylistMutationVariables = Exact<{
-  playlistJSON: PlaylistJsonInput;
+  listJSON: Array<PlaylistJsonInput> | PlaylistJsonInput;
 }>;
 
 
 export type ConvertToSpotifyPlaylistMutation = { __typename?: 'Mutation', convertToSpotifyPlaylist: boolean };
 
 export type ConvertToYoutubePlaylistMutationVariables = Exact<{
-  playlistJSON: PlaylistJsonInput;
+  listJSON: Array<PlaylistJsonInput> | PlaylistJsonInput;
 }>;
 
 
@@ -299,7 +300,7 @@ export type GetPlaylistQueryVariables = Exact<{
 }>;
 
 
-export type GetPlaylistQuery = { __typename?: 'Query', playlist: { __typename?: 'Playlist', id: string, name: string, listJson: string, user: { __typename?: 'User', id: string, name: string, profileImg?: string | null } } };
+export type GetPlaylistQuery = { __typename?: 'Query', playlist: { __typename?: 'Playlist', id: string, name: string, listJson: Array<{ __typename?: 'PlaylistJSON', title?: string | null, artist?: string | null, album?: string | null, thumbnail?: string | null }>, user: { __typename?: 'User', id: string, name: string, profileImg?: string | null } } };
 
 export type GetStatisticQueryVariables = Exact<{
   userId: Scalars['ID']['input'];
@@ -321,7 +322,12 @@ export const SavePlaylistDocument = gql`
   savePlaylist(savePlaylistInput: $savePlaylistInput) {
     id
     name
-    listJson
+    listJson {
+      title
+      artist
+      album
+      thumbnail
+    }
     user {
       id
       name
@@ -361,7 +367,12 @@ export const RemovePlaylistDocument = gql`
   removePlaylist(id: $id) {
     id
     name
-    listJson
+    listJson {
+      title
+      artist
+      album
+      thumbnail
+    }
   }
 }
     `;
@@ -428,8 +439,8 @@ export type ReadPlaylistMutationHookResult = ReturnType<typeof useReadPlaylistMu
 export type ReadPlaylistMutationResult = Apollo.MutationResult<ReadPlaylistMutation>;
 export type ReadPlaylistMutationOptions = Apollo.BaseMutationOptions<ReadPlaylistMutation, ReadPlaylistMutationVariables>;
 export const ConvertToSpotifyPlaylistDocument = gql`
-    mutation ConvertToSpotifyPlaylist($playlistJSON: PlaylistJSONInput!) {
-  convertToSpotifyPlaylist(playlistJSON: $playlistJSON)
+    mutation ConvertToSpotifyPlaylist($listJSON: [PlaylistJSONInput!]!) {
+  convertToSpotifyPlaylist(listJSON: $listJSON)
 }
     `;
 export type ConvertToSpotifyPlaylistMutationFn = Apollo.MutationFunction<ConvertToSpotifyPlaylistMutation, ConvertToSpotifyPlaylistMutationVariables>;
@@ -447,7 +458,7 @@ export type ConvertToSpotifyPlaylistMutationFn = Apollo.MutationFunction<Convert
  * @example
  * const [convertToSpotifyPlaylistMutation, { data, loading, error }] = useConvertToSpotifyPlaylistMutation({
  *   variables: {
- *      playlistJSON: // value for 'playlistJSON'
+ *      listJSON: // value for 'listJSON'
  *   },
  * });
  */
@@ -459,8 +470,8 @@ export type ConvertToSpotifyPlaylistMutationHookResult = ReturnType<typeof useCo
 export type ConvertToSpotifyPlaylistMutationResult = Apollo.MutationResult<ConvertToSpotifyPlaylistMutation>;
 export type ConvertToSpotifyPlaylistMutationOptions = Apollo.BaseMutationOptions<ConvertToSpotifyPlaylistMutation, ConvertToSpotifyPlaylistMutationVariables>;
 export const ConvertToYoutubePlaylistDocument = gql`
-    mutation ConvertToYoutubePlaylist($playlistJSON: PlaylistJSONInput!) {
-  convertToYoutubePlaylist(playlistJSON: $playlistJSON)
+    mutation ConvertToYoutubePlaylist($listJSON: [PlaylistJSONInput!]!) {
+  convertToYoutubePlaylist(listJSON: $listJSON)
 }
     `;
 export type ConvertToYoutubePlaylistMutationFn = Apollo.MutationFunction<ConvertToYoutubePlaylistMutation, ConvertToYoutubePlaylistMutationVariables>;
@@ -478,7 +489,7 @@ export type ConvertToYoutubePlaylistMutationFn = Apollo.MutationFunction<Convert
  * @example
  * const [convertToYoutubePlaylistMutation, { data, loading, error }] = useConvertToYoutubePlaylistMutation({
  *   variables: {
- *      playlistJSON: // value for 'playlistJSON'
+ *      listJSON: // value for 'listJSON'
  *   },
  * });
  */
@@ -774,7 +785,12 @@ export const GetPlaylistDocument = gql`
   playlist(id: $id) {
     id
     name
-    listJson
+    listJson {
+      title
+      artist
+      album
+      thumbnail
+    }
     user {
       id
       name

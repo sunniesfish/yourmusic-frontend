@@ -1,7 +1,13 @@
 import { CodegenConfig } from "@graphql-codegen/cli";
 
 const config: CodegenConfig = {
-  schema: "http://localhost:4000/graphql", // GraphQL 서버 엔드포인트
+  schema: {
+    "http://localhost:4000/graphql": {
+      headers: {
+        "Cache-Control": "no-cache",
+      },
+    },
+  }, // GraphQL 서버 엔드포인트
   documents: ["src/graphql/**/*.ts"],
   generates: {
     "./src/graphql/types/generated.ts": {

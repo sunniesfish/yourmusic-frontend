@@ -1,0 +1,54 @@
+.frutiger-aero-bg {
+  background: linear-gradient(135deg, #87ceeb, #e0ffff);
+  min-height: 100vh;
+}
+
+.frutiger-aero-card {
+  background: rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+}
+
+.frutiger-aero-input {
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.frutiger-aero-button {
+  background: linear-gradient(45deg, #4da0b0, #d39d38);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.frutiger-aero-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Override shadcn button styles */
+.frutiger-aero-button.button {
+  background: linear-gradient(45deg, #4da0b0, #d39d38);
+  color: white;
+}
+
+.frutiger-aero-button.button:hover {
+  background: linear-gradient(45deg, #3c8d9e, #c28c27);
+}
+
+/* New styles for input */
+.frutiger-aero-input.input {
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  color: #2c5282;
+}
+
+.frutiger-aero-input.input::placeholder {
+  color: rgba(44, 82, 130, 0.5);
+}
+
+.frutiger-aero-input.input:focus {
+  border-color: #4da0b0;
+  box-shadow: 0 0 0 2px rgba(77, 160, 176, 0.2);
+}

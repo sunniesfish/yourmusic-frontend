@@ -5,7 +5,12 @@ export const SAVE_PLAYLIST = gql`
     savePlaylist(savePlaylistInput: $savePlaylistInput) {
       id
       name
-      listJson
+      listJson {
+        title
+        artist
+        album
+        thumbnail
+      }
       user {
         id
         name
@@ -20,7 +25,12 @@ export const REMOVE_PLAYLIST = gql`
     removePlaylist(id: $id) {
       id
       name
-      listJson
+      listJson {
+        title
+        artist
+        album
+        thumbnail
+      }
     }
   }
 `;
@@ -37,13 +47,13 @@ export const READ_PLAYLIST = gql`
 `;
 
 export const CONVERT_TO_SPOTIFY_PLAYLIST = gql`
-  mutation ConvertToSpotifyPlaylist($playlistJSON: PlaylistJSONInput!) {
-    convertToSpotifyPlaylist(playlistJSON: $playlistJSON)
+  mutation ConvertToSpotifyPlaylist($listJSON: [PlaylistJSONInput!]!) {
+    convertToSpotifyPlaylist(listJSON: $listJSON)
   }
 `;
 
 export const CONVERT_TO_YOUTUBE_PLAYLIST = gql`
-  mutation ConvertToYoutubePlaylist($playlistJSON: PlaylistJSONInput!) {
-    convertToYoutubePlaylist(playlistJSON: $playlistJSON)
+  mutation ConvertToYoutubePlaylist($listJSON: [PlaylistJSONInput!]!) {
+    convertToYoutubePlaylist(listJSON: $listJSON)
   }
 `;
