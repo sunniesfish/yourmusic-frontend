@@ -6,6 +6,7 @@ export const SIGN_IN = gql`
       id
       name
       profileImg
+      accessToken
     }
   }
 `;
@@ -13,10 +14,13 @@ export const SIGN_IN = gql`
 export const SIGN_UP = gql`
   mutation SignUp($signUpInput: SignUpInput!) {
     signUp(signUpInput: $signUpInput) {
-      id
-      name
-      profileImg
     }
+  }
+`;
+
+export const SIGN_OUT = gql`
+  mutation SignOut {
+    signOut
   }
 `;
 

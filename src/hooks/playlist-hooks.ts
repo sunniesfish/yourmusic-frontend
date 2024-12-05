@@ -1,5 +1,9 @@
 import { useMutation, useQuery } from "@apollo/client";
-import { Playlist } from "@/graphql/types/generated";
+import {
+  GetPlaylistsQuery,
+  GetPlaylistQuery,
+  Playlist,
+} from "@/graphql/types/generated";
 import { GET_PLAYLIST, GET_PLAYLISTS } from "@/graphql/queries/playlist";
 import {
   READ_PLAYLIST,
@@ -9,18 +13,21 @@ import {
   CONVERT_TO_YOUTUBE_PLAYLIST,
 } from "@/graphql/mutations/playlist";
 
-export const usePlaylist = () => {
+export const usePlaylist = (userId: string) => {
   const getPlaylists = async (token: string) => {
-    const { data } = useQuery<Playlist[]>(GET_PLAYLISTS, {
+    const { data } = useQuery<GetPlaylistsQuery>(GET_PLAYLISTS, {
       context: {
         headers: { Authorization: `Bearer ${token}` },
+      },
+      variables: {
+        userId,
       },
     });
     return data;
   };
 
   const getPlaylistDetails = async (token: string, playlistId: string) => {
-    const { data } = useQuery<Playlist>(GET_PLAYLIST, {
+    const { data } = useQuery<GetPlaylistQuery>(GET_PLAYLIST, {
       variables: { id: playlistId },
       context: {
         headers: { Authorization: `Bearer ${token}` },

@@ -3,15 +3,6 @@ import { gql } from "@apollo/client";
 export const SAVE_STATISTIC = gql`
   mutation SaveStatistic($saveStatisticInput: SaveStatisticInput!) {
     saveStatistic(saveStatisticInput: $saveStatisticInput) {
-      userId
-      albumRankJson
-      artistRankJson
-      genreRankJson
-      user {
-        id
-        name
-        profileImg
-      }
     }
   }
 `;

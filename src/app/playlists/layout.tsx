@@ -1,19 +1,24 @@
 import Navbar from "@/components/nav-bar";
 import "@/styles/theme-frutiger-aero.css";
+import { getUser } from "@/lib/utils";
 
 interface PlaylistsLayoutProps {
   children: React.ReactNode;
 }
 
-export default function PlaylistsLayout({ children }: PlaylistsLayoutProps) {
+export default async function PlaylistsLayout({
+  children,
+}: PlaylistsLayoutProps) {
+  const user = await getUser();
+
   return (
     <div className="min-h-screen frutiger-aero-bg">
       <Navbar
-        isLoggedIn={true}
-        username="John Doe"
-        profileImage="/placeholder.svg?height=32&width=32"
+        isLoggedIn={user?.id !== null}
+        username={user?.name}
+        profileImage={user?.profileImg ?? undefined}
       />
-      <div className="container mx-auto px-4 py-8">{children}</div>
+      {children}
     </div>
   );
 }

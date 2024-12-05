@@ -4,9 +4,7 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { Share2, Trash2, ChevronDown } from "lucide-react";
-import * as Dialog from "@radix-ui/react-dialog";
-import Navbar from "../../components/nav-bar";
-import "../../styles/theme-frutiger-aero.css";
+import DeletePlaylistDialog from "./components";
 
 interface Playlist {
   id: string;
@@ -81,12 +79,7 @@ export default function PlaylistsPage() {
   };
 
   return (
-    <div className="min-h-screen frutiger-aero-bg">
-      <Navbar
-        isLoggedIn={true}
-        username={username}
-        profileImage="/placeholder.svg?height=32&width=32"
-      />
+    <>
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold text-blue-900 mb-6">
           {username}'s Playlists
@@ -153,34 +146,13 @@ export default function PlaylistsPage() {
           </div>
         </InfiniteScroll>
       </div>
-      <Dialog.Root open={isDeleteModalOpen} onOpenChange={setIsDeleteModalOpen}>
-        <Dialog.Portal>
-          <Dialog.Overlay className="fixed inset-0 bg-black bg-opacity-50" />
-          <Dialog.Content className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 frutiger-aero-card p-6 rounded-lg w-full max-w-md">
-            <Dialog.Title className="text-xl font-bold text-blue-900 mb-4">
-              Confirm Deletion
-            </Dialog.Title>
-            <Dialog.Description className="text-blue-800 mb-6">
-              Are you sure you want to delete this playlist? This action cannot
-              be undone.
-            </Dialog.Description>
-            <div className="flex justify-end space-x-4">
-              <button
-                className="frutiger-aero-button-secondary px-4 py-2 rounded-md"
-                onClick={() => setIsDeleteModalOpen(false)}
-              >
-                Cancel
-              </button>
-              <button
-                className="frutiger-aero-button px-4 py-2 rounded-md text-white"
-                onClick={confirmDelete}
-              >
-                Delete
-              </button>
-            </div>
-          </Dialog.Content>
-        </Dialog.Portal>
-      </Dialog.Root>
-    </div>
+      {isDeleteModalOpen && (
+        <DeletePlaylistDialog
+          isDeleteModalOpen={isDeleteModalOpen}
+          setIsDeleteModalOpen={setIsDeleteModalOpen}
+          playlistId={playlistToDelete ? parseInt(playlistToDelete) : 0}
+        />
+      )}
+    </>
   );
 }

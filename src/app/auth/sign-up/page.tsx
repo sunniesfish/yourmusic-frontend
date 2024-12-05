@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
+import { useAuth } from "@/hooks/auth-hooks";
 
 interface SignUpFormData {
   id: string;
@@ -13,7 +14,7 @@ interface SignUpFormData {
 
 export default function SignUp() {
   const [idAvailable, setIdAvailable] = useState<boolean | null>(null);
-
+  const { signUp } = useAuth();
   const {
     register,
     handleSubmit,
@@ -28,12 +29,16 @@ export default function SignUp() {
     setIdAvailable(isAvailable);
   };
 
-  const onSubmit = (data: SignUpFormData) => {
+  const onSubmit = async (data: SignUpFormData) => {
     if (idAvailable !== true) {
-      alert("ID 중복 확인을 먼저 해주세요!");
+      alert("Please check ID availability first!");
       return;
     }
-    console.log("회원가입 시도:", data);
+    const result = await signUp(data.id, data.username, data.password);
+    if (!result) {
+      alert("Failed to sign up");
+    }
+    console.log("Sign up result:", result);
   };
 
   return (
@@ -51,7 +56,7 @@ export default function SignUp() {
           </label>
           <div className="frutiger-aero-input-group flex flex-col md:flex-row">
             <input
-              {...register("id", { required: "ID는 필수입니다" })}
+              {...register("id", { required: "ID is required" })}
               type="text"
               id="id"
               className="frutiger-aero-input w-full px-3 py-2 rounded-md md:rounded-r-none text-blue-900 placeholder-blue-400"
@@ -88,8 +93,8 @@ export default function SignUp() {
           </label>
           <input
             {...register("username", {
-              required: "사용자 이름은 필수입니다",
-              minLength: { value: 2, message: "2글자 이상 입력해주세요" },
+              required: "Username is required",
+              minLength: { value: 2, message: "Must be at least 2 characters" },
             })}
             type="text"
             id="username"
@@ -112,10 +117,10 @@ export default function SignUp() {
           </label>
           <input
             {...register("password", {
-              required: "비밀번호는 필수입니다",
+              required: "Password is required",
               minLength: {
                 value: 6,
-                message: "비밀번호는 최소 6자 이상이어야 합니다",
+                message: "Password must be at least 6 characters",
               },
             })}
             type="password"
@@ -139,9 +144,9 @@ export default function SignUp() {
           </label>
           <input
             {...register("confirmPassword", {
-              required: "비밀번호 확인은 필수입니다",
+              required: "Password confirmation is required",
               validate: (value) =>
-                value === watch("password") || "비밀번호가 일치하지 않습니다",
+                value === watch("password") || "Passwords do not match",
             })}
             type="password"
             id="confirmPassword"

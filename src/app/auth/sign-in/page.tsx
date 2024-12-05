@@ -1,5 +1,6 @@
 "use client";
 
+import { useAuth } from "@/hooks/auth-hooks";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 
@@ -9,6 +10,7 @@ interface SignInFormData {
 }
 
 export default function SignIn() {
+  const { signIn } = useAuth();
   const {
     register,
     handleSubmit,
@@ -17,8 +19,12 @@ export default function SignIn() {
     mode: "onChange",
   });
 
-  const onSubmit = (data: SignInFormData) => {
+  const onSubmit = async (data: SignInFormData) => {
     console.log("Login attempt:", data);
+    const result = await signIn(data.id, data.password);
+    if (!result) {
+      alert("Invalid ID or password");
+    }
   };
 
   return (

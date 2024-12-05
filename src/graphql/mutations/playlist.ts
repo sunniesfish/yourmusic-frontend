@@ -3,19 +3,7 @@ import { gql } from "@apollo/client";
 export const SAVE_PLAYLIST = gql`
   mutation SavePlaylist($savePlaylistInput: SavePlaylistInput!) {
     savePlaylist(savePlaylistInput: $savePlaylistInput) {
-      id
-      name
-      listJson {
-        title
-        artist
-        album
-        thumbnail
-      }
-      user {
-        id
-        name
-        profileImg
-      }
+      
     }
   }
 `;
