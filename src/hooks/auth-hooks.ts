@@ -1,5 +1,11 @@
-import { useApolloClient, useQuery } from "@apollo/client";
-import { SIGN_IN, SIGN_OUT, SIGN_UP } from "@/graphql/mutations/user";
+import { useApolloClient, useQuery, useMutation } from "@apollo/client";
+import {
+  CHANGE_PASSWORD,
+  SIGN_IN,
+  SIGN_OUT,
+  SIGN_UP,
+  UPDATE_USER,
+} from "@/graphql/mutations/user";
 import { GET_USER } from "@/graphql/queries/user";
 import { SignInResponse, User } from "@/graphql/types/generated";
 import router from "next/router";
@@ -20,6 +26,10 @@ export const useAuth = () => {
       setUser(data);
     }
     return data;
+  };
+
+  const isLoggedIn = () => {
+    return !!token;
   };
 
   const signIn = async (id: string, password: string) => {
@@ -45,6 +55,7 @@ export const useAuth = () => {
   const signOut = async () => {
     const { data } = await client.mutate<boolean>({
       mutation: SIGN_OUT,
+      context: { headers: { Authorization: `Bearer ${token}` } },
     });
     if (data) {
       logout();
@@ -55,5 +66,31 @@ export const useAuth = () => {
     }
   };
 
-  return { getUser, signIn, signUp, signOut };
+  const updateUser = async (user: User) => {
+    const { data } = await client.mutate<boolean>({
+      mutation: UPDATE_USER,
+      variables: { user },
+      context: { headers: { Authorization: `Bearer ${token}` } },
+    });
+    return data ? data : false;
+  };
+
+  const changePassword = async (oldPassword: string, newPassword: string) => {
+    const { data } = await client.mutate<boolean>({
+      mutation: CHANGE_PASSWORD,
+      variables: { oldPassword, newPassword },
+      context: { headers: { Authorization: `Bearer ${token}` } },
+    });
+    return data ? data : false;
+  };
+
+  return {
+    getUser,
+    signIn,
+    signUp,
+    signOut,
+    changePassword,
+    updateUser,
+    isLoggedIn,
+  };
 };

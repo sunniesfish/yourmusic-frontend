@@ -4,7 +4,10 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { Share2, Trash2, ChevronDown } from "lucide-react";
-import DeletePlaylistDialog from "./components";
+import { DeletePlaylistDialog } from "./components";
+import { useAuthStore } from "@/store/auth-store";
+import { redirect } from "next/navigation";
+import { usePlaylist } from "@/hooks/playlist-hooks";
 
 interface Playlist {
   id: string;
@@ -14,13 +17,18 @@ interface Playlist {
 }
 
 export default function PlaylistsPage() {
+  const { user } = useAuthStore();
+  useEffect(() => {
+    if (!user) {
+      redirect("/auth/sign-in");
+    }
+  }, [user]);
+  const { getPlaylists } = usePlaylist(user?.id ?? "");
   const [playlists, setPlaylists] = useState<Playlist[]>([]);
   const [hasMore, setHasMore] = useState(true);
   const [sortBy, setSortBy] = useState<"name" | "date">("date");
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [playlistToDelete, setPlaylistToDelete] = useState<string | null>(null);
-
-  const username = "John Doe"; // 실제 사용시 사용자 정보에서 가져와야 합니다
 
   useEffect(() => {
     // 초기 플레이리스트 로드
@@ -82,7 +90,7 @@ export default function PlaylistsPage() {
     <>
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold text-blue-900 mb-6">
-          {username}'s Playlists
+          {user?.name}'s Playlists
         </h1>
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 space-y-4 sm:space-y-0">
           <button className="frutiger-aero-button px-4 py-2 rounded-md text-white">
