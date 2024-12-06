@@ -1,55 +1,93 @@
-.frutiger-aero-bg {
-  background: linear-gradient(135deg, #87ceeb, #e0ffff);
-  min-height: 100vh;
-}
-
-.frutiger-aero-card {
-  background: rgba(255, 255, 255, 0.4);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-}
-
-.frutiger-aero-loader {
+.frutiger-aero-spinner {
+  --spinner-color: #4da0b0;
+  display: inline-block;
   position: relative;
-  width: 100px;
-  height: 100px;
-  margin: 0 auto;
 }
 
-.frutiger-aero-loader::before,
-.frutiger-aero-loader::after {
+.frutiger-aero-spinner__inner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}
+
+.frutiger-aero-spinner__circle {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 4px solid transparent;
+  border-top-color: var(--spinner-color);
+  animation: frutiger-aero-spin 1.5s cubic-bezier(0.68, -0.55, 0.27, 1.55)
+    infinite;
+}
+
+.frutiger-aero-spinner__circle:nth-child(1) {
+  animation-delay: -0.3s;
+}
+
+.frutiger-aero-spinner__circle:nth-child(2) {
+  animation-delay: -0.2s;
+}
+
+.frutiger-aero-spinner__circle:nth-child(3) {
+  animation-delay: -0.1s;
+}
+
+@keyframes frutiger-aero-spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.frutiger-aero-spinner--small {
+  width: 24px;
+  height: 24px;
+}
+
+.frutiger-aero-spinner--medium {
+  width: 48px;
+  height: 48px;
+}
+
+.frutiger-aero-spinner--large {
+  width: 72px;
+  height: 72px;
+}
+
+/* Frutiger Aero theme enhancements */
+.frutiger-aero-spinner::before {
+  content: "";
+  position: absolute;
+  top: -10%;
+  left: -10%;
+  right: -10%;
+  bottom: -10%;
+  background: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 0.3) 0%,
+    rgba(255, 255, 255, 0) 70%
+  );
+  filter: blur(10px);
+  z-index: -1;
+}
+
+.frutiger-aero-spinner::after {
   content: "";
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.3) 0%,
+    rgba(255, 255, 255, 0) 50%
+  );
   border-radius: 50%;
-  border: 4px solid transparent;
-  animation: frutiger-aero-pulse 2s linear infinite;
-}
-
-.frutiger-aero-loader::before {
-  border-top-color: rgba(77, 160, 176, 0.7);
-}
-
-.frutiger-aero-loader::after {
-  border-bottom-color: rgba(211, 157, 56, 0.7);
-  animation-delay: 1s;
-}
-
-@keyframes frutiger-aero-pulse {
-  0% {
-    transform: scale(0.8);
-    opacity: 0.7;
-  }
-  50% {
-    transform: scale(1.2);
-    opacity: 1;
-  }
-  100% {
-    transform: scale(0.8);
-    opacity: 0.7;
-  }
+  z-index: 1;
 }

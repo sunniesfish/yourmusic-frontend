@@ -26,7 +26,7 @@
     "react-infinite-scroll-component": "^6.1.0",
     "tailwind-merge": "^2.5.5",
     "tailwindcss-animate": "^1.0.7",
-    "zustand": "^5.0.1"
+    "zustand": "^5.0.2"
   },
   "devDependencies": {
     "@graphql-codegen/cli": "^5.0.3",

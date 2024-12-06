@@ -15,11 +15,6 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const token = localStorage.getItem("token");
-  let data;
-  if (token) {
-    data = await client.query<User | null>({ query: GET_USER });
-  }
   return (
     <html lang="en">
       <body>

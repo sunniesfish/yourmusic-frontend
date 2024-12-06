@@ -1,10 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import "@/styles/theme-frutiger-aero.css";
 import { Menu, X } from "lucide-react";
+import { useAuth } from "@/hooks/auth-hooks";
+import { User } from "@/graphql/types/generated";
+import { useAuthStore } from "@/store/auth-store";
 
 interface NavbarProps {
   isLoggedIn: boolean;
@@ -12,14 +15,18 @@ interface NavbarProps {
   profileImage?: string;
 }
 
-export default function Navbar({
-  isLoggedIn,
-  username,
-  profileImage,
-}: NavbarProps) {
+export default function Navbar() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
+  const { getUser } = useAuth();
+  const { user, setUser } = useAuthStore();
+  useEffect(() => {
+    (async () => {
+      const userData = await getUser();
+      setUser(userData ?? null);
+    })();
+  }, []);
   return (
     <nav className="frutiger-aero-navbar p-4">
       <div className="container mx-auto flex justify-between items-center">
@@ -46,21 +53,21 @@ export default function Navbar({
           </button>
         </div>
         <div className="relative">
-          {isLoggedIn ? (
+          {user ? (
             <div className="flex items-center space-x-2">
               <button
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                 className="flex items-center space-x-2 focus:outline-none"
               >
                 <Image
-                  src={profileImage || "/placeholder.svg"}
+                  src={user.profileImg || "/placeholder.svg"}
                   alt="Profile"
                   width={32}
                   height={32}
                   className="rounded-full"
                 />
                 <span className="text-blue-900 hidden md:inline">
-                  {username}
+                  {user.name}
                 </span>
               </button>
               {isDropdownOpen && (

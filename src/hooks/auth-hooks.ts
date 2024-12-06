@@ -3,19 +3,22 @@ import { SIGN_IN, SIGN_OUT, SIGN_UP } from "@/graphql/mutations/user";
 import { GET_USER } from "@/graphql/queries/user";
 import { SignInResponse, User } from "@/graphql/types/generated";
 import router from "next/router";
+import { useAuthStore } from "@/store/auth-store";
 
 export const useAuth = () => {
   const client = useApolloClient();
+  const { setUser, setToken, logout, token } = useAuthStore();
 
-  const getUser = async (user: { id: string; username: string }) => {
-    const token = localStorage.getItem("token");
+  const getUser = async () => {
     if (!token) {
-      throw new Error("No token found");
+      throw new Error("No token or user found");
     }
     const { data } = useQuery<User>(GET_USER, {
-      variables: { id: user?.id, username: user?.username },
       context: { headers: { Authorization: `Bearer ${token}` } },
     });
+    if (data) {
+      setUser(data);
+    }
     return data;
   };
 
@@ -25,8 +28,8 @@ export const useAuth = () => {
       variables: { id, password },
     });
     if (data) {
-      localStorage.setItem("user", JSON.stringify(data.user));
-      localStorage.setItem("token", data.accessToken);
+      setUser(data.user);
+      setToken(data.accessToken);
     }
     return data;
   };
@@ -44,7 +47,7 @@ export const useAuth = () => {
       mutation: SIGN_OUT,
     });
     if (data) {
-      localStorage.removeItem("token");
+      logout();
       client.clearStore();
       router.push("/auth/sign-in");
     } else {

@@ -1,6 +1,17 @@
 import { useMutation } from "@apollo/client";
 import { REMOVE_PLAYLIST } from "@/graphql/mutations/playlist";
 import * as Dialog from "@radix-ui/react-dialog";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { Search } from "lucide-react";
+import Image from "next/image";
 
 interface DeletePlaylistDialogProps {
   isDeleteModalOpen: boolean;
@@ -8,7 +19,7 @@ interface DeletePlaylistDialogProps {
   playlistId: number;
 }
 
-export default function DeletePlaylistDialog({
+export function DeletePlaylistDialog({
   isDeleteModalOpen,
   setIsDeleteModalOpen,
   playlistId,
@@ -50,5 +61,61 @@ export default function DeletePlaylistDialog({
         </Dialog.Content>
       </Dialog.Portal>
     </Dialog.Root>
+  );
+}
+
+interface Song {
+  _typename?: "PlaylistJSON";
+  title?: string | null;
+  artist?: string | null;
+  album?: string | null;
+  thumbnail?: string | null;
+}
+
+interface SongTableProps {
+  songs: Song[];
+}
+
+export function SongTable({ songs }: SongTableProps) {
+  return (
+    <div className="frutiger-aero-card overflow-hidden rounded-lg">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead className="w-[100px]">Cover</TableHead>
+            <TableHead>Title</TableHead>
+            <TableHead>Artist</TableHead>
+            <TableHead className="hidden md:table-cell">Album</TableHead>
+            <TableHead className="w-[100px]">Actions</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {songs.map((song) => (
+            <TableRow key={song.title}>
+              <TableCell>
+                <Image
+                  src={song.thumbnail || "/placeholder.svg?height=40&width=40"}
+                  alt={song.title || ""}
+                  width={40}
+                  height={40}
+                  className="rounded-md"
+                />
+              </TableCell>
+              <TableCell className="font-medium">{song.title}</TableCell>
+              <TableCell>{song.artist}</TableCell>
+              <TableCell className="hidden md:table-cell">
+                {song.album}
+              </TableCell>
+              <TableCell>
+                <Button variant="ghost" size="sm">
+                  <Search className="h-4 w-4" />
+                  <span className="sr-only">Search</span>
+                </Button>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </div>
   );
 }

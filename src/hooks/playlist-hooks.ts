@@ -40,7 +40,11 @@ export const usePlaylist = (userId: string) => {
     const [mutate] = useMutation<Playlist>(READ_PLAYLIST, {
       variables: { link },
     });
-    return mutate;
+    const data = await mutate();
+    if (data) {
+      return data.data;
+    }
+    return null;
   };
 
   const savePlaylist = async (token: string, playlist: Playlist) => {
@@ -50,7 +54,11 @@ export const usePlaylist = (userId: string) => {
         headers: { Authorization: `Bearer ${token}` },
       },
     });
-    return mutate;
+    const data = await mutate();
+    if (data) {
+      return data.data;
+    }
+    return null;
   };
 
   const removePlaylist = async (token: string, playlistId: string) => {
@@ -60,21 +68,27 @@ export const usePlaylist = (userId: string) => {
         headers: { Authorization: `Bearer ${token}` },
       },
     });
-    return mutate;
+    const data = await mutate();
+    if (data) {
+      return data.data;
+    }
+    return null;
   };
 
   const convertToSpotifyPlaylist = async (data: any) => {
     const [mutate] = useMutation<Boolean>(CONVERT_TO_SPOTIFY_PLAYLIST, {
       variables: { data },
     });
-    return mutate;
+    const result = await mutate();
+    return result;
   };
 
   const convertToYoutubePlaylist = async (data: any) => {
     const [mutate] = useMutation<Boolean>(CONVERT_TO_YOUTUBE_PLAYLIST, {
       variables: { data },
     });
-    return mutate;
+    const result = await mutate();
+    return result;
   };
 
   return {

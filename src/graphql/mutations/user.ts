@@ -13,8 +13,7 @@ export const SIGN_IN = gql`
 
 export const SIGN_UP = gql`
   mutation SignUp($signUpInput: SignUpInput!) {
-    signUp(signUpInput: $signUpInput) {
-    }
+    signUp(signUpInput: $signUpInput)
   }
 `;
 

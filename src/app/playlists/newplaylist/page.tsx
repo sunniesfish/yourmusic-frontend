@@ -1,14 +1,23 @@
 "use client";
 
 import React, { useState } from "react";
-import { Edit2, ArrowRight } from "lucide-react";
+import { Edit2, ArrowRight, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { usePlaylist } from "@/hooks/playlist-hooks";
+import { Playlist } from "@/graphql/types/generated";
+import { useAuthStore } from "@/store/auth-store";
+import { SongTable } from "../components";
 
 export default function NewPlaylistPage() {
+  const { token, user } = useAuthStore();
+  const { savePlaylist, readPlaylist } = usePlaylist(token ?? "");
+
   const [playlistTitle, setPlaylistTitle] = useState("New Playlist");
+  const [playlist, setPlaylist] = useState<Playlist | null>(null);
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [playlistLink, setPlaylistLink] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleTitleEdit = () => {
     setIsEditingTitle(!isEditingTitle);
@@ -26,15 +35,24 @@ export default function NewPlaylistPage() {
     setPlaylistLink(e.target.value);
   };
 
-  const handleGetPlaylist = () => {
-    console.log("Getting playlist from:", playlistLink);
-    // Implement the logic to fetch the playlist here
+  const handleGetPlaylist = async () => {
+    try {
+      setLoading(true);
+      const playlistData = await readPlaylist(playlistLink);
+      if (playlistData) {
+        setPlaylist(playlistData);
+      }
+    } catch (error) {
+      console.error("Error getting playlist:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div className="frutiger-aero-card p-6 rounded-lg shadow-lg">
       <div className="flex items-center justify-between mb-6">
-        {isEditingTitle ? (
+        {user && isEditingTitle ? (
           <Input
             value={playlistTitle}
             onChange={handleTitleChange}
@@ -47,15 +65,17 @@ export default function NewPlaylistPage() {
             {playlistTitle}
           </h1>
         )}
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={handleTitleEdit}
-          className="text-blue-900 hover:text-blue-700"
-        >
-          <Edit2 className="h-4 w-4" />
-          <span className="sr-only">Edit title</span>
-        </Button>
+        {user && (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleTitleEdit}
+            className="text-blue-900 hover:text-blue-700"
+          >
+            <Edit2 className="h-4 w-4" />
+            <span className="sr-only">Edit title</span>
+          </Button>
+        )}
       </div>
       <div className="space-y-4">
         <div>
@@ -81,6 +101,8 @@ export default function NewPlaylistPage() {
           Get Playlist <ArrowRight className="ml-2 h-4 w-4" />
         </Button>
       </div>
+      {loading && <Loader2 className="animate-spin h-4 w-4" />}
+      {playlist && <SongTable songs={playlist.listJson} />}
     </div>
   );
 }
