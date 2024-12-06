@@ -13,40 +13,31 @@ interface Playlist {
   id: string;
   title: string;
   coverArt: string;
-  savedDate: string;
+  createdAt: string;
 }
 
 export default function PlaylistsPage() {
-  const { user } = useAuthStore();
+  const { user, token } = useAuthStore();
   useEffect(() => {
     if (!user) {
       redirect("/auth/sign-in");
     }
   }, [user]);
-  const { getPlaylists } = usePlaylist(user?.id ?? "");
+  const { getPlaylists } = usePlaylist();
   const [playlists, setPlaylists] = useState<Playlist[]>([]);
   const [hasMore, setHasMore] = useState(true);
-  const [sortBy, setSortBy] = useState<"name" | "date">("date");
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [playlistToDelete, setPlaylistToDelete] = useState<string | null>(null);
+  const [sortType, setSortType] = useState<"name" | "createdAt">("name");
 
   useEffect(() => {
     // 초기 플레이리스트 로드
     fetchMoreData();
   }, []);
 
-  const fetchMoreData = () => {
-    // 실제 구현시 API 호출로 대체해야 합니다
-    const newPlaylists: Playlist[] = Array(10)
-      .fill(null)
-      .map((_, index) => ({
-        id: `playlist-${playlists.length + index}`,
-        title: `Playlist ${playlists.length + index + 1}`,
-        coverArt: `/placeholder.svg?height=80&width=80`,
-        savedDate: new Date(Date.now() - Math.random() * 10000000000)
-          .toISOString()
-          .split("T")[0],
-      }));
+  const fetchMoreData = async () => {
+    const data = await getPlaylists(token ?? "", 1, 10, sortType);
+    const newPlaylists: Playlist[] = [];
 
     setPlaylists([...playlists, ...newPlaylists]);
     if (playlists.length + newPlaylists.length >= 50) {
@@ -54,21 +45,9 @@ export default function PlaylistsPage() {
     }
   };
 
-  const handleSort = (type: "name" | "date") => {
-    setSortBy(type);
-    setPlaylists((prevPlaylists) => {
-      const sortedPlaylists = [...prevPlaylists];
-      sortedPlaylists.sort((a, b) => {
-        if (type === "name") {
-          return a.title.localeCompare(b.title);
-        } else {
-          return (
-            new Date(b.savedDate).getTime() - new Date(a.savedDate).getTime()
-          );
-        }
-      });
-      return sortedPlaylists;
-    });
+  const handleSort = (type: "name" | "createdAt") => {
+    setSortType(type);
+    fetchMoreData();
   };
 
   const handleDelete = (id: string) => {
@@ -99,8 +78,10 @@ export default function PlaylistsPage() {
           <div className="relative">
             <select
               className="frutiger-aero-input appearance-none px-4 py-2 pr-8 rounded-md text-blue-900"
-              value={sortBy}
-              onChange={(e) => handleSort(e.target.value as "name" | "date")}
+              value={sortType}
+              onChange={(e) =>
+                handleSort(e.target.value as "name" | "createdAt")
+              }
             >
               <option value="name">Sort by Name</option>
               <option value="date">Sort by Date</option>
@@ -136,7 +117,7 @@ export default function PlaylistsPage() {
                   <h3 className="text-lg font-semibold text-blue-900">
                     {playlist.title}
                   </h3>
-                  <p className="text-sm text-blue-700">{playlist.savedDate}</p>
+                  <p className="text-sm text-blue-700">{playlist.createdAt}</p>
                 </div>
                 <div className="flex space-x-2">
                   <button className="p-2 rounded-full hover:bg-blue-100 transition-colors">

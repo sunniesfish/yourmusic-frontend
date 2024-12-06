@@ -15,6 +15,7 @@ export type Scalars = {
   Boolean: { input: boolean; output: boolean; }
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
+  DateTime: { input: any; output: any; }
 };
 
 export type ChangePasswordInput = {
@@ -107,6 +108,7 @@ export type MutationUpdateUserArgs = {
 
 export type Playlist = {
   __typename?: 'Playlist';
+  createdAt: Scalars['DateTime']['output'];
   id: Scalars['ID']['output'];
   listJson: Array<PlaylistJson>;
   name: Scalars['String']['output'];
@@ -128,10 +130,16 @@ export type PlaylistJsonInput = {
   title?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type PlaylistsResponse = {
+  __typename?: 'PlaylistsResponse';
+  playlists: Array<Playlist>;
+  totalPages: Scalars['Int']['output'];
+};
+
 export type Query = {
   __typename?: 'Query';
   playlist: Playlist;
-  playlists: Array<Playlist>;
+  playlists: PlaylistsResponse;
   statistic: Statistic;
   user: User;
 };
@@ -142,13 +150,15 @@ export type QueryPlaylistArgs = {
 };
 
 
-export type QueryStatisticArgs = {
-  userId: Scalars['ID']['input'];
+export type QueryPlaylistsArgs = {
+  limit: Scalars['Int']['input'];
+  orderBy: Scalars['String']['input'];
+  page: Scalars['Int']['input'];
 };
 
 
-export type QueryUserArgs = {
-  id: Scalars['ID']['input'];
+export type QueryStatisticArgs = {
+  userId: Scalars['ID']['input'];
 };
 
 export type SavePlaylistInput = {
@@ -217,10 +227,54 @@ export type PlaylistJsonFieldsFragment = { __typename?: 'PlaylistJSON', title?: 
 
 export type PlaylistFieldsFragment = { __typename?: 'Playlist', id: string, name: string, listJson: Array<{ __typename?: 'PlaylistJSON', title?: string | null, artist?: string | null, album?: string | null, thumbnail?: string | null }>, user: { __typename?: 'User', id: string, name: string, profileImg?: string | null } };
 
-export type GetPlaylistsQueryVariables = Exact<{ [key: string]: never; }>;
+export type SignInMutationVariables = Exact<{
+  signInInput: SignInInput;
+}>;
 
 
-export type GetPlaylistsQuery = { __typename?: 'Query', playlists: Array<{ __typename?: 'Playlist', id: string, name: string, listJson: Array<{ __typename?: 'PlaylistJSON', title?: string | null, artist?: string | null, album?: string | null, thumbnail?: string | null }>, user: { __typename?: 'User', id: string, name: string, profileImg?: string | null } }> };
+export type SignInMutation = { __typename?: 'Mutation', signIn: { __typename?: 'SignInResponse', accessToken: string, user: { __typename?: 'User', id: string, name: string, profileImg?: string | null } } };
+
+export type SignUpMutationVariables = Exact<{
+  signUpInput: SignUpInput;
+}>;
+
+
+export type SignUpMutation = { __typename?: 'Mutation', signUp: boolean };
+
+export type SignOutMutationVariables = Exact<{ [key: string]: never; }>;
+
+
+export type SignOutMutation = { __typename?: 'Mutation', signOut: boolean };
+
+export type UpdateUserMutationVariables = Exact<{
+  updateUserInput: UpdateUserInput;
+}>;
+
+
+export type UpdateUserMutation = { __typename?: 'Mutation', updateUser: boolean };
+
+export type ChangePasswordMutationVariables = Exact<{
+  input: ChangePasswordInput;
+}>;
+
+
+export type ChangePasswordMutation = { __typename?: 'Mutation', changePassword: { __typename?: 'User', id: string, name: string, profileImg?: string | null } };
+
+export type CheckPasswordMutationVariables = Exact<{
+  input: ChangePasswordInput;
+}>;
+
+
+export type CheckPasswordMutation = { __typename?: 'Mutation', checkPassword: boolean };
+
+export type GetPlaylistsPaginatedQueryVariables = Exact<{
+  page: Scalars['Int']['input'];
+  limit: Scalars['Int']['input'];
+  orderBy: Scalars['String']['input'];
+}>;
+
+
+export type GetPlaylistsPaginatedQuery = { __typename?: 'Query', playlists: { __typename?: 'PlaylistsResponse', totalPages: number, playlists: Array<{ __typename?: 'Playlist', id: string, name: string, listJson: Array<{ __typename?: 'PlaylistJSON', title?: string | null, artist?: string | null, album?: string | null, thumbnail?: string | null }> }> } };
 
 export type GetPlaylistQueryVariables = Exact<{
   id: Scalars['Int']['input'];
@@ -235,13 +289,6 @@ export type GetStatisticQueryVariables = Exact<{
 
 
 export type GetStatisticQuery = { __typename?: 'Query', statistic: { __typename?: 'Statistic', userId: string, albumRankJson: string, artistRankJson: string, genreRankJson: string, user: { __typename?: 'User', id: string, name: string, profileImg?: string | null } } };
-
-export type GetUserQueryVariables = Exact<{
-  id: Scalars['ID']['input'];
-}>;
-
-
-export type GetUserQuery = { __typename?: 'Query', user: { __typename?: 'User', id: string, name: string, profileImg?: string | null } };
 
 export const PlaylistJsonFieldsFragmentDoc = gql`
     fragment PlaylistJsonFields on PlaylistJSON {
@@ -270,57 +317,254 @@ export const PlaylistFieldsFragmentDoc = gql`
   }
 }
     `;
-export const GetPlaylistsDocument = gql`
-    query GetPlaylists {
-  playlists {
-    id
-    name
-    listJson {
-      title
-      artist
-      album
-      thumbnail
-    }
+export const SignInDocument = gql`
+    mutation SignIn($signInInput: SignInInput!) {
+  signIn(signInInput: $signInInput) {
     user {
       id
       name
       profileImg
     }
+    accessToken
+  }
+}
+    `;
+export type SignInMutationFn = Apollo.MutationFunction<SignInMutation, SignInMutationVariables>;
+
+/**
+ * __useSignInMutation__
+ *
+ * To run a mutation, you first call `useSignInMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useSignInMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [signInMutation, { data, loading, error }] = useSignInMutation({
+ *   variables: {
+ *      signInInput: // value for 'signInInput'
+ *   },
+ * });
+ */
+export function useSignInMutation(baseOptions?: Apollo.MutationHookOptions<SignInMutation, SignInMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<SignInMutation, SignInMutationVariables>(SignInDocument, options);
+      }
+export type SignInMutationHookResult = ReturnType<typeof useSignInMutation>;
+export type SignInMutationResult = Apollo.MutationResult<SignInMutation>;
+export type SignInMutationOptions = Apollo.BaseMutationOptions<SignInMutation, SignInMutationVariables>;
+export const SignUpDocument = gql`
+    mutation SignUp($signUpInput: SignUpInput!) {
+  signUp(signUpInput: $signUpInput)
+}
+    `;
+export type SignUpMutationFn = Apollo.MutationFunction<SignUpMutation, SignUpMutationVariables>;
+
+/**
+ * __useSignUpMutation__
+ *
+ * To run a mutation, you first call `useSignUpMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useSignUpMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [signUpMutation, { data, loading, error }] = useSignUpMutation({
+ *   variables: {
+ *      signUpInput: // value for 'signUpInput'
+ *   },
+ * });
+ */
+export function useSignUpMutation(baseOptions?: Apollo.MutationHookOptions<SignUpMutation, SignUpMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<SignUpMutation, SignUpMutationVariables>(SignUpDocument, options);
+      }
+export type SignUpMutationHookResult = ReturnType<typeof useSignUpMutation>;
+export type SignUpMutationResult = Apollo.MutationResult<SignUpMutation>;
+export type SignUpMutationOptions = Apollo.BaseMutationOptions<SignUpMutation, SignUpMutationVariables>;
+export const SignOutDocument = gql`
+    mutation SignOut {
+  signOut
+}
+    `;
+export type SignOutMutationFn = Apollo.MutationFunction<SignOutMutation, SignOutMutationVariables>;
+
+/**
+ * __useSignOutMutation__
+ *
+ * To run a mutation, you first call `useSignOutMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useSignOutMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [signOutMutation, { data, loading, error }] = useSignOutMutation({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useSignOutMutation(baseOptions?: Apollo.MutationHookOptions<SignOutMutation, SignOutMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<SignOutMutation, SignOutMutationVariables>(SignOutDocument, options);
+      }
+export type SignOutMutationHookResult = ReturnType<typeof useSignOutMutation>;
+export type SignOutMutationResult = Apollo.MutationResult<SignOutMutation>;
+export type SignOutMutationOptions = Apollo.BaseMutationOptions<SignOutMutation, SignOutMutationVariables>;
+export const UpdateUserDocument = gql`
+    mutation UpdateUser($updateUserInput: UpdateUserInput!) {
+  updateUser(updateUserInput: $updateUserInput)
+}
+    `;
+export type UpdateUserMutationFn = Apollo.MutationFunction<UpdateUserMutation, UpdateUserMutationVariables>;
+
+/**
+ * __useUpdateUserMutation__
+ *
+ * To run a mutation, you first call `useUpdateUserMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateUserMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateUserMutation, { data, loading, error }] = useUpdateUserMutation({
+ *   variables: {
+ *      updateUserInput: // value for 'updateUserInput'
+ *   },
+ * });
+ */
+export function useUpdateUserMutation(baseOptions?: Apollo.MutationHookOptions<UpdateUserMutation, UpdateUserMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateUserMutation, UpdateUserMutationVariables>(UpdateUserDocument, options);
+      }
+export type UpdateUserMutationHookResult = ReturnType<typeof useUpdateUserMutation>;
+export type UpdateUserMutationResult = Apollo.MutationResult<UpdateUserMutation>;
+export type UpdateUserMutationOptions = Apollo.BaseMutationOptions<UpdateUserMutation, UpdateUserMutationVariables>;
+export const ChangePasswordDocument = gql`
+    mutation ChangePassword($input: ChangePasswordInput!) {
+  changePassword(input: $input) {
+    id
+    name
+    profileImg
+  }
+}
+    `;
+export type ChangePasswordMutationFn = Apollo.MutationFunction<ChangePasswordMutation, ChangePasswordMutationVariables>;
+
+/**
+ * __useChangePasswordMutation__
+ *
+ * To run a mutation, you first call `useChangePasswordMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useChangePasswordMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [changePasswordMutation, { data, loading, error }] = useChangePasswordMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useChangePasswordMutation(baseOptions?: Apollo.MutationHookOptions<ChangePasswordMutation, ChangePasswordMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<ChangePasswordMutation, ChangePasswordMutationVariables>(ChangePasswordDocument, options);
+      }
+export type ChangePasswordMutationHookResult = ReturnType<typeof useChangePasswordMutation>;
+export type ChangePasswordMutationResult = Apollo.MutationResult<ChangePasswordMutation>;
+export type ChangePasswordMutationOptions = Apollo.BaseMutationOptions<ChangePasswordMutation, ChangePasswordMutationVariables>;
+export const CheckPasswordDocument = gql`
+    mutation CheckPassword($input: ChangePasswordInput!) {
+  checkPassword(input: $input)
+}
+    `;
+export type CheckPasswordMutationFn = Apollo.MutationFunction<CheckPasswordMutation, CheckPasswordMutationVariables>;
+
+/**
+ * __useCheckPasswordMutation__
+ *
+ * To run a mutation, you first call `useCheckPasswordMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCheckPasswordMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [checkPasswordMutation, { data, loading, error }] = useCheckPasswordMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useCheckPasswordMutation(baseOptions?: Apollo.MutationHookOptions<CheckPasswordMutation, CheckPasswordMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CheckPasswordMutation, CheckPasswordMutationVariables>(CheckPasswordDocument, options);
+      }
+export type CheckPasswordMutationHookResult = ReturnType<typeof useCheckPasswordMutation>;
+export type CheckPasswordMutationResult = Apollo.MutationResult<CheckPasswordMutation>;
+export type CheckPasswordMutationOptions = Apollo.BaseMutationOptions<CheckPasswordMutation, CheckPasswordMutationVariables>;
+export const GetPlaylistsPaginatedDocument = gql`
+    query GetPlaylistsPaginated($page: Int!, $limit: Int!, $orderBy: String!) {
+  playlists(page: $page, limit: $limit, orderBy: $orderBy) {
+    playlists {
+      id
+      name
+      listJson {
+        title
+        artist
+        album
+        thumbnail
+      }
+    }
+    totalPages
   }
 }
     `;
 
 /**
- * __useGetPlaylistsQuery__
+ * __useGetPlaylistsPaginatedQuery__
  *
- * To run a query within a React component, call `useGetPlaylistsQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetPlaylistsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * To run a query within a React component, call `useGetPlaylistsPaginatedQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetPlaylistsPaginatedQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useGetPlaylistsQuery({
+ * const { data, loading, error } = useGetPlaylistsPaginatedQuery({
  *   variables: {
+ *      page: // value for 'page'
+ *      limit: // value for 'limit'
+ *      orderBy: // value for 'orderBy'
  *   },
  * });
  */
-export function useGetPlaylistsQuery(baseOptions?: Apollo.QueryHookOptions<GetPlaylistsQuery, GetPlaylistsQueryVariables>) {
+export function useGetPlaylistsPaginatedQuery(baseOptions: Apollo.QueryHookOptions<GetPlaylistsPaginatedQuery, GetPlaylistsPaginatedQueryVariables> & ({ variables: GetPlaylistsPaginatedQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetPlaylistsQuery, GetPlaylistsQueryVariables>(GetPlaylistsDocument, options);
+        return Apollo.useQuery<GetPlaylistsPaginatedQuery, GetPlaylistsPaginatedQueryVariables>(GetPlaylistsPaginatedDocument, options);
       }
-export function useGetPlaylistsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetPlaylistsQuery, GetPlaylistsQueryVariables>) {
+export function useGetPlaylistsPaginatedLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetPlaylistsPaginatedQuery, GetPlaylistsPaginatedQueryVariables>) {
           const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetPlaylistsQuery, GetPlaylistsQueryVariables>(GetPlaylistsDocument, options);
+          return Apollo.useLazyQuery<GetPlaylistsPaginatedQuery, GetPlaylistsPaginatedQueryVariables>(GetPlaylistsPaginatedDocument, options);
         }
-export function useGetPlaylistsSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetPlaylistsQuery, GetPlaylistsQueryVariables>) {
+export function useGetPlaylistsPaginatedSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetPlaylistsPaginatedQuery, GetPlaylistsPaginatedQueryVariables>) {
           const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<GetPlaylistsQuery, GetPlaylistsQueryVariables>(GetPlaylistsDocument, options);
+          return Apollo.useSuspenseQuery<GetPlaylistsPaginatedQuery, GetPlaylistsPaginatedQueryVariables>(GetPlaylistsPaginatedDocument, options);
         }
-export type GetPlaylistsQueryHookResult = ReturnType<typeof useGetPlaylistsQuery>;
-export type GetPlaylistsLazyQueryHookResult = ReturnType<typeof useGetPlaylistsLazyQuery>;
-export type GetPlaylistsSuspenseQueryHookResult = ReturnType<typeof useGetPlaylistsSuspenseQuery>;
-export type GetPlaylistsQueryResult = Apollo.QueryResult<GetPlaylistsQuery, GetPlaylistsQueryVariables>;
+export type GetPlaylistsPaginatedQueryHookResult = ReturnType<typeof useGetPlaylistsPaginatedQuery>;
+export type GetPlaylistsPaginatedLazyQueryHookResult = ReturnType<typeof useGetPlaylistsPaginatedLazyQuery>;
+export type GetPlaylistsPaginatedSuspenseQueryHookResult = ReturnType<typeof useGetPlaylistsPaginatedSuspenseQuery>;
+export type GetPlaylistsPaginatedQueryResult = Apollo.QueryResult<GetPlaylistsPaginatedQuery, GetPlaylistsPaginatedQueryVariables>;
 export const GetPlaylistDocument = gql`
     query GetPlaylist($id: Int!) {
   playlist(id: $id) {
@@ -421,45 +665,3 @@ export type GetStatisticQueryHookResult = ReturnType<typeof useGetStatisticQuery
 export type GetStatisticLazyQueryHookResult = ReturnType<typeof useGetStatisticLazyQuery>;
 export type GetStatisticSuspenseQueryHookResult = ReturnType<typeof useGetStatisticSuspenseQuery>;
 export type GetStatisticQueryResult = Apollo.QueryResult<GetStatisticQuery, GetStatisticQueryVariables>;
-export const GetUserDocument = gql`
-    query GetUser($id: ID!) {
-  user(id: $id) {
-    id
-    name
-    profileImg
-  }
-}
-    `;
-
-/**
- * __useGetUserQuery__
- *
- * To run a query within a React component, call `useGetUserQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetUserQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetUserQuery({
- *   variables: {
- *      id: // value for 'id'
- *   },
- * });
- */
-export function useGetUserQuery(baseOptions: Apollo.QueryHookOptions<GetUserQuery, GetUserQueryVariables> & ({ variables: GetUserQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetUserQuery, GetUserQueryVariables>(GetUserDocument, options);
-      }
-export function useGetUserLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetUserQuery, GetUserQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetUserQuery, GetUserQueryVariables>(GetUserDocument, options);
-        }
-export function useGetUserSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetUserQuery, GetUserQueryVariables>) {
-          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
-          return Apollo.useSuspenseQuery<GetUserQuery, GetUserQueryVariables>(GetUserDocument, options);
-        }
-export type GetUserQueryHookResult = ReturnType<typeof useGetUserQuery>;
-export type GetUserLazyQueryHookResult = ReturnType<typeof useGetUserLazyQuery>;
-export type GetUserSuspenseQueryHookResult = ReturnType<typeof useGetUserSuspenseQuery>;
-export type GetUserQueryResult = Apollo.QueryResult<GetUserQuery, GetUserQueryVariables>;
