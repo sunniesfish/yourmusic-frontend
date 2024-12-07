@@ -1,27 +1,40 @@
 import { CodegenConfig } from "@graphql-codegen/cli";
 
 const config: CodegenConfig = {
-  schema: {
-    "http://localhost:4000/graphql": {
-      headers: {
-        "Cache-Control": "no-cache",
+  overwrite: true,
+  schema: "http://localhost:4000/graphql",
+  documents: ["./src/graphql/doc/*.graphql"],
+  generates: {
+    // 기본 타입 정의
+    "./src/graphql/types.ts": {
+      plugins: ["typescript"],
+      config: {
+        skipTypename: false,
       },
     },
-  }, // GraphQL 서버 엔드포인트
-  documents: ["src/graphql/**/*.ts"],
-  generates: {
-    "./src/graphql/types/generated.ts": {
-      plugins: [
-        "typescript",
-        "typescript-operations",
-        "typescript-react-apollo",
-      ],
+    // 쿼리/뮤테이션 operations
+    "./src/graphql/operations.ts": {
+      preset: "import-types",
+      presetConfig: {
+        typesPath: "./types",
+      },
+      plugins: ["typescript-operations"],
       config: {
-        withHooks: true, // React Hook 생성
-        withHOC: false,
-        withComponent: false,
         skipTypename: false,
         dedupeFragments: true,
+      },
+    },
+    // React hooks
+    "./src/graphql/hooks.ts": {
+      preset: "import-types",
+      presetConfig: {
+        typesPath: "./types",
+      },
+      plugins: ["typescript-react-apollo"],
+      config: {
+        withHooks: true,
+        withHOC: false,
+        withComponent: false,
       },
     },
   },

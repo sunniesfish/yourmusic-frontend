@@ -1,5 +1,3 @@
-import { useMutation } from "@apollo/client";
-import { REMOVE_PLAYLIST } from "@/graphql/mutations/playlist";
 import * as Dialog from "@radix-ui/react-dialog";
 import {
   Table,
@@ -12,6 +10,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Search } from "lucide-react";
 import Image from "next/image";
+import { useRemovePlaylistMutation } from "@/graphql/hooks";
 
 interface DeletePlaylistDialogProps {
   isDeleteModalOpen: boolean;
@@ -24,7 +23,7 @@ export function DeletePlaylistDialog({
   setIsDeleteModalOpen,
   playlistId,
 }: DeletePlaylistDialogProps) {
-  const [deletePlaylist] = useMutation(REMOVE_PLAYLIST, {
+  const [deletePlaylist] = useRemovePlaylistMutation({
     onCompleted: () => {
       setIsDeleteModalOpen(false);
     },

@@ -5,16 +5,16 @@ import { Edit2, ArrowRight, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { usePlaylist } from "@/hooks/playlist-hooks";
-import { Playlist } from "@/graphql/types/generated";
 import { useAuthStore } from "@/store/auth-store";
 import { SongTable } from "../components";
+import { Playlist, PlaylistJson } from "@/graphql/types";
 
 export default function NewPlaylistPage() {
   const { token, user } = useAuthStore();
-  const { savePlaylist, readPlaylist } = usePlaylist(token ?? "");
+  const { savePlaylist, readPlaylist } = usePlaylist();
 
   const [playlistTitle, setPlaylistTitle] = useState("New Playlist");
-  const [playlist, setPlaylist] = useState<Playlist | null>(null);
+  const [playlistData, setPlaylistData] = useState<PlaylistJson[] | null>(null);
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [playlistLink, setPlaylistLink] = useState("");
   const [loading, setLoading] = useState(false);
@@ -40,7 +40,7 @@ export default function NewPlaylistPage() {
       setLoading(true);
       const playlistData = await readPlaylist(playlistLink);
       if (playlistData) {
-        setPlaylist(playlistData);
+        setPlaylistData(playlistData);
       }
     } catch (error) {
       console.error("Error getting playlist:", error);
@@ -102,7 +102,7 @@ export default function NewPlaylistPage() {
         </Button>
       </div>
       {loading && <Loader2 className="animate-spin h-4 w-4" />}
-      {playlist && <SongTable songs={playlist.listJson} />}
+      {playlistData && <SongTable songs={playlistData} />}
     </div>
   );
 }

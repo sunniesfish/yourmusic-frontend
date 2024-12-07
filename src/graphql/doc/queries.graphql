@@ -1,0 +1,52 @@
+# User 정보를 가져오는 쿼리
+query GetUser {
+  user {
+    id
+    name
+    profileImg
+  }
+}
+
+# 단일 플레이리스트 정보를 가져오는 쿼리
+query GetPlaylist($id: Int!) {
+  playlist(id: $id) {
+    id
+    name
+    createdAt
+    listJson {
+      title
+      artist
+      album
+      thumbnail
+    }
+    user {
+      id
+      name
+    }
+  }
+}
+
+# 플레이리스트 페이지네이션 쿼리
+query GetPlaylistsPage($limit: Int!, $orderBy: String!, $page: Int!) {
+  playlistsPage(limit: $limit, orderBy: $orderBy, page: $page) {
+    playlists {
+      id
+      name
+      createdAt
+    }
+    totalPages
+  }
+}
+
+# 사용자 통계 정보를 가져오는 쿼리
+query GetStatistic($userId: ID!) {
+  statistic(userId: $userId) {
+    albumRankJson
+    artistRankJson
+    genreRankJson
+    user {
+      id
+      name
+    }
+  }
+}

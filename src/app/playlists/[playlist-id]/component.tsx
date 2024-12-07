@@ -9,16 +9,14 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { usePlaylist } from "@/hooks/playlist-hooks";
-import { GetPlaylistQuery } from "@/graphql/types/generated";
 import { SongTable } from "@/app/playlists/components";
+import { GetPlaylistQuery } from "@/graphql/operations";
 export default function PlaylistComponent({
   playlistProps,
 }: {
   playlistProps: GetPlaylistQuery["playlist"];
 }) {
-  const { convertToSpotifyPlaylist, convertToYoutubePlaylist } = usePlaylist(
-    playlistProps.id
-  );
+  const { convertToSpotifyPlaylist, convertToYoutubePlaylist } = usePlaylist();
 
   const handleConvertToSpotify = async () => {
     await convertToSpotifyPlaylist(playlistProps.id);

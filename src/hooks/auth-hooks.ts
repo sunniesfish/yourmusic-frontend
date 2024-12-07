@@ -1,15 +1,15 @@
-import { useApolloClient, useQuery, useMutation } from "@apollo/client";
-import {
-  CHANGE_PASSWORD,
-  SIGN_IN,
-  SIGN_OUT,
-  SIGN_UP,
-  UPDATE_USER,
-} from "@/graphql/mutations/user";
-import { GET_USER } from "@/graphql/queries/user";
-import { SignInResponse, User } from "@/graphql/types/generated";
+import { useApolloClient } from "@apollo/client";
 import router from "next/router";
 import { useAuthStore } from "@/store/auth-store";
+import { User } from "@/graphql/types";
+import {
+  useGetUserQuery,
+  useSignInMutation,
+  useSignUpMutation,
+  useSignOutMutation,
+  useUpdateUserMutation,
+  useChangePasswordMutation,
+} from "@/graphql/hooks";
 
 export const useAuth = () => {
   const client = useApolloClient();
@@ -19,7 +19,7 @@ export const useAuth = () => {
     if (!token) {
       throw new Error("No token or user found");
     }
-    const { data } = useQuery<User>(GET_USER, {
+    const { data } = useGetUserQuery({
       context: { headers: { Authorization: `Bearer ${token}` } },
     });
     if (data) {
@@ -33,31 +33,31 @@ export const useAuth = () => {
   };
 
   const signIn = async (id: string, password: string) => {
-    const { data } = await client.mutate<SignInResponse>({
-      mutation: SIGN_IN,
-      variables: { id, password },
+    const [mutate] = useSignInMutation({
+      variables: { signInInput: { id, password } },
     });
-    if (data) {
-      setUser(data.user);
-      setToken(data.accessToken);
+    const data = await mutate();
+    if (data.data) {
+      setUser(data.data.signIn.user);
+      setToken(data.data.signIn.accessToken);
     }
-    return data;
+    return data.data ? true : false;
   };
 
   const signUp = async (id: string, username: string, password: string) => {
-    const { data } = await client.mutate<boolean>({
-      mutation: SIGN_UP,
-      variables: { id, username, password },
+    const [mutate] = useSignUpMutation({
+      variables: { signUpInput: { id, name: username, password } },
     });
-    return data ? data : false;
+    const data = await mutate();
+    return data.data ? data.data.signUp : false;
   };
 
   const signOut = async () => {
-    const { data } = await client.mutate<boolean>({
-      mutation: SIGN_OUT,
+    const [mutate] = useSignOutMutation({
       context: { headers: { Authorization: `Bearer ${token}` } },
     });
-    if (data) {
+    const data = await mutate();
+    if (data.data?.signOut) {
       logout();
       client.clearStore();
       router.push("/auth/sign-in");
@@ -67,21 +67,21 @@ export const useAuth = () => {
   };
 
   const updateUser = async (user: User) => {
-    const { data } = await client.mutate<boolean>({
-      mutation: UPDATE_USER,
-      variables: { user },
+    const [mutate] = useUpdateUserMutation({
+      variables: { updateUserInput: user },
       context: { headers: { Authorization: `Bearer ${token}` } },
     });
-    return data ? data : false;
+    const data = await mutate();
+    return data.data ? data.data.updateUser : false;
   };
 
-  const changePassword = async (oldPassword: string, newPassword: string) => {
-    const { data } = await client.mutate<boolean>({
-      mutation: CHANGE_PASSWORD,
-      variables: { oldPassword, newPassword },
+  const changePassword = async (id: string, password: string) => {
+    const [mutate] = useChangePasswordMutation({
+      variables: { input: { id, password } },
       context: { headers: { Authorization: `Bearer ${token}` } },
     });
-    return data ? data : false;
+    const data = await mutate();
+    return data.data ? true : false;
   };
 
   return {

@@ -24,7 +24,7 @@ export default function PlaylistsPage() {
     }
   }, [user]);
   const { getPlaylists } = usePlaylist();
-  const [playlists, setPlaylists] = useState<Playlist[]>([]);
+  const [playlists, setPlaylists] = useState<Partial<Playlist>[]>([]);
   const [hasMore, setHasMore] = useState(true);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [playlistToDelete, setPlaylistToDelete] = useState<string | null>(null);
@@ -37,7 +37,7 @@ export default function PlaylistsPage() {
 
   const fetchMoreData = async () => {
     const data = await getPlaylists(token ?? "", 1, 10, sortType);
-    const newPlaylists: Playlist[] = [];
+    const newPlaylists = data?.playlistsPage.playlists ?? [];
 
     setPlaylists([...playlists, ...newPlaylists]);
     if (playlists.length + newPlaylists.length >= 50) {
@@ -107,8 +107,8 @@ export default function PlaylistsPage() {
                 className="frutiger-aero-card p-4 rounded-lg flex items-center space-x-4"
               >
                 <Image
-                  src={playlist.coverArt}
-                  alt={playlist.title}
+                  src={playlist.coverArt ?? ""}
+                  alt={playlist.title ?? ""}
                   width={80}
                   height={80}
                   className="rounded-md"
@@ -125,7 +125,7 @@ export default function PlaylistsPage() {
                   </button>
                   <button
                     className="p-2 rounded-full hover:bg-blue-100 transition-colors"
-                    onClick={() => handleDelete(playlist.id)}
+                    onClick={() => handleDelete(playlist.id ?? "")}
                   >
                     <Trash2 className="w-5 h-5 text-blue-900" />
                   </button>

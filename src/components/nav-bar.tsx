@@ -6,14 +6,7 @@ import Image from "next/image";
 import "@/styles/theme-frutiger-aero.css";
 import { Menu, X } from "lucide-react";
 import { useAuth } from "@/hooks/auth-hooks";
-import { User } from "@/graphql/types/generated";
 import { useAuthStore } from "@/store/auth-store";
-
-interface NavbarProps {
-  isLoggedIn: boolean;
-  username?: string;
-  profileImage?: string;
-}
 
 export default function Navbar() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);

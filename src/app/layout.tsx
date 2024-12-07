@@ -1,9 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import ApolloProvider from "@/providers/apollo-provider";
-import { client } from "@/lib/apollo-client";
-import { GET_USER } from "@/graphql/queries/user";
-import { User } from "@/graphql/types/generated";
 
 export const metadata: Metadata = {
   title: "YOUR MUSIC",

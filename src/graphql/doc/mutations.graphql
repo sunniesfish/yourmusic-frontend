@@ -1,0 +1,89 @@
+# 사용자 회원가입
+mutation SignUp($signUpInput: SignUpInput!) {
+  signUp(signUpInput: $signUpInput)
+}
+
+# 사용자 로그인
+mutation SignIn($signInInput: SignInInput!) {
+  signIn(signInInput: $signInInput) {
+    accessToken
+    user {
+      id
+      name
+      profileImg
+    }
+  }
+}
+
+# 사용자 로그아웃
+mutation SignOut {
+  signOut
+}
+
+# 비밀번호 변경
+mutation ChangePassword($input: ChangePasswordInput!) {
+  changePassword(input: $input) {
+    id
+    name
+  }
+}
+
+# 새로운 플레이리스트 저장
+mutation SavePlaylist($savePlaylistInput: SavePlaylistInput!) {
+  savePlaylist(savePlaylistInput: $savePlaylistInput)
+}
+
+# 플레이리스트 제거
+mutation RemovePlaylist($id: Int!) {
+  removePlaylist(id: $id) {
+    id
+    name
+  }
+}
+
+# 플레이리스트 읽기
+mutation ReadPlaylist($link: String!) {
+  readPlaylist(link: $link) {
+    title
+    artist
+    album
+    thumbnail
+  }
+}
+
+# 플레이리스트를 Spotify로 변환
+mutation ConvertToSpotifyPlaylist($listJSON: [PlaylistJSONInput!]!) {
+  convertToSpotifyPlaylist(listJSON: $listJSON)
+}
+
+# 플레이리스트를 YouTube로 변환
+mutation ConvertToYoutubePlaylist($listJSON: [PlaylistJSONInput!]!) {
+  convertToYoutubePlaylist(listJSON: $listJSON)
+}
+
+# 사용자 업데이트
+mutation UpdateUser($updateUserInput: UpdateUserInput!) {
+  updateUser(updateUserInput: $updateUserInput)
+}
+
+# 통계 저장
+mutation SaveStatistic($saveStatisticInput: SaveStatisticInput!) {
+  saveStatistic(saveStatisticInput: $saveStatisticInput)
+}
+
+# 통계 업데이트
+mutation UpdateStatistic($updateStatisticInput: UpdateStatisticInput!) {
+  updateStatistic(updateStatisticInput: $updateStatisticInput) {
+    user {
+      id
+      name
+    }
+  }
+}
+
+# 통계 제거
+mutation RemoveStatistic($userId: ID!) {
+  removeStatistic(userId: $userId) {
+    userId
+  }
+}

@@ -1,17 +1,14 @@
+import {
+  useConvertToSpotifyPlaylistMutation,
+  useConvertToYoutubePlaylistMutation,
+  useGetPlaylistQuery,
+  useGetPlaylistsPageQuery,
+  useReadPlaylistMutation,
+  useRemovePlaylistMutation,
+  useSavePlaylistMutation,
+} from "@/graphql/hooks";
+import { Playlist } from "@/graphql/types";
 import { useMutation, useQuery } from "@apollo/client";
-import {
-  GetPlaylistsPaginatedQuery,
-  GetPlaylistQuery,
-  Playlist,
-} from "@/graphql/types/generated";
-import { GET_PLAYLIST, GET_PLAYLISTS } from "@/graphql/queries/playlist";
-import {
-  READ_PLAYLIST,
-  SAVE_PLAYLIST,
-  REMOVE_PLAYLIST,
-  CONVERT_TO_SPOTIFY_PLAYLIST,
-  CONVERT_TO_YOUTUBE_PLAYLIST,
-} from "@/graphql/mutations/playlist";
 
 export const usePlaylist = () => {
   const getPlaylists = async (
@@ -20,7 +17,7 @@ export const usePlaylist = () => {
     limit: number,
     orderBy: "createdAt" | "name"
   ) => {
-    const { data } = useQuery<GetPlaylistsPaginatedQuery>(GET_PLAYLISTS, {
+    const { data } = useGetPlaylistsPageQuery({
       context: {
         headers: { Authorization: `Bearer ${token}` },
       },
@@ -33,8 +30,8 @@ export const usePlaylist = () => {
     return data;
   };
 
-  const getPlaylistDetails = async (token: string, playlistId: string) => {
-    const { data } = useQuery<GetPlaylistQuery>(GET_PLAYLIST, {
+  const getPlaylistDetails = async (token: string, playlistId: number) => {
+    const { data } = useGetPlaylistQuery({
       variables: { id: playlistId },
       context: {
         headers: { Authorization: `Bearer ${token}` },
@@ -44,19 +41,16 @@ export const usePlaylist = () => {
   };
 
   const readPlaylist = async (link: string) => {
-    const [mutate] = useMutation<Playlist>(READ_PLAYLIST, {
+    const [mutate] = useReadPlaylistMutation({
       variables: { link },
     });
     const data = await mutate();
-    if (data) {
-      return data.data;
-    }
-    return null;
+    return data.data?.readPlaylist ?? null;
   };
 
   const savePlaylist = async (token: string, playlist: Playlist) => {
-    const [mutate] = useMutation<Playlist>(SAVE_PLAYLIST, {
-      variables: { playlist },
+    const [mutate] = useSavePlaylistMutation({
+      variables: { savePlaylistInput: playlist },
       context: {
         headers: { Authorization: `Bearer ${token}` },
       },
@@ -68,8 +62,8 @@ export const usePlaylist = () => {
     return null;
   };
 
-  const removePlaylist = async (token: string, playlistId: string) => {
-    const [mutate] = useMutation<Boolean>(REMOVE_PLAYLIST, {
+  const removePlaylist = async (token: string, playlistId: number) => {
+    const [mutate] = useRemovePlaylistMutation({
       variables: { id: playlistId },
       context: {
         headers: { Authorization: `Bearer ${token}` },
@@ -83,16 +77,16 @@ export const usePlaylist = () => {
   };
 
   const convertToSpotifyPlaylist = async (data: any) => {
-    const [mutate] = useMutation<Boolean>(CONVERT_TO_SPOTIFY_PLAYLIST, {
-      variables: { data },
+    const [mutate] = useConvertToSpotifyPlaylistMutation({
+      variables: { listJSON: data },
     });
     const result = await mutate();
     return result;
   };
 
   const convertToYoutubePlaylist = async (data: any) => {
-    const [mutate] = useMutation<Boolean>(CONVERT_TO_YOUTUBE_PLAYLIST, {
-      variables: { data },
+    const [mutate] = useConvertToYoutubePlaylistMutation({
+      variables: { listJSON: data },
     });
     const result = await mutate();
     return result;
