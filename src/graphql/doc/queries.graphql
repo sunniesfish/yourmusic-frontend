@@ -27,12 +27,22 @@ query GetPlaylist($id: Int!) {
 }
 
 # 플레이리스트 페이지네이션 쿼리
-query GetPlaylistsPage($limit: Int!, $orderBy: String!, $page: Int!) {
+query GetPlaylistsPage(
+  $limit: Int!
+  $orderBy: String!
+  $page: Int!
+  $includeListJson: Boolean!
+) {
   playlistsPage(limit: $limit, orderBy: $orderBy, page: $page) {
     playlists {
       id
       name
       createdAt
+      listJson @include(if: $includeListJson) {
+        title
+        artist
+        album
+      }
     }
     totalPages
   }
@@ -44,6 +54,7 @@ query GetStatistic($userId: ID!) {
     albumRankJson
     artistRankJson
     genreRankJson
+    updatedAt
     user {
       id
       name

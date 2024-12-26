@@ -1,9 +1,11 @@
-import { GET_USER } from "@/graphql/queries/user";
+import { PlaylistJson } from "@/graphql/types";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
-import { client } from "./apollo-client";
-import { GetUserQuery } from "@/graphql/types/generated";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
+}
+
+export function parsePlaylistJSONArray(json: string): PlaylistJson[] {
+  return JSON.parse(json);
 }

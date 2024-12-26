@@ -813,12 +813,22 @@ export type GetPlaylistQueryResult = Apollo.QueryResult<
   Types.GetPlaylistQueryVariables
 >;
 export const GetPlaylistsPageDocument = gql`
-  query GetPlaylistsPage($limit: Int!, $orderBy: String!, $page: Int!) {
+  query GetPlaylistsPage(
+    $limit: Int!
+    $orderBy: String!
+    $page: Int!
+    $isListJson: Boolean!
+  ) {
     playlistsPage(limit: $limit, orderBy: $orderBy, page: $page) {
       playlists {
         id
         name
         createdAt
+        listJson @include(if: $isListJson) {
+          title
+          artist
+          album
+        }
       }
       totalPages
     }

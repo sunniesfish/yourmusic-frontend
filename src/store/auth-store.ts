@@ -1,4 +1,4 @@
-import { User } from "@/graphql/types/generated";
+import { User } from "@/graphql/types";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 

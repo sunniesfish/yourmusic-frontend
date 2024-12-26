@@ -165,6 +165,7 @@ export type GetPlaylistsPageQueryVariables = Types.Exact<{
   limit: Types.Scalars["Int"]["input"];
   orderBy: Types.Scalars["String"]["input"];
   page: Types.Scalars["Int"]["input"];
+  includeListJson: Types.Scalars["Boolean"]["input"];
 }>;
 
 export type GetPlaylistsPageQuery = {
@@ -177,6 +178,12 @@ export type GetPlaylistsPageQuery = {
       id: string;
       name: string;
       createdAt: any;
+      listJson?: Array<{
+        __typename?: "PlaylistJSON";
+        title?: string | null;
+        artist?: string | null;
+        album?: string | null;
+      }> | null;
     }>;
   };
 };
@@ -192,6 +199,7 @@ export type GetStatisticQuery = {
     albumRankJson: string;
     artistRankJson: string;
     genreRankJson: string;
+    updatedAt: string;
     user: { __typename?: "User"; id: string; name: string };
   };
 };

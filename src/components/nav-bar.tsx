@@ -17,7 +17,7 @@ export default function Navbar() {
   useEffect(() => {
     (async () => {
       const userData = await getUser();
-      setUser(userData ?? null);
+      setUser(userData?.user ?? null);
     })();
   }, []);
   return (
