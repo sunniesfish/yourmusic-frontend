@@ -84,7 +84,7 @@ export type MutationSavePlaylistArgs = {
 };
 
 export type MutationSaveStatisticArgs = {
-  saveStatisticInput: SaveStatisticInput;
+  saveStatisticInput: MutateStatisticInput;
 };
 
 export type MutationSignInArgs = {
@@ -160,13 +160,6 @@ export type SavePlaylistInput = {
   name: Scalars["String"]["input"];
 };
 
-export type SaveStatisticInput = {
-  albumRankJson: Scalars["String"]["input"];
-  artistRankJson: Scalars["String"]["input"];
-  genreRankJson: Scalars["String"]["input"];
-  userId: Scalars["ID"]["input"];
-};
-
 export type SignInInput = {
   id: Scalars["String"]["input"];
   password: Scalars["String"]["input"];
@@ -185,11 +178,31 @@ export type SignUpInput = {
   profileImg?: InputMaybe<Scalars["String"]["input"]>;
 };
 
+export type StatisticRank = {
+  __typename?: "StatisticRank";
+  first: Scalars["String"]["output"];
+  second: Scalars["String"]["output"];
+  third: Scalars["String"]["output"];
+};
+
+export type StatisticRankInput = {
+  first: Scalars["String"]["input"];
+  second: Scalars["String"]["input"];
+  third: Scalars["String"]["input"];
+};
+
+export type MutateStatisticInput = {
+  albumRankJson: StatisticRankInput;
+  artistRankJson: StatisticRankInput;
+  titleRankJson: StatisticRankInput;
+  userId: Scalars["ID"]["input"];
+};
+
 export type Statistic = {
   __typename?: "Statistic";
-  albumRankJson: Scalars["String"]["output"];
-  artistRankJson: Scalars["String"]["output"];
-  genreRankJson: Scalars["String"]["output"];
+  albumRankJson: StatisticRank;
+  artistRankJson: StatisticRank;
+  titleRankJson: StatisticRank;
   updatedAt: Scalars["DateTime"]["output"];
   user: User;
   userId: Scalars["ID"]["output"];

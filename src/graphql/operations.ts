@@ -98,7 +98,7 @@ export type UpdateUserMutation = {
 };
 
 export type SaveStatisticMutationVariables = Types.Exact<{
-  saveStatisticInput: Types.SaveStatisticInput;
+  saveStatisticInput: Types.MutateStatisticInput;
 }>;
 
 export type SaveStatisticMutation = {
@@ -107,13 +107,32 @@ export type SaveStatisticMutation = {
 };
 
 export type UpdateStatisticMutationVariables = Types.Exact<{
-  updateStatisticInput: Types.UpdateStatisticInput;
+  updateStatisticInput: Types.MutateStatisticInput;
 }>;
 
 export type UpdateStatisticMutation = {
   __typename?: "Mutation";
   updateStatistic: {
     __typename?: "Statistic";
+    albumRankJson: {
+      __typename?: "StatisticRank";
+      first: string;
+      second: string;
+      third: string;
+    };
+    artistRankJson: {
+      __typename?: "StatisticRank";
+      first: string;
+      second: string;
+      third: string;
+    };
+    titleRankJson: {
+      __typename?: "StatisticRank";
+      first: string;
+      second: string;
+      third: string;
+    };
+    updatedAt: any;
     user: { __typename?: "User"; id: string; name: string };
   };
 };
@@ -196,10 +215,25 @@ export type GetStatisticQuery = {
   __typename?: "Query";
   statistic: {
     __typename?: "Statistic";
-    albumRankJson: string;
-    artistRankJson: string;
-    genreRankJson: string;
-    updatedAt: string;
+    albumRankJson: {
+      __typename?: "StatisticRank";
+      first: string;
+      second: string;
+      third: string;
+    };
+    artistRankJson: {
+      __typename?: "StatisticRank";
+      first: string;
+      second: string;
+      third: string;
+    };
+    titleRankJson: {
+      __typename?: "StatisticRank";
+      first: string;
+      second: string;
+      third: string;
+    };
+    updatedAt: any;
     user: { __typename?: "User"; id: string; name: string };
   };
 };

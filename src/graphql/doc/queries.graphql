@@ -51,9 +51,21 @@ query GetPlaylistsPage(
 # 사용자 통계 정보를 가져오는 쿼리
 query GetStatistic($userId: ID!) {
   statistic(userId: $userId) {
-    albumRankJson
-    artistRankJson
-    genreRankJson
+    albumRankJson {
+      first
+      second
+      third
+    }
+    artistRankJson {
+      first
+      second
+      third
+    }
+    titleRankJson {
+      first
+      second
+      third
+    }
     updatedAt
     user {
       id

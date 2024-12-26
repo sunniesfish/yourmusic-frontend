@@ -67,13 +67,29 @@ mutation UpdateUser($updateUserInput: UpdateUserInput!) {
 }
 
 # 통계 저장
-mutation SaveStatistic($saveStatisticInput: SaveStatisticInput!) {
+mutation SaveStatistic($saveStatisticInput: MutateStatisticInput!) {
   saveStatistic(saveStatisticInput: $saveStatisticInput)
 }
 
 # 통계 업데이트
-mutation UpdateStatistic($updateStatisticInput: UpdateStatisticInput!) {
+mutation UpdateStatistic($updateStatisticInput: MutateStatisticInput!) {
   updateStatistic(updateStatisticInput: $updateStatisticInput) {
+    albumRankJson {
+      first
+      second
+      third
+    }
+    artistRankJson {
+      first
+      second
+      third
+    }
+    titleRankJson {
+      first
+      second
+      third
+    }
+    updatedAt
     user {
       id
       name
