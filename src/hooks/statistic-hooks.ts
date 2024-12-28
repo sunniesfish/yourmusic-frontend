@@ -3,107 +3,122 @@ import {
   useGetStatisticQuery,
   useSaveStatisticMutation,
 } from "@/graphql/hooks";
-import { calculateTopRanks } from "@/hooks/lib/statistic-calculator";
+import { MutateStatisticInput, Statistic } from "@/graphql/types";
+import { calculateTopRanks } from "@/lib/statistic-calculator";
+import { useMemo, useCallback } from "react";
+
+const ERROR_CODES = {
+  NO_USER: "NO_USER",
+  FETCH_ERROR: "FETCH_ERROR",
+  SAVE_ERROR: "SAVE_ERROR",
+} as const;
+
+type StatisticErrorCode = keyof typeof ERROR_CODES;
 
 interface StatisticError extends Error {
-  code: "NO_USER" | "FETCH_ERROR" | "SAVE_ERROR";
+  code: StatisticErrorCode;
 }
 
-export const useStatistic = () => {
-  const getStatistic = async (user: { id: string }): Promise<any> => {
-    if (!user?.id) {
-      throw createStatisticError("NO_USER", "사용자 ID가 필요합니다.");
+export const useStatistic = (userId: string) => {
+  const { data: statisticData, loading: statisticLoading } =
+    useGetStatisticQuery({
+      variables: { userId },
+      skip: !userId,
+    });
+
+  const { data: playlistData, loading: playlistLoading } =
+    useGetPlaylistsPageQuery({
+      variables: {
+        limit: 1000,
+        orderBy: "createdAt",
+        page: 1,
+        includeListJson: true,
+      },
+      skip:
+        !userId ||
+        (statisticData?.statistic &&
+          !isStatisticOutdated(statisticData.statistic)),
+    });
+
+  const [saveStatistic] = useSaveStatisticMutation();
+
+  const topRanks = useMemo(() => {
+    if (!playlistData?.playlistsPage?.playlists) return null;
+    return calculateTopRanks(playlistData.playlistsPage.playlists);
+  }, [playlistData]);
+
+  const analyzeStatistic = useCallback(async (): Promise<
+    Partial<Statistic>
+  > => {
+    if (!userId) {
+      throw createStatisticError(ERROR_CODES.NO_USER, "User ID is required");
     }
 
     try {
-      const { data } = await useGetStatisticQuery({
-        variables: { userId: user.id },
-      });
-      return data;
-    } catch (err) {
-      throw createStatisticError(
-        "FETCH_ERROR",
-        "Failed to fetch statistic data. Please try again later."
-      );
-    }
-  };
+      if (
+        statisticData?.statistic &&
+        !isStatisticOutdated(statisticData.statistic)
+      ) {
+        return {
+          ...statisticData.statistic,
+        };
+      }
 
-  const analyzeStatistic = async (user: { id: string }) => {
-    if (!user?.id) {
-      throw createStatisticError("NO_USER", "사용자 ID가 필요합니다.");
-    }
-
-    try {
-      const statistic = await getStatistic(user);
-      const isStatisticOutdated =
-        !statistic ||
-        new Date(statistic.statistic.updatedAt).toDateString() !==
-          new Date().toDateString();
-
-      if (isStatisticOutdated) {
-        const { data } = await useGetPlaylistsPageQuery({
+      if (topRanks) {
+        const statisticInput: MutateStatisticInput = {
+          userId,
+          artistRankJson: {
+            first: topRanks.artistRank[0]?.name,
+            second: topRanks.artistRank[1]?.name,
+            third: topRanks.artistRank[2]?.name,
+          },
+          albumRankJson: {
+            first: topRanks.albumRank[0]?.name,
+            second: topRanks.albumRank[1]?.name,
+            third: topRanks.albumRank[2]?.name,
+          },
+          titleRankJson: {
+            first: topRanks.titleRank[0]?.name,
+            second: topRanks.titleRank[1]?.name,
+            third: topRanks.titleRank[2]?.name,
+          },
+        };
+        await saveStatistic({
           variables: {
-            limit: 1000,
-            orderBy: "createdAt",
-            page: 1,
-            includeListJson: true,
+            saveStatisticInput: statisticInput,
           },
         });
-
-        if (!data?.playlistsPage?.playlists) {
-          throw createStatisticError(
-            "FETCH_ERROR",
-            "Failed to fetch playlist data. Please try again later."
-          );
-        }
-
-        const topRanks = calculateTopRanks(data.playlistsPage.playlists);
-
-        try {
-          await useSaveStatisticMutation({
-            variables: {
-              saveStatisticInput: {
-                userId: user.id,
-                artistRankJson: {
-                  first: topRanks.artistRank[0]?.name,
-                  second: topRanks.artistRank[1]?.name,
-                  third: topRanks.artistRank[2]?.name,
-                },
-                albumRankJson: {
-                  first: topRanks.albumRank[0]?.name,
-                  second: topRanks.albumRank[1]?.name,
-                  third: topRanks.albumRank[2]?.name,
-                },
-                titleRankJson: {
-                  first: topRanks.titleRank[0]?.name,
-                  second: topRanks.titleRank[1]?.name,
-                  third: topRanks.titleRank[2]?.name,
-                },
-              },
-            },
-          });
-        } catch (err) {
-          throw createStatisticError(
-            "SAVE_ERROR",
-            "Failed to save statistic data. Please try again later."
-          );
-        }
+        return {
+          ...statisticInput,
+        };
       }
 
-      return statistic?.statistic;
-    } catch (err) {
-      if (err instanceof Error) {
-        throw err;
-      }
       throw createStatisticError(
-        "FETCH_ERROR",
-        "An error occurred while analyzing the statistic. Please try again later."
+        ERROR_CODES.FETCH_ERROR,
+        "Fail to fetch playlist data"
+      );
+    } catch (err) {
+      if (err instanceof Error) throw err;
+      throw createStatisticError(
+        ERROR_CODES.FETCH_ERROR,
+        "Fail to analyze statistic"
       );
     }
-  };
+  }, [userId, statisticData, topRanks, saveStatistic]);
 
-  return { getStatistic, analyzeStatistic };
+  return {
+    analyzeStatistic,
+    isLoading: statisticLoading || playlistLoading,
+    statistic: statisticData?.statistic,
+  };
 };
+
+function isStatisticOutdated(statistic: { updatedAt: string }): boolean {
+  const today = new Date();
+  const updatedDate = new Date(statistic.updatedAt);
+
+  return updatedDate.toDateString() !== today.toDateString();
+}
 
 function createStatisticError(
   code: StatisticError["code"],

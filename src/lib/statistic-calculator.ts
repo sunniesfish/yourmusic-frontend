@@ -4,7 +4,7 @@ interface RankItem {
   rank?: number;
 }
 
-interface TopRanks {
+export interface TopRanks {
   artistRank: RankItem[];
   albumRank: RankItem[];
   titleRank: RankItem[];
