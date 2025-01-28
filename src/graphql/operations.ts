@@ -237,3 +237,12 @@ export type GetStatisticQuery = {
     user: { __typename?: "User"; id: string; name: string };
   };
 };
+
+export type CheckIdMutationVariables = Types.Exact<{
+  id: Types.Scalars["String"]["input"];
+}>;
+
+export type CheckIdMutation = {
+  __typename?: "Mutation";
+  checkId: boolean;
+};

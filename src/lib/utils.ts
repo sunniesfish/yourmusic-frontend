@@ -1,4 +1,3 @@
-import { PlaylistJson } from "@/graphql/types";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 

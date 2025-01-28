@@ -51,11 +51,6 @@ mutation ReadPlaylist($link: String!) {
   }
 }
 
-# 플레이리스트를 Spotify로 변환
-mutation ConvertToSpotifyPlaylist($listJSON: [PlaylistJSONInput!]!) {
-  convertToSpotifyPlaylist(listJSON: $listJSON)
-}
-
 # 플레이리스트를 YouTube로 변환
 mutation ConvertToYoutubePlaylist($listJSON: [PlaylistJSONInput!]!) {
   convertToYoutubePlaylist(listJSON: $listJSON)
@@ -102,4 +97,9 @@ mutation RemoveStatistic($userId: ID!) {
   removeStatistic(userId: $userId) {
     userId
   }
+}
+
+# 아이디 중복 확인
+mutation CheckId($id: String!) {
+  checkId(id: $id)
 }

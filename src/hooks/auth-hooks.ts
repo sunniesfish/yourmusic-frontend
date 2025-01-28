@@ -14,18 +14,20 @@ import {
 export const useAuth = () => {
   const client = useApolloClient();
   const { setUser, setToken, logout, token } = useAuthStore();
+  const [signInMutation] = useSignInMutation();
+  const [signUpMutation] = useSignUpMutation();
+  const { data: userData } = useGetUserQuery({
+    skip: !token,
+    context: {
+      headers: { Authorization: token ? `Bearer ${token}` : "" },
+    },
+  });
 
   const getUser = async () => {
-    if (!token) {
+    if (!token || !userData) {
       throw new Error("No token or user found");
     }
-    const { data } = useGetUserQuery({
-      context: { headers: { Authorization: `Bearer ${token}` } },
-    });
-    if (data) {
-      setUser(data);
-    }
-    return data;
+    return userData;
   };
 
   const isLoggedIn = () => {
@@ -33,15 +35,23 @@ export const useAuth = () => {
   };
 
   const signIn = async (id: string, password: string) => {
-    const [mutate] = useSignInMutation({
-      variables: { signInInput: { id, password } },
-    });
-    const data = await mutate();
-    if (data.data) {
-      setUser(data.data.signIn.user);
-      setToken(data.data.signIn.accessToken);
+    try {
+      const { data } = await signInMutation({
+        variables: {
+          signInInput: { id, password },
+        },
+      });
+
+      if (data) {
+        setUser(data.signIn.user);
+        setToken(data.signIn.accessToken);
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.error("Sign in failed:", error);
+      return false;
     }
-    return data.data ? true : false;
   };
 
   const signUp = async (id: string, username: string, password: string) => {

@@ -96,7 +96,7 @@ export type MutationSignUpArgs = {
 };
 
 export type MutationUpdateStatisticArgs = {
-  updateStatisticInput: UpdateStatisticInput;
+  updateStatisticInput: MutateStatisticInput;
 };
 
 export type MutationUpdateUserArgs = {
@@ -206,13 +206,6 @@ export type Statistic = {
   updatedAt: Scalars["DateTime"]["output"];
   user: User;
   userId: Scalars["ID"]["output"];
-};
-
-export type UpdateStatisticInput = {
-  albumRankJson?: InputMaybe<Scalars["String"]["input"]>;
-  artistRankJson?: InputMaybe<Scalars["String"]["input"]>;
-  genreRankJson?: InputMaybe<Scalars["String"]["input"]>;
-  userId: Scalars["ID"]["input"];
 };
 
 export type UpdateUserInput = {

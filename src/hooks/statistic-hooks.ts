@@ -4,7 +4,7 @@ import {
   useSaveStatisticMutation,
 } from "@/graphql/hooks";
 import { MutateStatisticInput, Statistic } from "@/graphql/types";
-import { calculateTopRanks } from "@/lib/statistic-calculator";
+import { calculateTopRanks, TopRanks } from "@/lib/statistic-calculator";
 import { useMemo, useCallback } from "react";
 
 const ERROR_CODES = {
@@ -42,10 +42,28 @@ export const useStatistic = (userId: string) => {
 
   const [saveStatistic] = useSaveStatisticMutation();
 
-  const topRanks = useMemo(() => {
-    if (!playlistData?.playlistsPage?.playlists) return null;
-    return calculateTopRanks(playlistData.playlistsPage.playlists);
-  }, [playlistData]);
+  const calculateStatisticWithWorker = useCallback(
+    (playlists: any[]): Promise<TopRanks> => {
+      return new Promise((resolve, reject) => {
+        const worker = new Worker(
+          new URL("../../public/statistics.js", import.meta.url)
+        );
+
+        worker.onmessage = (event) => {
+          worker.terminate();
+          resolve(event.data);
+        };
+
+        worker.onerror = (error) => {
+          worker.terminate();
+          reject(error);
+        };
+
+        worker.postMessage({ playlists });
+      });
+    },
+    []
+  );
 
   const analyzeStatistic = useCallback(async (): Promise<
     Partial<Statistic>
@@ -59,38 +77,39 @@ export const useStatistic = (userId: string) => {
         statisticData?.statistic &&
         !isStatisticOutdated(statisticData.statistic)
       ) {
-        return {
-          ...statisticData.statistic,
-        };
+        return statisticData.statistic;
       }
 
-      if (topRanks) {
+      if (playlistData?.playlistsPage?.playlists) {
+        const topRanks = await calculateStatisticWithWorker(
+          playlistData.playlistsPage.playlists
+        );
+
         const statisticInput: MutateStatisticInput = {
           userId,
           artistRankJson: {
-            first: topRanks.artistRank[0]?.name,
-            second: topRanks.artistRank[1]?.name,
-            third: topRanks.artistRank[2]?.name,
+            first: topRanks.artistRank[0]?.name || "",
+            second: topRanks.artistRank[1]?.name || "",
+            third: topRanks.artistRank[2]?.name || "",
           },
           albumRankJson: {
-            first: topRanks.albumRank[0]?.name,
-            second: topRanks.albumRank[1]?.name,
-            third: topRanks.albumRank[2]?.name,
+            first: topRanks.albumRank[0]?.name || "",
+            second: topRanks.albumRank[1]?.name || "",
+            third: topRanks.albumRank[2]?.name || "",
           },
           titleRankJson: {
-            first: topRanks.titleRank[0]?.name,
-            second: topRanks.titleRank[1]?.name,
-            third: topRanks.titleRank[2]?.name,
+            first: topRanks.titleRank[0]?.name || "",
+            second: topRanks.titleRank[1]?.name || "",
+            third: topRanks.titleRank[2]?.name || "",
           },
         };
+
         await saveStatistic({
           variables: {
             saveStatisticInput: statisticInput,
           },
         });
-        return {
-          ...statisticInput,
-        };
+        return statisticInput;
       }
 
       throw createStatisticError(
@@ -104,7 +123,13 @@ export const useStatistic = (userId: string) => {
         "Fail to analyze statistic"
       );
     }
-  }, [userId, statisticData, topRanks, saveStatistic]);
+  }, [
+    userId,
+    statisticData,
+    playlistData,
+    saveStatistic,
+    calculateStatisticWithWorker,
+  ]);
 
   return {
     analyzeStatistic,

@@ -36,7 +36,12 @@ export default function PlaylistsPage() {
   }, []);
 
   const fetchMoreData = async () => {
-    const data = await getPlaylists(token ?? "", 1, 10, sortType);
+    const data = await getPlaylists({
+      token: token ?? "",
+      page: 1,
+      limit: 10,
+      orderBy: sortType,
+    });
     const newPlaylists = data?.playlistsPage.playlists ?? [];
 
     setPlaylists([...playlists, ...newPlaylists]);

@@ -119,20 +119,7 @@ const usePlaylistMutation = () => {
 
 // 변환 관련 훅
 const usePlaylistConverter = () => {
-  const [convertToSpotifyMutate] = useConvertToSpotifyPlaylistMutation();
   const [convertToYoutubeMutate] = useConvertToYoutubePlaylistMutation();
-
-  const convertToSpotify = async (data: PlaylistJson[]) => {
-    try {
-      const { data: result } = await convertToSpotifyMutate({
-        variables: { listJSON: data },
-      });
-      return result?.convertToSpotifyPlaylist || false;
-    } catch (err) {
-      console.error("Failed to convert to Spotify playlist:", err);
-      return false;
-    }
-  };
 
   const convertToYoutube = async (data: PlaylistJson[]) => {
     try {
@@ -146,14 +133,14 @@ const usePlaylistConverter = () => {
     }
   };
 
-  return { convertToSpotify, convertToYoutube };
+  return { convertToYoutube };
 };
 
 // 메인 훅
 export const usePlaylist = () => {
   const { getPlaylists, getPlaylistDetails } = usePlaylistQuery();
   const { readPlaylist, savePlaylist, removePlaylist } = usePlaylistMutation();
-  const { convertToSpotify, convertToYoutube } = usePlaylistConverter();
+  const { convertToYoutube } = usePlaylistConverter();
 
   return {
     getPlaylists,
@@ -161,7 +148,6 @@ export const usePlaylist = () => {
     readPlaylist,
     savePlaylist,
     removePlaylist,
-    convertToSpotify,
     convertToYoutube,
   };
 };
