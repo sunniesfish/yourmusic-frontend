@@ -25,6 +25,7 @@ mutation ChangePassword($input: ChangePasswordInput!) {
   changePassword(input: $input) {
     id
     name
+    profileImg
   }
 }
 
@@ -38,6 +39,13 @@ mutation RemovePlaylist($id: Int!) {
   removePlaylist(id: $id) {
     id
     name
+    createdAt
+    listJson {
+      title
+      artist
+      album
+      thumbnail
+    }
   }
 }
 
@@ -53,7 +61,24 @@ mutation ReadPlaylist($link: String!) {
 
 # 플레이리스트를 YouTube로 변환
 mutation ConvertToYoutubePlaylist($listJSON: [PlaylistJSONInput!]!) {
-  convertToYoutubePlaylist(listJSON: $listJSON)
+  convertToYoutubePlaylist(listJSON: $listJSON) {
+    success
+    message
+    playlistId
+    playlistName
+    playlistUrl
+  }
+}
+
+# 플레이리스트를 Spotify로 변환
+mutation ConvertToSpotifyPlaylist($listJSON: [PlaylistJSONInput!]!) {
+  convertToSpotifyPlaylist(listJSON: $listJSON) {
+    success
+    message
+    playlistId
+    playlistName
+    playlistUrl
+  }
 }
 
 # 사용자 업데이트
@@ -69,6 +94,7 @@ mutation SaveStatistic($saveStatisticInput: MutateStatisticInput!) {
 # 통계 업데이트
 mutation UpdateStatistic($updateStatisticInput: MutateStatisticInput!) {
   updateStatistic(updateStatisticInput: $updateStatisticInput) {
+    userId
     albumRankJson {
       first
       second
@@ -85,10 +111,6 @@ mutation UpdateStatistic($updateStatisticInput: MutateStatisticInput!) {
       third
     }
     updatedAt
-    user {
-      id
-      name
-    }
   }
 }
 
@@ -96,10 +118,31 @@ mutation UpdateStatistic($updateStatisticInput: MutateStatisticInput!) {
 mutation RemoveStatistic($userId: ID!) {
   removeStatistic(userId: $userId) {
     userId
+    albumRankJson {
+      first
+      second
+      third
+    }
+    artistRankJson {
+      first
+      second
+      third
+    }
+    titleRankJson {
+      first
+      second
+      third
+    }
+    updatedAt
   }
 }
 
 # 아이디 중복 확인
 mutation CheckId($id: String!) {
   checkId(id: $id)
+}
+
+# 비밀번호 확인
+mutation CheckPassword($password: String!) {
+  checkPassword(password: $password)
 }

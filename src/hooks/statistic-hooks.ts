@@ -4,8 +4,8 @@ import {
   useSaveStatisticMutation,
 } from "@/graphql/hooks";
 import { MutateStatisticInput, Statistic } from "@/graphql/types";
-import { calculateTopRanks, TopRanks } from "@/lib/statistic-calculator";
-import { useMemo, useCallback } from "react";
+import { TopRanks } from "@/lib/statistic-calculator";
+import { useCallback } from "react";
 
 const ERROR_CODES = {
   NO_USER: "NO_USER",
@@ -32,7 +32,6 @@ export const useStatistic = (userId: string) => {
         limit: 1000,
         orderBy: "createdAt",
         page: 1,
-        includeListJson: true,
       },
       skip:
         !userId ||

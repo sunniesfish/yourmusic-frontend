@@ -1,18 +1,14 @@
 import { Loader2 } from "lucide-react";
 
-export default function FrutigerLoader({
-  message = "Loading...",
-}: {
+interface LoaderProps {
   message?: string;
-}) {
+}
+
+export default function Loader({ message = "Loading..." }: LoaderProps) {
   return (
-    <div className="min-h-screen frutiger-aero-bg flex items-center justify-center">
-      <div className="frutiger-aero-card p-8 rounded-lg shadow-lg text-center">
-        <div className="frutiger-aero-loader mb-4">
-          <Loader2 className="h-12 w-12 animate-spin text-blue-600" />
-        </div>
-        <p className="text-xl font-semibold text-blue-900">{message}</p>
-      </div>
+    <div className="min-h-[200px] flex flex-col items-center justify-center gap-4 p-4">
+      <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+      <p className="text-sm text-muted-foreground font-medium">{message}</p>
     </div>
   );
 }

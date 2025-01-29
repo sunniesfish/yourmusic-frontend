@@ -1,15 +1,14 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
-import { Edit2, Key } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import "../styles/frutiger-aero.css";
-import ChangePasswordModal from "./changepwd-modal";
+import { Label } from "@/components/ui/label";
 import { useAuth } from "@/hooks/auth-hooks";
 import { useAuthStore } from "@/store/auth-store";
 import { redirect } from "next/navigation";
+import ChangePasswordModal from "./changepwd-modal";
 
 export default function MyPage() {
   const { updateUser, isLoggedIn } = useAuth();
@@ -24,91 +23,68 @@ export default function MyPage() {
     }
   }, [isLoggedIn]);
 
-  const handleNicknameEdit = () => {
-    if (isEditingNickname) {
-      // Save the new nickname
-      if (user) {
-        updateUser({ ...user, name: newNickname });
-      }
+  const handleNicknameEdit = async () => {
+    if (isEditingNickname && user) {
+      await updateUser({ ...user, name: newNickname });
     }
     setIsEditingNickname(!isEditingNickname);
   };
 
-  const handleNicknameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setNewNickname(e.target.value);
-  };
-
   return (
-    <>
-      <div className="frutiger-aero-card p-8 rounded-lg shadow-lg max-w-2xl mx-auto">
-        <div className="flex flex-col items-center mb-6">
-          <Image
-            src={user?.profileImg ?? "/placeholder.svg?height=200&width=200"}
-            alt={user?.name ?? ""}
-            width={200}
-            height={200}
-            className="rounded-full mb-4"
-          />
-          <div className="flex items-center">
-            {isEditingNickname ? (
-              <Input
-                value={newNickname}
-                onChange={handleNicknameChange}
-                className="frutiger-aero-input mr-2"
-              />
-            ) : (
-              <h2 className="text-2xl font-bold text-blue-900 mr-2">
-                {user?.name ?? ""}
-              </h2>
-            )}
+    <div className="container mx-auto max-w-2xl px-4 py-8">
+      <div className="rounded-lg border bg-card p-8 shadow-sm">
+        <div className="flex flex-col items-center space-y-6">
+          <div className="relative h-32 w-32">
+            <Image
+              src={user?.profileImg ?? "/placeholder.svg"}
+              alt=""
+              fill
+              className="rounded-full object-cover"
+            />
+          </div>
+
+          <div className="space-y-4 text-center">
+            <div className="flex items-center justify-center gap-2">
+              {isEditingNickname ? (
+                <Input
+                  value={newNickname}
+                  onChange={(e) => setNewNickname(e.target.value)}
+                  className="max-w-[200px]"
+                />
+              ) : (
+                <h2 className="text-2xl font-semibold">{user?.name}</h2>
+              )}
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleNicknameEdit}
+                aria-label={
+                  isEditingNickname ? "Save nickname" : "Edit nickname"
+                }
+              >
+                {isEditingNickname ? "Save" : "Edit"}
+              </Button>
+            </div>
+
+            <div className="space-y-2">
+              <Label>User ID</Label>
+              <Input value={user?.id ?? ""} disabled />
+            </div>
+
             <Button
-              onClick={handleNicknameEdit}
-              variant="ghost"
-              size="sm"
-              className="text-blue-900 hover:text-blue-700"
+              variant="outline"
+              onClick={() => setIsPasswordModalOpen(true)}
             >
-              <Edit2 className="h-4 w-4" />
+              Change Password
             </Button>
           </div>
         </div>
-        <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-blue-900 mb-1">
-              User ID
-            </label>
-            <Input
-              value={user?.id ?? ""}
-              disabled
-              className="frutiger-aero-input bg-opacity-50"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-blue-900 mb-1">
-              Password
-            </label>
-            <div className="flex items-center">
-              <Input
-                value="••••"
-                disabled
-                className="frutiger-aero-input bg-opacity-50 mr-2"
-              />
-              <Button
-                onClick={() => setIsPasswordModalOpen(true)}
-                variant="outline"
-                size="sm"
-                className="frutiger-aero-button-secondary"
-              >
-                <Key className="h-4 w-4 mr-2" />
-                Change
-              </Button>
-            </div>
-          </div>
-        </div>
       </div>
+
       <ChangePasswordModal
         isOpen={isPasswordModalOpen}
         onClose={() => setIsPasswordModalOpen(false)}
       />
-    </>
+    </div>
   );
 }

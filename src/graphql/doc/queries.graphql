@@ -19,29 +19,21 @@ query GetPlaylist($id: Int!) {
       album
       thumbnail
     }
-    user {
-      id
-      name
-    }
   }
 }
 
 # 플레이리스트 페이지네이션 쿼리
-query GetPlaylistsPage(
-  $limit: Int!
-  $orderBy: String!
-  $page: Int!
-  $includeListJson: Boolean!
-) {
-  playlistsPage(limit: $limit, orderBy: $orderBy, page: $page) {
+query GetPlaylistsPage($page: Int!, $limit: Int!, $orderBy: String!) {
+  playlistsPage(page: $page, limit: $limit, orderBy: $orderBy) {
     playlists {
       id
       name
       createdAt
-      listJson @include(if: $includeListJson) {
+      listJson {
         title
         artist
         album
+        thumbnail
       }
     }
     totalPages
@@ -51,6 +43,7 @@ query GetPlaylistsPage(
 # 사용자 통계 정보를 가져오는 쿼리
 query GetStatistic($userId: ID!) {
   statistic(userId: $userId) {
+    userId
     albumRankJson {
       first
       second
@@ -67,9 +60,5 @@ query GetStatistic($userId: ID!) {
       third
     }
     updatedAt
-    user {
-      id
-      name
-    }
   }
 }
