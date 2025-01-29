@@ -16,6 +16,7 @@ interface PlaylistQueryParams {
   page: number;
   limit: number;
   orderBy: "createdAt" | "name";
+  includeListJson?: boolean;
 }
 
 interface PlaylistMutationParams {
@@ -31,11 +32,12 @@ const usePlaylistQuery = () => {
     page,
     limit,
     orderBy,
+    includeListJson = false,
   }: PlaylistQueryParams) => {
     try {
       const { data } = await useGetPlaylistsPageQuery({
         context: { headers: { Authorization: `Bearer ${token}` } },
-        variables: { page, limit, orderBy, includeListJson: false },
+        variables: { page, limit, orderBy, includeListJson },
       });
       if (data) {
         usePlaylistsStore.getState().setPlaylists([]);
@@ -120,6 +122,7 @@ const usePlaylistMutation = () => {
 // 변환 관련 훅
 const usePlaylistConverter = () => {
   const [convertToYoutubeMutate] = useConvertToYoutubePlaylistMutation();
+  const [convertToSpotifyMutate] = useConvertToSpotifyPlaylistMutation();
 
   const convertToYoutube = async (data: PlaylistJson[]) => {
     try {
@@ -133,14 +136,26 @@ const usePlaylistConverter = () => {
     }
   };
 
-  return { convertToYoutube };
+  const convertToSpotify = async (data: PlaylistJson[]) => {
+    try {
+      const { data: result } = await convertToSpotifyMutate({
+        variables: { listJSON: data },
+      });
+      return result?.convertToSpotifyPlaylist || false;
+    } catch (err) {
+      console.error("Failed to convert to Spotify playlist:", err);
+      return false;
+    }
+  };
+
+  return { convertToYoutube, convertToSpotify };
 };
 
 // 메인 훅
 export const usePlaylist = () => {
   const { getPlaylists, getPlaylistDetails } = usePlaylistQuery();
   const { readPlaylist, savePlaylist, removePlaylist } = usePlaylistMutation();
-  const { convertToYoutube } = usePlaylistConverter();
+  const { convertToYoutube, convertToSpotify } = usePlaylistConverter();
 
   return {
     getPlaylists,
@@ -149,5 +164,6 @@ export const usePlaylist = () => {
     savePlaylist,
     removePlaylist,
     convertToYoutube,
+    convertToSpotify,
   };
 };

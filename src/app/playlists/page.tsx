@@ -26,7 +26,7 @@ interface Playlist {
 }
 
 export default function PlaylistsPage() {
-  const { user } = useAuthStore();
+  const { user, token } = useAuthStore();
   const { getPlaylists } = usePlaylist();
   const [playlists, setPlaylists] = useState<Partial<Playlist>[]>([]);
   const [hasMore, setHasMore] = useState(true);
@@ -43,10 +43,11 @@ export default function PlaylistsPage() {
 
   const fetchMoreData = async () => {
     const data = await getPlaylists({
-      token: user?.token ?? "",
+      token: token ?? "",
       page: 1,
       limit: 10,
       orderBy: sortType,
+      includeListJson: true,
     });
     const newPlaylists = data?.playlistsPage.playlists ?? [];
     setPlaylists([...playlists, ...newPlaylists]);

@@ -5,7 +5,7 @@ import {
 } from "@/graphql/hooks";
 import { MutateStatisticInput, Statistic } from "@/graphql/types";
 import { TopRanks } from "@/lib/statistic-calculator";
-import { useCallback } from "react";
+import { useCallback, useState, useEffect } from "react";
 
 const ERROR_CODES = {
   NO_USER: "NO_USER",
@@ -20,6 +20,8 @@ interface StatisticError extends Error {
 }
 
 export const useStatistic = (userId: string) => {
+  const [calculatedStatistic, setCalculatedStatistic] =
+    useState<Partial<Statistic> | null>(null);
   const { data: statisticData, loading: statisticLoading } =
     useGetStatisticQuery({
       variables: { userId },
@@ -32,6 +34,7 @@ export const useStatistic = (userId: string) => {
         limit: 1000,
         orderBy: "createdAt",
         page: 1,
+        includeListJson: true,
       },
       skip:
         !userId ||
@@ -48,13 +51,15 @@ export const useStatistic = (userId: string) => {
           new URL("../../public/statistics.js", import.meta.url)
         );
 
+        const cleanup = () => worker.terminate();
+
         worker.onmessage = (event) => {
-          worker.terminate();
+          cleanup();
           resolve(event.data);
         };
 
         worker.onerror = (error) => {
-          worker.terminate();
+          cleanup();
           reject(error);
         };
 
@@ -64,22 +69,28 @@ export const useStatistic = (userId: string) => {
     []
   );
 
-  const analyzeStatistic = useCallback(async (): Promise<
-    Partial<Statistic>
-  > => {
-    if (!userId) {
-      throw createStatisticError(ERROR_CODES.NO_USER, "User ID is required");
-    }
-
-    try {
-      if (
-        statisticData?.statistic &&
-        !isStatisticOutdated(statisticData.statistic)
-      ) {
-        return statisticData.statistic;
+  useEffect(() => {
+    const calculateAndSetStatistic = async () => {
+      if (!userId) {
+        return;
       }
 
-      if (playlistData?.playlistsPage?.playlists) {
+      try {
+        if (
+          statisticData?.statistic &&
+          !isStatisticOutdated(statisticData.statistic)
+        ) {
+          setCalculatedStatistic(statisticData.statistic);
+          return;
+        }
+
+        if (!playlistData?.playlistsPage?.playlists) {
+          throw createStatisticError(
+            ERROR_CODES.FETCH_ERROR,
+            "Fail to fetch playlist data"
+          );
+        }
+
         const topRanks = await calculateStatisticWithWorker(
           playlistData.playlistsPage.playlists
         );
@@ -87,19 +98,19 @@ export const useStatistic = (userId: string) => {
         const statisticInput: MutateStatisticInput = {
           userId,
           artistRankJson: {
-            first: topRanks.artistRank[0]?.name || "",
-            second: topRanks.artistRank[1]?.name || "",
-            third: topRanks.artistRank[2]?.name || "",
+            first: topRanks.artistRank[0]?.name ?? "",
+            second: topRanks.artistRank[1]?.name ?? "",
+            third: topRanks.artistRank[2]?.name ?? "",
           },
           albumRankJson: {
-            first: topRanks.albumRank[0]?.name || "",
-            second: topRanks.albumRank[1]?.name || "",
-            third: topRanks.albumRank[2]?.name || "",
+            first: topRanks.albumRank[0]?.name ?? "",
+            second: topRanks.albumRank[1]?.name ?? "",
+            third: topRanks.albumRank[2]?.name ?? "",
           },
           titleRankJson: {
-            first: topRanks.titleRank[0]?.name || "",
-            second: topRanks.titleRank[1]?.name || "",
-            third: topRanks.titleRank[2]?.name || "",
+            first: topRanks.titleRank[0]?.name ?? "",
+            second: topRanks.titleRank[1]?.name ?? "",
+            third: topRanks.titleRank[2]?.name ?? "",
           },
         };
 
@@ -108,32 +119,30 @@ export const useStatistic = (userId: string) => {
             saveStatisticInput: statisticInput,
           },
         });
-        return statisticInput;
-      }
 
-      throw createStatisticError(
-        ERROR_CODES.FETCH_ERROR,
-        "Fail to fetch playlist data"
-      );
-    } catch (err) {
-      if (err instanceof Error) throw err;
-      throw createStatisticError(
-        ERROR_CODES.FETCH_ERROR,
-        "Fail to analyze statistic"
-      );
+        setCalculatedStatistic(statisticInput);
+      } catch (err) {
+        console.error(err);
+        // 에러 처리를 위한 상태 관리가 필요하다면 여기에 추가
+      }
+    };
+
+    if (!statisticLoading && !playlistLoading) {
+      calculateAndSetStatistic();
     }
   }, [
     userId,
     statisticData,
     playlistData,
+    statisticLoading,
+    playlistLoading,
     saveStatistic,
     calculateStatisticWithWorker,
   ]);
 
   return {
-    analyzeStatistic,
+    statistic: calculatedStatistic,
     isLoading: statisticLoading || playlistLoading,
-    statistic: statisticData?.statistic,
   };
 };
 

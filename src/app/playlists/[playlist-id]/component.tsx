@@ -15,11 +15,11 @@ export default function PlaylistComponent({
   const { convertToYoutube, convertToSpotify } = usePlaylist();
 
   const handleConvertToSpotify = async () => {
-    await convertToSpotify(playlistProps.listJson);
+    await convertToSpotify(playlistProps.listJson || []);
   };
 
   const handleConvertToYoutube = async () => {
-    await convertToYoutube(playlistProps.listJson);
+    await convertToYoutube(playlistProps.listJson || []);
   };
 
   const handleDownloadJSON = () => {
@@ -71,7 +71,7 @@ export default function PlaylistComponent({
           </Button>
         </div>
 
-        <SongTable songs={playlistProps.listJson} />
+        <SongTable songs={playlistProps.listJson || []} />
       </div>
     </div>
   );
