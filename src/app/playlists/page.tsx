@@ -49,7 +49,7 @@ export default function PlaylistsPage() {
       orderBy: sortType,
       includeListJson: true,
     });
-    const newPlaylists = data?.playlistsPage.playlists ?? [];
+    const newPlaylists = data?.playlists ?? [];
     setPlaylists([...playlists, ...newPlaylists]);
     setHasMore(newPlaylists.length === 10);
   };
@@ -81,7 +81,7 @@ export default function PlaylistsPage() {
                 <SelectItem value="createdAt">Sort by Date</SelectItem>
               </SelectContent>
             </Select>
-            <Link href="/playlists/new">
+            <Link href="/playlists/newplaylist">
               <Button className="gap-2">
                 <Plus className="h-4 w-4" />
                 New Playlist

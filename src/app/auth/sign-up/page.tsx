@@ -4,6 +4,10 @@ import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
 import { useAuth } from "@/hooks/auth-hooks";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useRouter } from "next/navigation";
 
 interface SignUpFormData {
   id: string;
@@ -11,10 +15,10 @@ interface SignUpFormData {
   password: string;
   confirmPassword: string;
 }
-
 export default function SignUp() {
+  const router = useRouter();
   const [idAvailable, setIdAvailable] = useState<boolean | null>(null);
-  const { signUp } = useAuth();
+  const { signUp, checkIdAvailability } = useAuth();
   const {
     register,
     handleSubmit,
@@ -24,9 +28,15 @@ export default function SignUp() {
     mode: "onChange",
   });
 
-  const handleIdCheck = () => {
-    const isAvailable = Math.random() > 0.5;
-    setIdAvailable(isAvailable);
+  const handleIdCheck = async () => {
+    const id = watch("id");
+    const isAvailable = await checkIdAvailability(id);
+    console.log(isAvailable);
+    if (isAvailable) {
+      setIdAvailable(true);
+    } else {
+      setIdAvailable(false);
+    }
   };
 
   const onSubmit = async (data: SignUpFormData) => {
@@ -38,45 +48,38 @@ export default function SignUp() {
     if (!result) {
       alert("Failed to sign up");
     }
-    console.log("Sign up result:", result);
+    if (result) {
+      router.push("/auth/sign-in");
+    }
   };
 
   return (
     <>
-      <h1 className="text-2xl md:text-3xl font-bold text-center mb-6 text-blue-900">
-        Sign Up
-      </h1>
+      <h1 className="text-2xl font-semibold text-center mb-6">Sign Up</h1>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-        <div>
-          <label
-            htmlFor="id"
-            className="block text-sm font-medium text-blue-900 mb-1"
-          >
-            ID
-          </label>
-          <div className="frutiger-aero-input-group flex flex-col md:flex-row">
-            <input
+        <div className="space-y-2">
+          <Label htmlFor="id">ID</Label>
+          <div className="flex gap-2">
+            <Input
               {...register("id", { required: "ID is required" })}
               type="text"
               id="id"
-              className="frutiger-aero-input w-full px-3 py-2 rounded-md md:rounded-r-none text-blue-900 placeholder-blue-400"
               placeholder="Enter your ID"
+              aria-describedby={errors.id ? "id-error" : undefined}
             />
-            <button
-              type="button"
-              onClick={handleIdCheck}
-              className="frutiger-aero-button-secondary px-3 py-2 rounded-md md:rounded-l-none mt-2 md:mt-0"
-            >
+            <Button type="button" variant="outline" onClick={handleIdCheck}>
               Check
-            </button>
+            </Button>
           </div>
           {errors.id && (
-            <p className="text-red-500 text-sm mt-1">{errors.id.message}</p>
+            <p className="text-sm text-destructive" id="id-error">
+              {errors.id.message}
+            </p>
           )}
           {idAvailable !== null && (
             <p
-              className={`text-sm mt-1 ${
-                idAvailable ? "text-green-600" : "text-red-600"
+              className={`text-sm ${
+                idAvailable ? "text-green-600" : "text-destructive"
               }`}
             >
               {idAvailable ? "ID is available" : "ID is not available"}
@@ -84,38 +87,28 @@ export default function SignUp() {
           )}
         </div>
 
-        <div>
-          <label
-            htmlFor="username"
-            className="block text-sm font-medium text-blue-900 mb-1"
-          >
-            Username
-          </label>
-          <input
+        <div className="space-y-2">
+          <Label htmlFor="username">Username</Label>
+          <Input
             {...register("username", {
               required: "Username is required",
               minLength: { value: 2, message: "Must be at least 2 characters" },
             })}
             type="text"
             id="username"
-            className="frutiger-aero-input w-full px-3 py-2 rounded-md text-blue-900 placeholder-blue-400"
             placeholder="Enter your username"
+            aria-describedby={errors.username ? "username-error" : undefined}
           />
           {errors.username && (
-            <p className="text-red-500 text-sm mt-1">
+            <p className="text-sm text-destructive" id="username-error">
               {errors.username.message}
             </p>
           )}
         </div>
 
-        <div>
-          <label
-            htmlFor="password"
-            className="block text-sm font-medium text-blue-900 mb-1"
-          >
-            Password
-          </label>
-          <input
+        <div className="space-y-2">
+          <Label htmlFor="password">Password</Label>
+          <Input
             {...register("password", {
               required: "Password is required",
               minLength: {
@@ -125,24 +118,19 @@ export default function SignUp() {
             })}
             type="password"
             id="password"
-            className="frutiger-aero-input w-full px-3 py-2 rounded-md text-blue-900 placeholder-blue-400"
             placeholder="Enter your password"
+            aria-describedby={errors.password ? "password-error" : undefined}
           />
           {errors.password && (
-            <p className="text-red-500 text-sm mt-1">
+            <p className="text-sm text-destructive" id="password-error">
               {errors.password.message}
             </p>
           )}
         </div>
 
-        <div>
-          <label
-            htmlFor="confirmPassword"
-            className="block text-sm font-medium text-blue-900 mb-1"
-          >
-            Confirm Password
-          </label>
-          <input
+        <div className="space-y-2">
+          <Label htmlFor="confirmPassword">Confirm Password</Label>
+          <Input
             {...register("confirmPassword", {
               required: "Password confirmation is required",
               validate: (value) =>
@@ -150,29 +138,34 @@ export default function SignUp() {
             })}
             type="password"
             id="confirmPassword"
-            className="frutiger-aero-input w-full px-3 py-2 rounded-md text-blue-900 placeholder-blue-400"
             placeholder="Confirm your password"
+            aria-describedby={
+              errors.confirmPassword ? "confirm-password-error" : undefined
+            }
           />
           {errors.confirmPassword && (
-            <p className="text-red-500 text-sm mt-1">
+            <p className="text-sm text-destructive" id="confirm-password-error">
               {errors.confirmPassword.message}
             </p>
           )}
         </div>
 
-        <button
-          type="submit"
-          className="frutiger-aero-button w-full py-2 px-4 rounded-md text-white font-semibold"
-        >
+        <Button type="submit" className="w-full">
           Sign Up
-        </button>
+        </Button>
       </form>
-      <p className="mt-4 text-center text-blue-900 text-sm md:text-base">
-        Already have an account?{" "}
-        <Link href="/auth/sign-in" className="text-blue-600 hover:underline">
-          Sign in
-        </Link>
-      </p>
+
+      <div className="mt-4 text-center">
+        <p className="text-sm text-muted-foreground">
+          Already have an account?{" "}
+          <Link
+            href="/auth/sign-in"
+            className="underline underline-offset-4 hover:text-primary"
+          >
+            Sign in
+          </Link>
+        </p>
+      </div>
     </>
   );
 }

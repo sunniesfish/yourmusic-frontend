@@ -3,8 +3,7 @@ import {
   useGetStatisticQuery,
   useSaveStatisticMutation,
 } from "@/graphql/hooks";
-import { MutateStatisticInput, Statistic } from "@/graphql/types";
-import { TopRanks } from "@/lib/statistic-calculator";
+import { MutateStatisticInput, Playlist, Statistic } from "@/graphql/types";
 import { useCallback, useState, useEffect } from "react";
 
 const ERROR_CODES = {
@@ -19,6 +18,23 @@ interface StatisticError extends Error {
   code: StatisticErrorCode;
 }
 
+export interface TopRanks {
+  artistRank: RankItem[];
+  albumRank: RankItem[];
+  titleRank: RankItem[];
+}
+
+interface RankItem {
+  name: string;
+  count: number;
+  rank?: number;
+}
+
+/**
+ * Hook for handling user statistics
+ * @param {string} userId - ID of the user to get statistics for
+ * @returns {Object} Object containing statistic data and loading state
+ */
 export const useStatistic = (userId: string) => {
   const [calculatedStatistic, setCalculatedStatistic] =
     useState<Partial<Statistic> | null>(null);
@@ -45,7 +61,7 @@ export const useStatistic = (userId: string) => {
   const [saveStatistic] = useSaveStatisticMutation();
 
   const calculateStatisticWithWorker = useCallback(
-    (playlists: any[]): Promise<TopRanks> => {
+    (playlists: Playlist[]): Promise<TopRanks> => {
       return new Promise((resolve, reject) => {
         const worker = new Worker(
           new URL("../../public/statistics.js", import.meta.url)

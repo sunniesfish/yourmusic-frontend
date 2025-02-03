@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useAuthStore } from "@/store/auth-store";
 import { useStatistic } from "@/hooks/statistic-hooks";
 import { redirect } from "next/navigation";
-import { RankCard } from "./components/rank-card";
+import { RankCard } from "../../components/rank-card";
 
 export default function StatisticsPage() {
   const { user } = useAuthStore();

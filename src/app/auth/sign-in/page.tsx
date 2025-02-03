@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useRouter } from "next/navigation";
 
 interface SignInFormData {
   id: string;
@@ -13,6 +14,7 @@ interface SignInFormData {
 }
 
 export default function SignIn() {
+  const router = useRouter();
   const { signIn } = useAuth();
   const {
     register,
@@ -24,9 +26,11 @@ export default function SignIn() {
 
   const onSubmit = async (data: SignInFormData) => {
     const result = await signIn(data.id, data.password);
+    console.log(result);
     if (!result) {
       alert("Invalid ID or password");
     }
+    router.push("/playlists/newplaylist");
   };
 
   return (

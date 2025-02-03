@@ -1,5 +1,4 @@
 import Navbar from "@/components/nav-bar";
-import "@/styles/theme-frutiger-aero.css";
 
 interface PlaylistsLayoutProps {
   children: React.ReactNode;

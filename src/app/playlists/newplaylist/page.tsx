@@ -50,7 +50,7 @@ export default function NewPlaylistPage() {
   };
 
   return (
-    <div className="frutiger-aero-card p-6 rounded-lg shadow-lg">
+    <div className=" p-6 rounded-lg shadow-lg">
       <div className="flex items-center justify-between mb-6">
         {user && isEditingTitle ? (
           <Input
@@ -91,13 +91,10 @@ export default function NewPlaylistPage() {
             placeholder="Enter playlist link here"
             value={playlistLink}
             onChange={handleLinkChange}
-            className="w-full frutiger-aero-input"
+            className="w-full "
           />
         </div>
-        <Button
-          onClick={handleGetPlaylist}
-          className="w-full md:w-auto frutiger-aero-button"
-        >
+        <Button onClick={handleGetPlaylist} className="w-full md:w-auto">
           Get Playlist <ArrowRight className="ml-2 h-4 w-4" />
         </Button>
       </div>

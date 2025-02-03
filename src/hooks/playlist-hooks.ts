@@ -1,32 +1,32 @@
+"use client";
+
 import {
   useConvertToSpotifyPlaylistMutation,
   useConvertToYoutubePlaylistMutation,
+  useGetPlaylistLazyQuery,
   useGetPlaylistQuery,
-  useGetPlaylistsPageQuery,
+  useGetPlaylistsPageLazyQuery,
   useReadPlaylistMutation,
   useRemovePlaylistMutation,
   useSavePlaylistMutation,
 } from "@/graphql/hooks";
-import { Playlist, PlaylistJson } from "@/graphql/types";
+import { PlaylistQueryParams, PlaylistMutationParams } from "@/types/playlist";
 import { usePlaylistsStore } from "@/store/playlist-store";
+import { PlaylistJson } from "@/graphql/types";
 
-// 타입 정의
-interface PlaylistQueryParams {
-  token: string;
-  page: number;
-  limit: number;
-  orderBy: "createdAt" | "name";
-  includeListJson?: boolean;
-}
-
-interface PlaylistMutationParams {
-  token: string;
-  playlist: Playlist;
-  playlistId?: number;
-}
-
-// 쿼리 관련 훅
+/**
+ * Hook for handling playlist-related queries
+ * @returns Object containing playlist query methods
+ */
 const usePlaylistQuery = () => {
+  const [getPlaylistsQuery] = useGetPlaylistsPageLazyQuery();
+  const [getPlaylistQuery] = useGetPlaylistLazyQuery();
+
+  /**
+   * Fetches playlists with pagination and sorting
+   * @param {PlaylistQueryParams} params - Query parameters including token, page, limit, and sorting
+   * @returns {Promise<PlaylistsResponse | null>} Paginated playlist data or null if failed
+   */
   const getPlaylists = async ({
     token,
     page,
@@ -35,23 +35,31 @@ const usePlaylistQuery = () => {
     includeListJson = false,
   }: PlaylistQueryParams) => {
     try {
-      const { data } = await useGetPlaylistsPageQuery({
-        context: { headers: { Authorization: `Bearer ${token}` } },
+      const { data } = await getPlaylistsQuery({
         variables: { page, limit, orderBy, includeListJson },
+        context: { headers: { Authorization: `Bearer ${token}` } },
       });
+
       if (data) {
-        usePlaylistsStore.getState().setPlaylists([]);
+        usePlaylistsStore.getState().setPlaylists(data.playlistsPage.playlists);
+        return data.playlistsPage;
       }
-      return data || null;
+      return null;
     } catch (err) {
       console.error("Failed to fetch playlists:", err);
       return null;
     }
   };
 
+  /**
+   * Fetches details of a specific playlist
+   * @param {string} token - Authentication token
+   * @param {number} playlistId - ID of the playlist to fetch
+   * @returns {Promise<GetPlaylistQuery | null>} Playlist details or null if failed
+   */
   const getPlaylistDetails = async (token: string, playlistId: number) => {
     try {
-      const { data } = await useGetPlaylistQuery({
+      const { data } = await getPlaylistQuery({
         variables: { id: playlistId },
         context: { headers: { Authorization: `Bearer ${token}` } },
       });
@@ -65,15 +73,25 @@ const usePlaylistQuery = () => {
   return { getPlaylists, getPlaylistDetails };
 };
 
-// 뮤테이션 관련 훅
+/**
+ * Hook for handling playlist mutations
+ * @returns Object containing playlist mutation methods
+ */
 const usePlaylistMutation = () => {
   const [readPlaylistMutate] = useReadPlaylistMutation();
   const [savePlaylistMutate] = useSavePlaylistMutation();
   const [removePlaylistMutate] = useRemovePlaylistMutation();
 
-  const readPlaylist = async (link: string) => {
+  /**
+   * Reads playlist data from a URL
+   * @param {string} link - URL of the playlist
+   * @returns {Promise<PlaylistJson[] | null>} Array of playlist items or null if failed
+   */
+  const readPlaylist = async (link: string): Promise<PlaylistJson[] | null> => {
     try {
-      const { data } = await readPlaylistMutate({ variables: { link } });
+      const { data } = await readPlaylistMutate({
+        variables: { link },
+      });
       return data?.readPlaylist || null;
     } catch (err) {
       console.error("Failed to read playlist:", err);
@@ -81,7 +99,15 @@ const usePlaylistMutation = () => {
     }
   };
 
-  const savePlaylist = async ({ token, playlist }: PlaylistMutationParams) => {
+  /**
+   * Saves a playlist
+   * @param {PlaylistMutationParams} params - Playlist data and token
+   * @returns {Promise<boolean>} True if save was successful
+   */
+  const savePlaylist = async ({
+    token,
+    playlist,
+  }: PlaylistMutationParams): Promise<boolean> => {
     try {
       const { data } = await savePlaylistMutate({
         variables: {
@@ -92,34 +118,38 @@ const usePlaylistMutation = () => {
         },
         context: { headers: { Authorization: `Bearer ${token}` } },
       });
-      return data?.savePlaylist || null;
+      return data?.savePlaylist || false;
     } catch (err) {
       console.error("Failed to save playlist:", err);
-      return null;
+      return false;
     }
   };
 
+  /**
+   * Removes a playlist
+   * @param {PlaylistMutationParams} params - Playlist ID and token
+   * @returns {Promise<boolean>} True if removal was successful
+   */
   const removePlaylist = async ({
     token,
     playlistId,
-  }: PlaylistMutationParams) => {
-    if (!playlistId) return null;
+  }: PlaylistMutationParams): Promise<boolean> => {
+    if (!playlistId) return false;
     try {
       const { data } = await removePlaylistMutate({
         variables: { id: playlistId },
         context: { headers: { Authorization: `Bearer ${token}` } },
       });
-      return data?.removePlaylist || null;
+      return !!data?.removePlaylist;
     } catch (err) {
       console.error("Failed to remove playlist:", err);
-      return null;
+      return false;
     }
   };
 
   return { readPlaylist, savePlaylist, removePlaylist };
 };
 
-// 변환 관련 훅
 const usePlaylistConverter = () => {
   const [convertToYoutubeMutate] = useConvertToYoutubePlaylistMutation();
   const [convertToSpotifyMutate] = useConvertToSpotifyPlaylistMutation();
@@ -151,7 +181,10 @@ const usePlaylistConverter = () => {
   return { convertToYoutube, convertToSpotify };
 };
 
-// 메인 훅
+/**
+ * Main hook for playlist operations
+ * @returns {Object} Combined playlist operations
+ */
 export const usePlaylist = () => {
   const { getPlaylists, getPlaylistDetails } = usePlaylistQuery();
   const { readPlaylist, savePlaylist, removePlaylist } = usePlaylistMutation();

@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
+import { useAuth } from "@/hooks/auth-hooks";
 
 interface ChangePasswordModalProps {
   isOpen: boolean;
@@ -17,10 +18,15 @@ export default function ChangePasswordModal({
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const { changePassword } = useAuth();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     // Implement password change logic here
+    const result = await changePassword(oldPassword, newPassword);
+    if (!result) {
+      alert("Failed to change password");
+    }
     onClose();
   };
 

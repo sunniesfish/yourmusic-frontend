@@ -1,5 +1,3 @@
-import "../../styles/theme-frutiger-aero.css";
-
 interface AuthLayoutProps {
   children: React.ReactNode;
 }

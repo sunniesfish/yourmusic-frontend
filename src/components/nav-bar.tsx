@@ -3,24 +3,22 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import "@/styles/theme-frutiger-aero.css";
 import { Menu, X } from "lucide-react";
 import { useAuth } from "@/hooks/auth-hooks";
 import { useAuthStore } from "@/store/auth-store";
 import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
 
 export default function Navbar() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
-  const { getUser } = useAuth();
+  const router = useRouter();
+  const { signOut } = useAuth();
   const { user, setUser } = useAuthStore();
-  useEffect(() => {
-    (async () => {
-      const userData = await getUser();
-      setUser(userData?.user ?? null);
-    })();
-  }, []);
+  const handleSignOut = async () => {
+    await signOut();
+    router.push("/auth/sign-in");
+  };
   return (
     <nav className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto px-4">
@@ -43,13 +41,13 @@ export default function Navbar() {
             {/* Desktop navigation */}
             <div className="hidden md:flex gap-6">
               <Link
-                href="/get-playlist"
+                href="/playlists/newplaylist"
                 className="text-sm font-medium transition-colors hover:text-primary"
               >
-                Get Playlist
+                New Playlist
               </Link>
               <Link
-                href="/my-playlists"
+                href="/playlists"
                 className="text-sm font-medium transition-colors hover:text-primary"
               >
                 My Playlists
@@ -93,12 +91,10 @@ export default function Navbar() {
                     MyPage
                   </Link>
                   <button
-                    onClick={() => {
-                      /* logout logic */
-                    }}
+                    onClick={() => handleSignOut()}
                     className="relative flex w-full cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground"
                   >
-                    Logout
+                    Sign Out
                   </button>
                 </div>
               </div>
@@ -111,13 +107,13 @@ export default function Navbar() {
           <div className="border-t py-2 md:hidden">
             <div className="space-y-1">
               <Link
-                href="/get-playlist"
+                href="/playlists/newplaylist"
                 className="block px-2 py-1.5 text-sm font-medium hover:bg-accent hover:text-accent-foreground rounded-md"
               >
                 Get Playlist
               </Link>
               <Link
-                href="/my-playlists"
+                href="/playlists"
                 className="block px-2 py-1.5 text-sm font-medium hover:bg-accent hover:text-accent-foreground rounded-md"
               >
                 My Playlists
