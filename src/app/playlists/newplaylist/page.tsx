@@ -1,23 +1,29 @@
 "use client";
 
 import React, { useState } from "react";
-import { Edit2, ArrowRight, Loader2 } from "lucide-react";
+import { Edit2, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { usePlaylist } from "@/hooks/playlist-hooks";
 import { useAuthStore } from "@/store/auth-store";
-import { SongTable } from "../components";
-import { Playlist, PlaylistJson } from "@/graphql/types";
+import { SongTable } from "./_components/sonng-table";
+import { PlaylistJson } from "@/graphql/types";
+import {
+  ConvertToSpotifyPlaylistButton,
+  ConvertToYoutubePlaylistButton,
+  GetListButton,
+  SavePlaylistButton,
+} from "./_components/buttons";
 
 export default function NewPlaylistPage() {
   const { token, user } = useAuthStore();
-  const { savePlaylist, readPlaylist } = usePlaylist();
+  const { readPlaylist } = usePlaylist();
 
   const [playlistTitle, setPlaylistTitle] = useState("New Playlist");
   const [playlistData, setPlaylistData] = useState<PlaylistJson[] | null>(null);
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [playlistLink, setPlaylistLink] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleTitleEdit = () => {
     setIsEditingTitle(!isEditingTitle);
@@ -37,7 +43,7 @@ export default function NewPlaylistPage() {
 
   const handleGetPlaylist = async () => {
     try {
-      setLoading(true);
+      setIsLoading(true);
       const playlistData = await readPlaylist(playlistLink);
       if (playlistData) {
         setPlaylistData(playlistData);
@@ -45,7 +51,7 @@ export default function NewPlaylistPage() {
     } catch (error) {
       console.error("Error getting playlist:", error);
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
@@ -85,21 +91,50 @@ export default function NewPlaylistPage() {
           >
             Playlist Link
           </label>
-          <Input
-            id="playlist-link"
-            type="url"
-            placeholder="Enter playlist link here"
-            value={playlistLink}
-            onChange={handleLinkChange}
-            className="w-full "
-          />
+          <div className="flex gap-2 items-center">
+            <Input
+              id="playlist-link"
+              type="url"
+              placeholder="Enter playlist link here"
+              value={playlistLink}
+              onChange={handleLinkChange}
+              className="flex-1"
+            />
+            <GetListButton
+              isLoading={isLoading}
+              handleClick={handleGetPlaylist}
+            />
+          </div>
         </div>
-        <Button onClick={handleGetPlaylist} className="w-full md:w-auto">
-          Get Playlist <ArrowRight className="ml-2 h-4 w-4" />
-        </Button>
       </div>
-      {loading && <Loader2 className="animate-spin h-4 w-4" />}
-      {playlistData && <SongTable songs={playlistData} />}
+      {isLoading && <Loader2 className="animate-spin h-4 w-4 " />}
+      {playlistData && (
+        <>
+          <div className="flex items-center justify-center mb-2 mt-6">
+            <p className="text-md font-medium text-blue-900 mb-1 ">
+              Convert To
+            </p>
+            <div className="flex items-center gap-2 ml-3 mr-3">
+              <ConvertToSpotifyPlaylistButton playlistData={playlistData} />
+              <p className="text-md font-medium text-blue-900 mb-1">or</p>
+              <ConvertToYoutubePlaylistButton playlistData={playlistData} />
+            </div>
+            <p className="text-md font-medium text-blue-900 mb-1">Playlist</p>
+          </div>
+          <div className="flex flex-col mb-6 mt-6">
+            <div className="flex justify-end mb-2">
+              {token && (
+                <SavePlaylistButton
+                  playlistData={playlistData}
+                  playlistTitle={playlistTitle}
+                  token={token}
+                />
+              )}
+            </div>
+            <SongTable songs={playlistData} />
+          </div>
+        </>
+      )}
     </div>
   );
 }

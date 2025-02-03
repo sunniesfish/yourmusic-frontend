@@ -13,6 +13,7 @@ import {
 import { PlaylistQueryParams, PlaylistMutationParams } from "@/types/playlist";
 import { usePlaylistsStore } from "@/store/playlist-store";
 import { PlaylistJson } from "@/graphql/types";
+import { omit } from "lodash";
 
 /**
  * Hook for handling playlist-related queries
@@ -106,21 +107,42 @@ const usePlaylistMutation = () => {
    */
   const savePlaylist = async ({
     token,
-    playlist,
+    playlistTitle,
+    playlistJson,
   }: PlaylistMutationParams): Promise<boolean> => {
+    console.log("props", token, playlistTitle, playlistJson);
+    const cleanedPlaylistJson = playlistJson.map((item) =>
+      omit(item, ["__typename"])
+    );
+    console.log("cleanedPlaylistJson", cleanedPlaylistJson);
     try {
-      const { data } = await savePlaylistMutate({
+      const input = {
         variables: {
           savePlaylistInput: {
-            name: playlist.name,
-            listJson: playlist.listJson || [],
+            name: playlistTitle,
+            listJson: cleanedPlaylistJson,
           },
         },
         context: { headers: { Authorization: `Bearer ${token}` } },
-      });
-      return data?.savePlaylist || false;
+      };
+
+      // mutation 실행 전 input 검사
+      console.log("Mutation Input:", JSON.stringify(input, null, 2));
+
+      const result = await savePlaylistMutate(input);
+
+      // 전체 응답 로깅
+      console.log("Full Mutation Result:", JSON.stringify(result, null, 2));
+
+      return Boolean(result.data?.savePlaylist);
     } catch (err) {
-      console.error("Failed to save playlist:", err);
+      if (err instanceof Error && "graphQLErrors" in err) {
+        console.error("GraphQL Errors:", err.graphQLErrors);
+      }
+      if (err instanceof Error && "networkError" in err) {
+        console.error("Network Error:", err.networkError);
+      }
+      console.error("Full Error:", err);
       return false;
     }
   };

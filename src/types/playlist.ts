@@ -1,4 +1,4 @@
-import { Playlist as GQLPlaylist } from "@/graphql/types";
+import { PlaylistJson } from "@/graphql/types";
 
 export interface PlaylistQueryParams {
   token: string;
@@ -10,6 +10,7 @@ export interface PlaylistQueryParams {
 
 export interface PlaylistMutationParams {
   token: string;
-  playlist: GQLPlaylist;
+  playlistTitle: string;
+  playlistJson: PlaylistJson[];
   playlistId?: number;
 }
