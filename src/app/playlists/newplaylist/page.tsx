@@ -6,14 +6,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { usePlaylist } from "@/hooks/playlist-hooks";
 import { useAuthStore } from "@/store/auth-store";
-import { SongTable } from "./_components/sonng-table";
+import { SongTable } from "../_components/song-table";
 import { PlaylistJson } from "@/graphql/types";
 import {
   ConvertToSpotifyPlaylistButton,
   ConvertToYoutubePlaylistButton,
   GetListButton,
   SavePlaylistButton,
-} from "./_components/buttons";
+} from "../_components/buttons";
 
 export default function NewPlaylistPage() {
   const { token, user } = useAuthStore();

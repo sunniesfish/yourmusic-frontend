@@ -15,7 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { DeletePlaylistDialog } from "./newplaylist/_components/sonng-table";
+import { DeletePlaylistDialog } from "./_components/song-table";
 import { PlaylistsItem } from "./_components/playlistsItem";
 import { Playlist } from "@/graphql/types";
 

@@ -12,7 +12,7 @@ import {
 } from "@/graphql/hooks";
 import { PlaylistQueryParams, PlaylistMutationParams } from "@/types/playlist";
 import { usePlaylistsStore } from "@/store/playlist-store";
-import { PlaylistJson } from "@/graphql/types";
+import { PlaylistJson, PlaylistsResponse } from "@/graphql/types";
 import { omit } from "lodash";
 
 /**
@@ -34,7 +34,7 @@ const usePlaylistQuery = () => {
     limit,
     orderBy,
     includeListJson = false,
-  }: PlaylistQueryParams) => {
+  }: PlaylistQueryParams): Promise<PlaylistsResponse | null> => {
     try {
       const { data } = await getPlaylistsQuery({
         variables: { page, limit, orderBy, includeListJson },

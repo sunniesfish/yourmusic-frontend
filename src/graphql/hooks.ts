@@ -869,7 +869,6 @@ export type GetUserQueryResult = Apollo.QueryResult<
 export const GetPlaylistDocument = gql`
   query GetPlaylist($id: Int!) {
     playlist(id: $id) {
-      id
       name
       createdAt
       listJson {

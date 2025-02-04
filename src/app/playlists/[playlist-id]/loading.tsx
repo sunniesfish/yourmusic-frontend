@@ -1,5 +1,5 @@
-import FrutigerLoader from "@/components/loader";
+import Loader from "@/components/loader";
 
 export default function Loading() {
-  return <FrutigerLoader message="Loading playlist..." />;
+  return <Loader message="Loading playlist..." />;
 }
