@@ -22,7 +22,6 @@ const sanitizeFileName = (name: string): string =>
 export default async function PlaylistDetailPage() {
   const params = useParams();
   const playlistId = params["playlist-id"] as string;
-  const router = useRouter();
   const { token } = useAuthStore();
   const { toast } = useToast();
 

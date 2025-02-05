@@ -3,7 +3,8 @@
 import { Button } from "@/components/ui/button";
 import { PlaylistJson } from "@/graphql/types";
 import { usePlaylist } from "@/hooks/playlist-hooks";
-import { ArrowRight, Check, Loader2 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { ArrowRight, Check, Copy, Loader2 } from "lucide-react";
 import { useState } from "react";
 
 export function GetListButton({
@@ -101,6 +102,28 @@ export function SavePlaylistButton({
       ) : (
         <>Save</>
       )}
+    </Button>
+  );
+}
+
+export function CopyLinkButton({ playlistId }: { playlistId: string }) {
+  const { toast } = useToast();
+
+  const handleCopyLink = () => {
+    if (!playlistId) return;
+    navigator.clipboard.writeText(
+      "https://" + process.env.NEXT_PUBLIC_DOMAIN + `/playlist/${playlistId}`
+    );
+    toast({
+      title: "Copied to clipboard",
+      description: "Link copied to clipboard",
+      duration: 1000,
+    });
+  };
+
+  return (
+    <Button className="h-8 w-8" onClick={handleCopyLink}>
+      <Copy className="h-4 w-4" />
     </Button>
   );
 }

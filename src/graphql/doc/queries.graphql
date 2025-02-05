@@ -13,6 +13,7 @@ query GetPlaylist($id: Int!) {
     id
     name
     createdAt
+    thumbnail
     listJson {
       title
       artist
@@ -23,13 +24,19 @@ query GetPlaylist($id: Int!) {
 }
 
 # 플레이리스트 페이지네이션 쿼리
-query GetPlaylistsPage($page: Int!, $limit: Int!, $orderBy: String!) {
+query GetPlaylistsPage(
+  $page: Int!
+  $limit: Int!
+  $orderBy: String!
+  $includeListJson: Boolean = false
+) {
   playlistsPage(page: $page, limit: $limit, orderBy: $orderBy) {
     playlists {
       id
       name
       createdAt
-      listJson {
+      thumbnail
+      listJson @include(if: $includeListJson) {
         title
         artist
         album

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import ApolloProvider from "@/providers/apollo-provider";
+import { Toaster } from "@/components/ui/toaster";
 
 export const metadata: Metadata = {
   title: "YOUR MUSIC",
@@ -16,6 +17,7 @@ export default async function RootLayout({
     <html lang="en">
       <body>
         <ApolloProvider>{children}</ApolloProvider>
+        <Toaster />
       </body>
     </html>
   );

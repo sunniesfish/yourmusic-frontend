@@ -18,10 +18,23 @@ import {
 import { DeletePlaylistDialog } from "./_components/song-table";
 import { PlaylistsItem } from "./_components/playlistsItem";
 import { Playlist } from "@/graphql/types";
+import {
+  useGetPlaylistLazyQuery,
+  useGetPlaylistsPageLazyQuery,
+  useGetPlaylistsPageQuery,
+} from "@/graphql/hooks";
 
 export default function PlaylistsPage() {
   const { user, token } = useAuthStore();
-  const { getPlaylists } = usePlaylist();
+  const { data, loading } = useGetPlaylistsPageQuery({
+    variables: {
+      page: 1,
+      limit: 10,
+      orderBy: "createdAt",
+      includeListJson: false,
+    },
+    context: { headers: { Authorization: `Bearer ${token}` } },
+  });
   const [playlists, setPlaylists] = useState<Partial<Playlist>[]>([]);
   const [hasMore, setHasMore] = useState(true);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -36,14 +49,7 @@ export default function PlaylistsPage() {
   }, [user]);
 
   const fetchMoreData = async () => {
-    const data = await getPlaylists({
-      token: token ?? "",
-      page: 1,
-      limit: 10,
-      orderBy: sortType,
-      includeListJson: true,
-    });
-    const newPlaylists = data?.playlists ?? [];
+    const newPlaylists = data?.playlistsPage?.playlists ?? [];
     setPlaylists([...playlists, ...newPlaylists]);
     setHasMore(newPlaylists.length === 10);
   };

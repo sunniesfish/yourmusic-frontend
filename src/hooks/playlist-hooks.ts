@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  GetPlaylistsPageDocument,
   useConvertToSpotifyPlaylistMutation,
   useConvertToYoutubePlaylistMutation,
   useGetPlaylistLazyQuery,
@@ -161,6 +162,17 @@ const usePlaylistMutation = () => {
       const { data } = await removePlaylistMutate({
         variables: { id: playlistId },
         context: { headers: { Authorization: `Bearer ${token}` } },
+        refetchQueries: [
+          {
+            query: GetPlaylistsPageDocument,
+            variables: {
+              page: 1,
+              limit: 10,
+              orderBy: "createdAt",
+              includeListJson: false,
+            },
+          },
+        ],
       });
       return !!data?.removePlaylist;
     } catch (err) {

@@ -1,11 +1,10 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { Playlist } from "@/graphql/types";
-import { Share2, Trash2 } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { CopyLinkButton } from "./buttons";
 
 interface PlaylistsItemProps {
   playlist: Partial<Playlist>;
@@ -13,21 +12,10 @@ interface PlaylistsItemProps {
 }
 
 export function PlaylistsItem({ playlist, onDelete }: PlaylistsItemProps) {
-  const [isPrefetched, setIsPrefetched] = useState(false);
-  const router = useRouter();
-
+  console.log("playlist item", playlist);
   const handleDelete = () => {
     if (!playlist.id) return;
     onDelete(Number(playlist.id));
-  };
-
-  const handleMouseEnter = () => {
-    console.log("handleMouseEnter", playlist.id);
-    if (!isPrefetched) {
-      router.prefetch(`/playlists/${playlist.id}`);
-      console.log("prefetch", `/playlists/${playlist.id}`);
-      setIsPrefetched(true);
-    }
   };
 
   return (
@@ -44,11 +32,7 @@ export function PlaylistsItem({ playlist, onDelete }: PlaylistsItemProps) {
             className="rounded-md object-cover"
           />
         </div>
-        <Link
-          href={`/playlists/${playlist.id}`}
-          prefetch={false}
-          onMouseEnter={handleMouseEnter}
-        >
+        <Link href={`/playlists/${playlist.id}`} prefetch={true}>
           <div className="flex-1 space-y-1">
             <h3 className="font-medium leading-none">{playlist.name}</h3>
             <p className="text-sm text-muted-foreground">
@@ -57,11 +41,8 @@ export function PlaylistsItem({ playlist, onDelete }: PlaylistsItemProps) {
           </div>
         </Link>
         <div className="flex gap-2">
-          <Button variant="ghost" size="icon">
-            <Share2 className="h-4 w-4" />
-            <span className="sr-only">Share playlist</span>
-          </Button>
-          <Button variant="ghost" size="icon" onClick={handleDelete}>
+          {playlist.id && <CopyLinkButton playlistId={playlist.id} />}
+          <Button className="h-8 w-8" onClick={handleDelete}>
             <Trash2 className="h-4 w-4" />
             <span className="sr-only">Delete playlist</span>
           </Button>
