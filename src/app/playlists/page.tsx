@@ -2,11 +2,9 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import InfiniteScroll from "react-infinite-scroll-component";
 import { Plus } from "lucide-react";
 import { useAuthStore } from "@/store/auth-store";
 import { redirect } from "next/navigation";
-import { usePlaylist } from "@/hooks/playlist-hooks";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -15,53 +13,66 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { DeletePlaylistDialog } from "./_components/song-table";
+import { DeletePlaylistDialog } from "./_components/delete-playlist-modal";
 import { PlaylistsItem } from "./_components/playlistsItem";
-import { Playlist } from "@/graphql/types";
-import {
-  useGetPlaylistLazyQuery,
-  useGetPlaylistsPageLazyQuery,
-  useGetPlaylistsPageQuery,
-} from "@/graphql/hooks";
+import { Pagination } from "@/components/ui/pagination";
+import Loader from "@/components/loader";
+import { useGetPlaylistsPageQuery } from "@/graphql/hooks";
+import { useHydration } from "@/hooks/use-hydration";
 
 export default function PlaylistsPage() {
   const { user, token } = useAuthStore();
-  const { data, loading } = useGetPlaylistsPageQuery({
-    variables: {
-      page: 1,
-      limit: 10,
-      orderBy: "createdAt",
-      includeListJson: false,
-    },
-    context: { headers: { Authorization: `Bearer ${token}` } },
-  });
-  const [playlists, setPlaylists] = useState<Partial<Playlist>[]>([]);
-  const [hasMore, setHasMore] = useState(true);
+  const isHydrated = useHydration();
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [playlistToDelete, setPlaylistToDelete] = useState<number | null>(null);
   const [sortType, setSortType] = useState<"name" | "createdAt">("name");
-  const { removePlaylist } = usePlaylist();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+
+  const { data, loading, fetchMore } = useGetPlaylistsPageQuery({
+    variables: {
+      page: currentPage,
+      limit: 10,
+      orderBy: sortType,
+      includeListJson: false,
+    },
+    context: { headers: { Authorization: `Bearer ${token}` } },
+    fetchPolicy: "cache-first",
+    skip: !token,
+  });
+
   useEffect(() => {
-    if (!user) {
+    if (!user && isHydrated) {
       redirect("/auth/sign-in");
     }
-    fetchMoreData();
-  }, [user]);
+  }, [user, isHydrated]);
 
-  const fetchMoreData = async () => {
-    const newPlaylists = data?.playlistsPage?.playlists ?? [];
-    setPlaylists([...playlists, ...newPlaylists]);
-    setHasMore(newPlaylists.length === 10);
+  useEffect(() => {
+    if (data) {
+      setTotalPages(data.playlistsPage.totalPages);
+    }
+  }, [data]);
+
+  const handlePageChange = (newPage: number) => {
+    setCurrentPage(newPage);
+    fetchMore({
+      variables: {
+        page: newPage,
+      },
+    });
+  };
+
+  const handleSortChange = (newSortType: "name" | "createdAt") => {
+    setSortType(newSortType);
+    fetchMore({
+      variables: {
+        orderBy: newSortType,
+      },
+    });
   };
 
   const handleDelete = async (id: number) => {
-    const result = await removePlaylist({
-      playlistId: id,
-      playlistTitle: "",
-      playlistJson: [],
-      token: token ?? "",
-    });
-    if (result) {
+    if (token) {
       setPlaylistToDelete(id);
       setIsDeleteModalOpen(true);
     }
@@ -78,7 +89,7 @@ export default function PlaylistsPage() {
             <Select
               value={sortType}
               onValueChange={(value) =>
-                setSortType(value as "name" | "createdAt")
+                handleSortChange(value as "name" | "createdAt")
               }
             >
               <SelectTrigger className="w-[180px]">
@@ -97,20 +108,11 @@ export default function PlaylistsPage() {
             </Link>
           </div>
         </div>
-
-        <InfiniteScroll
-          dataLength={playlists.length}
-          next={fetchMoreData}
-          hasMore={hasMore}
-          loader={<p className="text-center py-4">Loading...</p>}
-          endMessage={
-            <p className="text-center py-4 text-muted-foreground">
-              No more playlists to load.
-            </p>
-          }
-        >
+        {loading ? (
+          <Loader />
+        ) : (
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {playlists.map((playlist) => (
+            {data?.playlistsPage.playlists.map((playlist) => (
               <PlaylistsItem
                 playlist={playlist}
                 onDelete={handleDelete}
@@ -118,14 +120,22 @@ export default function PlaylistsPage() {
               />
             ))}
           </div>
-        </InfiniteScroll>
+        )}
+
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={handlePageChange}
+        />
       </div>
 
-      {isDeleteModalOpen && (
+      {isDeleteModalOpen && token && (
         <DeletePlaylistDialog
+          token={token}
           isDeleteModalOpen={isDeleteModalOpen}
           setIsDeleteModalOpen={setIsDeleteModalOpen}
           playlistId={playlistToDelete ?? 0}
+          fetchMore={() => fetchMore({ variables: { page: currentPage } })}
         />
       )}
     </div>

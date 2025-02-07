@@ -250,18 +250,7 @@ export type SavePlaylistMutationOptions = Apollo.BaseMutationOptions<
 >;
 export const RemovePlaylistDocument = gql`
   mutation RemovePlaylist($id: Int!) {
-    removePlaylist(id: $id) {
-      id
-      name
-      createdAt
-      thumbnail
-      listJson {
-        title
-        artist
-        album
-        thumbnail
-      }
-    }
+    removePlaylist(id: $id)
   }
 `;
 export type RemovePlaylistMutationFn = Apollo.MutationFunction<

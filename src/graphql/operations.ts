@@ -38,7 +38,7 @@ export type RemovePlaylistMutationVariables = Types.Exact<{
 }>;
 
 
-export type RemovePlaylistMutation = { __typename?: 'Mutation', removePlaylist: { __typename?: 'Playlist', id: string, name: string, createdAt: any, thumbnail?: string | null, listJson?: Array<{ __typename?: 'PlaylistJSON', title?: string | null, artist?: string | null, album?: string | null, thumbnail?: string | null }> | null } };
+export type RemovePlaylistMutation = { __typename?: 'Mutation', removePlaylist: boolean };
 
 export type ReadPlaylistMutationVariables = Types.Exact<{
   link: Types.Scalars['String']['input'];

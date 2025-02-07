@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { Edit2, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { usePlaylist } from "@/hooks/playlist-hooks";
+import { usePlaylist } from "@/hooks/use-playlist";
 import { useAuthStore } from "@/store/auth-store";
 import { SongTable } from "../_components/song-table";
 import { PlaylistJson } from "@/graphql/types";

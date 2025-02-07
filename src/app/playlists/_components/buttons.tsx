@@ -1,9 +1,11 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { GetPlaylistsPageDocument } from "@/graphql/hooks";
 import { PlaylistJson } from "@/graphql/types";
-import { usePlaylist } from "@/hooks/playlist-hooks";
+import { usePlaylist } from "@/hooks/use-playlist";
 import { useToast } from "@/hooks/use-toast";
+import { useApolloClient } from "@apollo/client/react/hooks/useApolloClient";
 import { ArrowRight, Check, Copy, Loader2 } from "lucide-react";
 import { useState } from "react";
 
@@ -74,6 +76,7 @@ export function SavePlaylistButton({
   playlistTitle: string;
   token: string;
 }) {
+  const client = useApolloClient();
   const { savePlaylist } = usePlaylist();
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
@@ -87,6 +90,15 @@ export function SavePlaylistButton({
       playlistJson: playlistData,
       token: token,
     });
+    if (result) {
+      await client.refetchQueries({
+        include: [GetPlaylistsPageDocument],
+        updateCache: (cache) => {
+          cache.evict({ fieldName: "playlistsPage" });
+          cache.gc();
+        },
+      });
+    }
     setIsLoading(false);
     setIsError(!result);
     setIsSuccess(result);
@@ -112,7 +124,7 @@ export function CopyLinkButton({ playlistId }: { playlistId: string }) {
   const handleCopyLink = () => {
     if (!playlistId) return;
     navigator.clipboard.writeText(
-      "https://" + process.env.NEXT_PUBLIC_DOMAIN + `/playlist/${playlistId}`
+      "http://" + process.env.NEXT_PUBLIC_DOMAIN + `/playlists/${playlistId}`
     );
     toast({
       title: "Copied to clipboard",

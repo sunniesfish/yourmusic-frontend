@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Menu, X } from "lucide-react";
-import { useAuth } from "@/hooks/auth-hooks";
+import { useAuth } from "@/hooks/use-auth";
 import { useAuthStore } from "@/store/auth-store";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
@@ -14,7 +14,7 @@ export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const router = useRouter();
   const { signOut } = useAuth();
-  const { user, setUser } = useAuthStore();
+  const { user } = useAuthStore();
   const handleSignOut = async () => {
     await signOut();
     router.push("/auth/sign-in");

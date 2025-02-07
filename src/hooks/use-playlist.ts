@@ -112,6 +112,7 @@ const usePlaylistMutation = () => {
     playlistJson,
   }: PlaylistMutationParams): Promise<boolean> => {
     console.log("props", token, playlistTitle, playlistJson);
+    if (!playlistTitle || !playlistJson) return false;
     const cleanedPlaylistJson = playlistJson.map((item) =>
       omit(item, ["__typename"])
     );
@@ -157,6 +158,7 @@ const usePlaylistMutation = () => {
     token,
     playlistId,
   }: PlaylistMutationParams): Promise<boolean> => {
+    console.log("props", token, playlistId);
     if (!playlistId) return false;
     try {
       const { data } = await removePlaylistMutate({
@@ -173,7 +175,26 @@ const usePlaylistMutation = () => {
             },
           },
         ],
+        update: (cache) => {
+          console.log("cache", cache);
+          // 캐시에서 해당 플레이리스트 제거
+          cache.modify({
+            fields: {
+              playlists: (existingPlaylists = [], { readField }) => {
+                return existingPlaylists.filter(
+                  (playlistRef: any) =>
+                    readField("id", playlistRef) !== playlistId
+                );
+              },
+            },
+          });
+        },
+        onError: (error) => {
+          console.log("Failed to remove playlist:", error);
+        },
       });
+      console.log("data", data);
+
       return !!data?.removePlaylist;
     } catch (err) {
       console.error("Failed to remove playlist:", err);

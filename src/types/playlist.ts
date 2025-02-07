@@ -10,7 +10,7 @@ export interface PlaylistQueryParams {
 
 export interface PlaylistMutationParams {
   token: string;
-  playlistTitle: string;
-  playlistJson: PlaylistJson[];
+  playlistTitle?: string;
+  playlistJson?: PlaylistJson[];
   playlistId?: number;
 }

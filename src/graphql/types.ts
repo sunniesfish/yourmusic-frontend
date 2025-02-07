@@ -44,7 +44,7 @@ export type Mutation = {
   convertToSpotifyPlaylist: ConvertedPlaylist;
   convertToYoutubePlaylist: ConvertedPlaylist;
   readPlaylist: Array<PlaylistJson>;
-  removePlaylist: Playlist;
+  removePlaylist: Scalars['Boolean']['output'];
   removeStatistic: Statistic;
   savePlaylist: Scalars['Boolean']['output'];
   saveStatistic: Scalars['Boolean']['output'];

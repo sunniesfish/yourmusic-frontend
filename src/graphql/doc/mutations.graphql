@@ -36,18 +36,7 @@ mutation SavePlaylist($savePlaylistInput: SavePlaylistInput!) {
 
 # 플레이리스트 제거
 mutation RemovePlaylist($id: Int!) {
-  removePlaylist(id: $id) {
-    id
-    name
-    createdAt
-    thumbnail
-    listJson {
-      title
-      artist
-      album
-      thumbnail
-    }
-  }
+  removePlaylist(id: $id)
 }
 
 # 플레이리스트 읽기
