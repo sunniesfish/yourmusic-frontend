@@ -50,24 +50,50 @@ mutation ReadPlaylist($link: String!) {
 }
 
 # 플레이리스트를 YouTube로 변환
-mutation ConvertToYoutubePlaylist($listJSON: [PlaylistJSONInput!]!) {
-  convertToYoutubePlaylist(listJSON: $listJSON) {
-    success
-    message
-    playlistId
-    playlistName
-    playlistUrl
+mutation ConvertToYoutubePlaylist(
+  $listJSON: [PlaylistJSONInput!]!
+  $authorizationCode: String
+) {
+  convertToYoutubePlaylist(
+    listJSON: $listJSON
+    authorizationCode: $authorizationCode
+  ) {
+    ... on ConvertedPlaylist {
+      success
+      message
+      playlistId
+      playlistName
+      playlistUrl
+    }
+    ... on AuthRequiredResponse {
+      needsAuth
+      authUrl
+      apiDomain
+    }
   }
 }
 
 # 플레이리스트를 Spotify로 변환
-mutation ConvertToSpotifyPlaylist($listJSON: [PlaylistJSONInput!]!) {
-  convertToSpotifyPlaylist(listJSON: $listJSON) {
-    success
-    message
-    playlistId
-    playlistName
-    playlistUrl
+mutation ConvertToSpotifyPlaylist(
+  $listJSON: [PlaylistJSONInput!]!
+  $authorizationCode: String
+) {
+  convertToSpotifyPlaylist(
+    listJSON: $listJSON
+    authorizationCode: $authorizationCode
+  ) {
+    ... on ConvertedPlaylist {
+      success
+      message
+      playlistId
+      playlistName
+      playlistUrl
+    }
+    ... on AuthRequiredResponse {
+      needsAuth
+      authUrl
+      apiDomain
+    }
   }
 }
 

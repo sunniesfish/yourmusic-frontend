@@ -350,13 +350,26 @@ export type ReadPlaylistMutationOptions = Apollo.BaseMutationOptions<
   Operations.ReadPlaylistMutationVariables
 >;
 export const ConvertToYoutubePlaylistDocument = gql`
-  mutation ConvertToYoutubePlaylist($listJSON: [PlaylistJSONInput!]!) {
-    convertToYoutubePlaylist(listJSON: $listJSON) {
-      success
-      message
-      playlistId
-      playlistName
-      playlistUrl
+  mutation ConvertToYoutubePlaylist(
+    $listJSON: [PlaylistJSONInput!]!
+    $authorizationCode: String
+  ) {
+    convertToYoutubePlaylist(
+      listJSON: $listJSON
+      authorizationCode: $authorizationCode
+    ) {
+      ... on ConvertedPlaylist {
+        success
+        message
+        playlistId
+        playlistName
+        playlistUrl
+      }
+      ... on AuthRequiredResponse {
+        needsAuth
+        authUrl
+        apiDomain
+      }
     }
   }
 `;
@@ -379,6 +392,7 @@ export type ConvertToYoutubePlaylistMutationFn = Apollo.MutationFunction<
  * const [convertToYoutubePlaylistMutation, { data, loading, error }] = useConvertToYoutubePlaylistMutation({
  *   variables: {
  *      listJSON: // value for 'listJSON'
+ *      authorizationCode: // value for 'authorizationCode'
  *   },
  * });
  */
@@ -405,13 +419,26 @@ export type ConvertToYoutubePlaylistMutationOptions =
     Operations.ConvertToYoutubePlaylistMutationVariables
   >;
 export const ConvertToSpotifyPlaylistDocument = gql`
-  mutation ConvertToSpotifyPlaylist($listJSON: [PlaylistJSONInput!]!) {
-    convertToSpotifyPlaylist(listJSON: $listJSON) {
-      success
-      message
-      playlistId
-      playlistName
-      playlistUrl
+  mutation ConvertToSpotifyPlaylist(
+    $listJSON: [PlaylistJSONInput!]!
+    $authorizationCode: String
+  ) {
+    convertToSpotifyPlaylist(
+      listJSON: $listJSON
+      authorizationCode: $authorizationCode
+    ) {
+      ... on ConvertedPlaylist {
+        success
+        message
+        playlistId
+        playlistName
+        playlistUrl
+      }
+      ... on AuthRequiredResponse {
+        needsAuth
+        authUrl
+        apiDomain
+      }
     }
   }
 `;
@@ -434,6 +461,7 @@ export type ConvertToSpotifyPlaylistMutationFn = Apollo.MutationFunction<
  * const [convertToSpotifyPlaylistMutation, { data, loading, error }] = useConvertToSpotifyPlaylistMutation({
  *   variables: {
  *      listJSON: // value for 'listJSON'
+ *      authorizationCode: // value for 'authorizationCode'
  *   },
  * });
  */

@@ -205,31 +205,78 @@ const usePlaylistMutation = () => {
   return { readPlaylist, savePlaylist, removePlaylist };
 };
 
+interface ConversionResult {
+  converted: boolean;
+  playlistUrl?: string;
+  authUrl?: string;
+}
+
 const usePlaylistConverter = () => {
   const [convertToYoutubeMutate] = useConvertToYoutubePlaylistMutation();
   const [convertToSpotifyMutate] = useConvertToSpotifyPlaylistMutation();
 
-  const convertToYoutube = async (data: PlaylistJson[]) => {
+  const convertToYoutube = async (
+    data: PlaylistJson[]
+  ): Promise<ConversionResult> => {
     try {
       const { data: result } = await convertToYoutubeMutate({
         variables: { listJSON: data },
       });
-      return result?.convertToYoutubePlaylist || false;
+
+      if (
+        result?.convertToYoutubePlaylist.__typename === "AuthRequiredResponse"
+      ) {
+        return {
+          converted: false,
+          authUrl: result.convertToYoutubePlaylist.authUrl,
+        };
+      }
+
+      if (result?.convertToYoutubePlaylist.__typename === "ConvertedPlaylist") {
+        const playlistUrl = result.convertToYoutubePlaylist.playlistUrl;
+        if (playlistUrl) {
+          return {
+            converted: true,
+            playlistUrl,
+          };
+        }
+      }
+      throw new Error("Failed to convert to YouTube playlist");
     } catch (err) {
-      console.error("Failed to convert to YouTube playlist:", err);
-      return false;
+      console.log("Failed to convert to YouTube playlist:", err);
+      throw err;
     }
   };
 
-  const convertToSpotify = async (data: PlaylistJson[]) => {
+  const convertToSpotify = async (
+    data: PlaylistJson[]
+  ): Promise<ConversionResult> => {
     try {
       const { data: result } = await convertToSpotifyMutate({
         variables: { listJSON: data },
       });
-      return result?.convertToSpotifyPlaylist || false;
+      if (
+        result?.convertToSpotifyPlaylist.__typename === "AuthRequiredResponse"
+      ) {
+        return {
+          converted: false,
+          authUrl: result.convertToSpotifyPlaylist.authUrl,
+        };
+      }
+
+      if (result?.convertToSpotifyPlaylist.__typename === "ConvertedPlaylist") {
+        const playlistUrl = result.convertToSpotifyPlaylist.playlistUrl;
+        if (playlistUrl) {
+          return {
+            converted: true,
+            playlistUrl,
+          };
+        }
+      }
+      throw new Error("Failed to convert to Spotify playlist");
     } catch (err) {
-      console.error("Failed to convert to Spotify playlist:", err);
-      return false;
+      console.log("Failed to convert to Spotify playlist:", err);
+      throw err;
     }
   };
 

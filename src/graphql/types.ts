@@ -15,10 +15,25 @@ export type Scalars = {
   DateTime: { input: any; output: any; }
 };
 
+/** Enum for the API domain */
+export enum ApiDomain {
+  Spotify = 'SPOTIFY',
+  Youtube = 'YOUTUBE'
+}
+
+export type AuthRequiredResponse = {
+  __typename?: 'AuthRequiredResponse';
+  apiDomain: ApiDomain;
+  authUrl: Scalars['String']['output'];
+  needsAuth: Scalars['Boolean']['output'];
+};
+
 export type ChangePasswordInput = {
   id: Scalars['ID']['input'];
   password: Scalars['String']['input'];
 };
+
+export type ConvertPlaylistResponse = AuthRequiredResponse | ConvertedPlaylist;
 
 export type ConvertedPlaylist = {
   __typename?: 'ConvertedPlaylist';
@@ -41,8 +56,8 @@ export type Mutation = {
   changePassword: User;
   checkId: Scalars['Boolean']['output'];
   checkPassword: Scalars['Boolean']['output'];
-  convertToSpotifyPlaylist: ConvertedPlaylist;
-  convertToYoutubePlaylist: ConvertedPlaylist;
+  convertToSpotifyPlaylist: ConvertPlaylistResponse;
+  convertToYoutubePlaylist: ConvertPlaylistResponse;
   readPlaylist: Array<PlaylistJson>;
   removePlaylist: Scalars['Boolean']['output'];
   removeStatistic: Statistic;
@@ -72,11 +87,13 @@ export type MutationCheckPasswordArgs = {
 
 
 export type MutationConvertToSpotifyPlaylistArgs = {
+  authorizationCode?: InputMaybe<Scalars['String']['input']>;
   listJSON: Array<PlaylistJsonInput>;
 };
 
 
 export type MutationConvertToYoutubePlaylistArgs = {
+  authorizationCode?: InputMaybe<Scalars['String']['input']>;
   listJSON: Array<PlaylistJsonInput>;
 };
 

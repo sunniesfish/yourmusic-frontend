@@ -38,7 +38,12 @@ export function ConvertToSpotifyPlaylistButton({
   const { convertToSpotify } = usePlaylist();
   const handleClick = async () => {
     setIsLoading(true);
-    await convertToSpotify(playlistData);
+    const result = await convertToSpotify(playlistData);
+    if (result.converted) {
+      window.open(result.playlistUrl, "_blank");
+    } else {
+      window.open(result.authUrl, "_blank");
+    }
     setIsLoading(false);
   };
   return (
