@@ -353,10 +353,12 @@ export const ConvertToYoutubePlaylistDocument = gql`
   mutation ConvertToYoutubePlaylist(
     $listJSON: [PlaylistJSONInput!]!
     $authorizationCode: String
+    $state: String
   ) {
     convertToYoutubePlaylist(
       listJSON: $listJSON
       authorizationCode: $authorizationCode
+      state: $state
     ) {
       ... on ConvertedPlaylist {
         success
@@ -393,6 +395,7 @@ export type ConvertToYoutubePlaylistMutationFn = Apollo.MutationFunction<
  *   variables: {
  *      listJSON: // value for 'listJSON'
  *      authorizationCode: // value for 'authorizationCode'
+ *      state: // value for 'state'
  *   },
  * });
  */
@@ -422,10 +425,12 @@ export const ConvertToSpotifyPlaylistDocument = gql`
   mutation ConvertToSpotifyPlaylist(
     $listJSON: [PlaylistJSONInput!]!
     $authorizationCode: String
+    $state: String
   ) {
     convertToSpotifyPlaylist(
       listJSON: $listJSON
       authorizationCode: $authorizationCode
+      state: $state
     ) {
       ... on ConvertedPlaylist {
         success
@@ -462,6 +467,7 @@ export type ConvertToSpotifyPlaylistMutationFn = Apollo.MutationFunction<
  *   variables: {
  *      listJSON: // value for 'listJSON'
  *      authorizationCode: // value for 'authorizationCode'
+ *      state: // value for 'state'
  *   },
  * });
  */

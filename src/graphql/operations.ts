@@ -50,6 +50,7 @@ export type ReadPlaylistMutation = { __typename?: 'Mutation', readPlaylist: Arra
 export type ConvertToYoutubePlaylistMutationVariables = Types.Exact<{
   listJSON: Array<Types.PlaylistJsonInput> | Types.PlaylistJsonInput;
   authorizationCode?: Types.InputMaybe<Types.Scalars['String']['input']>;
+  state?: Types.InputMaybe<Types.Scalars['String']['input']>;
 }>;
 
 
@@ -58,6 +59,7 @@ export type ConvertToYoutubePlaylistMutation = { __typename?: 'Mutation', conver
 export type ConvertToSpotifyPlaylistMutationVariables = Types.Exact<{
   listJSON: Array<Types.PlaylistJsonInput> | Types.PlaylistJsonInput;
   authorizationCode?: Types.InputMaybe<Types.Scalars['String']['input']>;
+  state?: Types.InputMaybe<Types.Scalars['String']['input']>;
 }>;
 
 

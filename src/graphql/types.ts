@@ -89,12 +89,14 @@ export type MutationCheckPasswordArgs = {
 export type MutationConvertToSpotifyPlaylistArgs = {
   authorizationCode?: InputMaybe<Scalars['String']['input']>;
   listJSON: Array<PlaylistJsonInput>;
+  state?: InputMaybe<Scalars['String']['input']>;
 };
 
 
 export type MutationConvertToYoutubePlaylistArgs = {
   authorizationCode?: InputMaybe<Scalars['String']['input']>;
   listJSON: Array<PlaylistJsonInput>;
+  state?: InputMaybe<Scalars['String']['input']>;
 };
 
 

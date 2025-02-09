@@ -5,10 +5,11 @@ import { GetPlaylistsPageDocument } from "@/graphql/hooks";
 import { PlaylistJson } from "@/graphql/types";
 import { usePlaylist } from "@/hooks/use-playlist";
 import { useToast } from "@/hooks/use-toast";
+import { useOAuthMessage } from "@/lib/oauth";
 import { useApolloClient } from "@apollo/client/react/hooks/useApolloClient";
 import { ArrowRight, Check, Copy, Loader2 } from "lucide-react";
 import { useState } from "react";
-
+import { randomUUID } from "node:crypto";
 export function GetListButton({
   isLoading,
   handleClick,
@@ -31,18 +32,61 @@ export function GetListButton({
 
 export function ConvertToSpotifyPlaylistButton({
   playlistData,
+  token,
 }: {
   playlistData: PlaylistJson[];
+  token: string | undefined;
 }) {
   const [isLoading, setIsLoading] = useState(false);
   const { convertToSpotify } = usePlaylist();
+  const { toast } = useToast();
+
+  useOAuthMessage({
+    onSuccess: async (authCode, redirectUri) => {
+      try {
+        setIsLoading(true);
+        const result = await convertToSpotify(
+          playlistData,
+          authCode,
+          redirectUri,
+          token
+        );
+        if (result.converted) {
+          toast({
+            title: "Success",
+            description: "Converted to Spotify playlist",
+          });
+          window.open(result.playlistUrl, "_blank");
+        } else {
+          toast({
+            title: "Error",
+            description: "Failed to convert to Spotify playlist",
+          });
+        }
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    onError: (error) => {
+      console.error(error);
+    },
+  });
   const handleClick = async () => {
     setIsLoading(true);
-    const result = await convertToSpotify(playlistData);
+    const result = await convertToSpotify(playlistData, token);
     if (result.converted) {
+      toast({
+        title: "Success",
+        description: "Converted to Spotify playlist",
+      });
       window.open(result.playlistUrl, "_blank");
     } else {
-      window.open(result.authUrl, "_blank");
+      toast({
+        title: "Error",
+        description: "Failed to convert to Spotify playlist",
+      });
     }
     setIsLoading(false);
   };
@@ -55,15 +99,58 @@ export function ConvertToSpotifyPlaylistButton({
 
 export function ConvertToYoutubePlaylistButton({
   playlistData,
+  token,
 }: {
   playlistData: PlaylistJson[];
+  token: string | undefined;
 }) {
   const [isLoading, setIsLoading] = useState(false);
+  const [state, setState] = useState<string | null>(null);
   const { convertToYoutube } = usePlaylist();
+  const { toast } = useToast();
+
+  useOAuthMessage({
+    onSuccess: async (authCode, receivedState) => {
+      try {
+        setIsLoading(true);
+        if (state !== receivedState) {
+          throw new Error("Invalid state");
+        }
+        const result = await convertToYoutube(playlistData, authCode, token);
+        if (result.converted) {
+          toast({
+            title: "Success",
+            description: "Converted to Youtube playlist",
+          });
+          window.open(result.playlistUrl, "_blank");
+        } else {
+          toast({
+            title: "Error",
+            description: "Failed to convert to Youtube playlist",
+          });
+        }
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    onError: (error) => {
+      console.error(error);
+    },
+  });
   const handleClick = async () => {
+    const state = randomUUID();
+    setState(state);
     setIsLoading(true);
-    await convertToYoutube(playlistData);
-    setIsLoading(false);
+    const result = await convertToYoutube(playlistData, token, state);
+    if (result.converted) {
+      console.log(result.authUrl);
+      setIsLoading(false);
+    }
+    if (result.authUrl) {
+      window.open(result.authUrl, "oauth_popup", "width=500,height=600");
+    }
   };
   return (
     <Button variant="youtube" onClick={handleClick} disabled={isLoading}>

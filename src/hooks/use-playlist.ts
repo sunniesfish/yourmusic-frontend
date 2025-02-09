@@ -15,7 +15,7 @@ import { PlaylistQueryParams, PlaylistMutationParams } from "@/types/playlist";
 import { usePlaylistsStore } from "@/store/playlist-store";
 import { PlaylistJson, PlaylistsResponse } from "@/graphql/types";
 import { omit } from "lodash";
-
+import { useState } from "react";
 /**
  * Hook for handling playlist-related queries
  * @returns Object containing playlist query methods
@@ -216,11 +216,15 @@ const usePlaylistConverter = () => {
   const [convertToSpotifyMutate] = useConvertToSpotifyPlaylistMutation();
 
   const convertToYoutube = async (
-    data: PlaylistJson[]
+    data: PlaylistJson[],
+    authorizationCode: string | undefined = undefined,
+    state: string | undefined = undefined,
+    token: string | undefined = undefined
   ): Promise<ConversionResult> => {
     try {
       const { data: result } = await convertToYoutubeMutate({
-        variables: { listJSON: data },
+        variables: { listJSON: data, authorizationCode, state },
+        context: { headers: { Authorization: `Bearer ${token}` } },
       });
 
       if (
@@ -249,11 +253,15 @@ const usePlaylistConverter = () => {
   };
 
   const convertToSpotify = async (
-    data: PlaylistJson[]
+    data: PlaylistJson[],
+    authorizationCode: string | undefined = undefined,
+    state: string | undefined = undefined,
+    token: string | undefined = undefined
   ): Promise<ConversionResult> => {
     try {
       const { data: result } = await convertToSpotifyMutate({
-        variables: { listJSON: data },
+        variables: { listJSON: data, authorizationCode, state },
+        context: { headers: { Authorization: `Bearer ${token}` } },
       });
       if (
         result?.convertToSpotifyPlaylist.__typename === "AuthRequiredResponse"
