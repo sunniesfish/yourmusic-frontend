@@ -9,7 +9,8 @@ import { useOAuthMessage } from "@/lib/oauth";
 import { useApolloClient } from "@apollo/client/react/hooks/useApolloClient";
 import { ArrowRight, Check, Copy, Loader2 } from "lucide-react";
 import { useState } from "react";
-import { randomUUID } from "node:crypto";
+import { v4 as uuidv4 } from "uuid";
+
 export function GetListButton({
   isLoading,
   handleClick,
@@ -140,7 +141,7 @@ export function ConvertToYoutubePlaylistButton({
     },
   });
   const handleClick = async () => {
-    const state = randomUUID();
+    const state = uuidv4();
     setState(state);
     setIsLoading(true);
     const result = await convertToYoutube(playlistData, token, state);
