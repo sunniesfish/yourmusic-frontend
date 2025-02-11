@@ -41,7 +41,6 @@ export function ConvertToSpotifyPlaylistButton({
   const [isLoading, setIsLoading] = useState(false);
   const { convertToSpotify } = usePlaylist();
   const { toast } = useToast();
-
   useOAuthMessage({
     onSuccess: async (authCode, redirectUri) => {
       try {

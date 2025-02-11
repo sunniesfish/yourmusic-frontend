@@ -9,6 +9,8 @@ import {
 } from "@/app/playlists/_components/buttons";
 import { useToast } from "@/hooks/use-toast";
 import { Playlist } from "@/graphql/types";
+import { useAuthStore } from "@/store/auth-store";
+import { useSanitizedData } from "@/hooks/use-sanitizedata";
 
 const HEADERS = ["Title", "Artist", "Album"];
 const BOM = "\uFEFF";
@@ -22,14 +24,17 @@ interface PlaylistDetailProps {
 }
 
 export default function PlaylistDetail({ playlist }: PlaylistDetailProps) {
+  if (!playlist) return <div>No playlist found</div>;
   const { toast } = useToast();
-  console.log("playlist", playlist);
+  const { token } = useAuthStore();
+
+  const sanitizedPlaylistJson = useSanitizedData(playlist.listJson);
   const handleDownloadCSV = () => {
     try {
-      if (!playlist?.listJson) return;
+      if (!sanitizedPlaylistJson) return;
       const headerString = HEADERS.map((header) => `"${header}"`).join(",");
 
-      const rows = playlist.listJson.reduce((acc, song) => {
+      const rows = sanitizedPlaylistJson.reduce((acc, song) => {
         return (
           acc +
           "\n" +
@@ -65,8 +70,6 @@ export default function PlaylistDetail({ playlist }: PlaylistDetailProps) {
     }
   };
 
-  if (!playlist) return <div>No playlist found</div>;
-
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="space-y-6">
@@ -78,10 +81,12 @@ export default function PlaylistDetail({ playlist }: PlaylistDetailProps) {
 
         <div className="flex flex-wrap gap-4">
           <ConvertToYoutubePlaylistButton
-            playlistData={playlist.listJson || []}
+            playlistData={sanitizedPlaylistJson || []}
+            token={token}
           />
           <ConvertToSpotifyPlaylistButton
-            playlistData={playlist.listJson || []}
+            playlistData={sanitizedPlaylistJson || []}
+            token={token}
           />
           <Button
             variant="outline"
@@ -94,7 +99,7 @@ export default function PlaylistDetail({ playlist }: PlaylistDetailProps) {
           </Button>
         </div>
 
-        <SongTable songs={playlist.listJson || []} />
+        <SongTable songs={sanitizedPlaylistJson || []} />
       </div>
     </div>
   );
