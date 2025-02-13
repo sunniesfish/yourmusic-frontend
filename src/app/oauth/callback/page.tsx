@@ -4,6 +4,7 @@ import { useEffect } from "react";
 export default function OAuthCallbackPage() {
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
+    console.log("urlParams", urlParams);
     const code = urlParams.get("code");
     const state = urlParams.get("state");
 

@@ -233,7 +233,6 @@ const usePlaylistConverter = () => {
     state,
     token,
   }: ConvertToYoutubeParams): Promise<ConversionResult> => {
-    console.log("convertToYoutube", data, authorizationCode, state, token);
     try {
       const { data: result } = await convertToYoutubeMutate({
         variables: { listJSON: data, authorizationCode, state },
