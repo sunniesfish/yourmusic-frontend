@@ -1,4 +1,4 @@
-import * as Operations from "./operations";
+import * as Operation from "./operations";
 
 import { gql } from "@apollo/client";
 import * as Apollo from "@apollo/client";
@@ -10,8 +10,8 @@ export const SignUpDocument = gql`
   }
 `;
 export type SignUpMutationFn = Apollo.MutationFunction<
-  Operations.SignUpMutation,
-  Operations.SignUpMutationVariables
+  Operation.SignUpMutation,
+  Operation.SignUpMutationVariables
 >;
 
 /**
@@ -33,22 +33,22 @@ export type SignUpMutationFn = Apollo.MutationFunction<
  */
 export function useSignUpMutation(
   baseOptions?: Apollo.MutationHookOptions<
-    Operations.SignUpMutation,
-    Operations.SignUpMutationVariables
+    Operation.SignUpMutation,
+    Operation.SignUpMutationVariables
   >
 ) {
   const options = { ...defaultOptions, ...baseOptions };
   return Apollo.useMutation<
-    Operations.SignUpMutation,
-    Operations.SignUpMutationVariables
+    Operation.SignUpMutation,
+    Operation.SignUpMutationVariables
   >(SignUpDocument, options);
 }
 export type SignUpMutationHookResult = ReturnType<typeof useSignUpMutation>;
 export type SignUpMutationResult =
-  Apollo.MutationResult<Operations.SignUpMutation>;
+  Apollo.MutationResult<Operation.SignUpMutation>;
 export type SignUpMutationOptions = Apollo.BaseMutationOptions<
-  Operations.SignUpMutation,
-  Operations.SignUpMutationVariables
+  Operation.SignUpMutation,
+  Operation.SignUpMutationVariables
 >;
 export const SignInDocument = gql`
   mutation SignIn($signInInput: SignInInput!) {
@@ -63,8 +63,8 @@ export const SignInDocument = gql`
   }
 `;
 export type SignInMutationFn = Apollo.MutationFunction<
-  Operations.SignInMutation,
-  Operations.SignInMutationVariables
+  Operation.SignInMutation,
+  Operation.SignInMutationVariables
 >;
 
 /**
@@ -86,22 +86,22 @@ export type SignInMutationFn = Apollo.MutationFunction<
  */
 export function useSignInMutation(
   baseOptions?: Apollo.MutationHookOptions<
-    Operations.SignInMutation,
-    Operations.SignInMutationVariables
+    Operation.SignInMutation,
+    Operation.SignInMutationVariables
   >
 ) {
   const options = { ...defaultOptions, ...baseOptions };
   return Apollo.useMutation<
-    Operations.SignInMutation,
-    Operations.SignInMutationVariables
+    Operation.SignInMutation,
+    Operation.SignInMutationVariables
   >(SignInDocument, options);
 }
 export type SignInMutationHookResult = ReturnType<typeof useSignInMutation>;
 export type SignInMutationResult =
-  Apollo.MutationResult<Operations.SignInMutation>;
+  Apollo.MutationResult<Operation.SignInMutation>;
 export type SignInMutationOptions = Apollo.BaseMutationOptions<
-  Operations.SignInMutation,
-  Operations.SignInMutationVariables
+  Operation.SignInMutation,
+  Operation.SignInMutationVariables
 >;
 export const SignOutDocument = gql`
   mutation SignOut {
@@ -109,8 +109,8 @@ export const SignOutDocument = gql`
   }
 `;
 export type SignOutMutationFn = Apollo.MutationFunction<
-  Operations.SignOutMutation,
-  Operations.SignOutMutationVariables
+  Operation.SignOutMutation,
+  Operation.SignOutMutationVariables
 >;
 
 /**
@@ -131,22 +131,22 @@ export type SignOutMutationFn = Apollo.MutationFunction<
  */
 export function useSignOutMutation(
   baseOptions?: Apollo.MutationHookOptions<
-    Operations.SignOutMutation,
-    Operations.SignOutMutationVariables
+    Operation.SignOutMutation,
+    Operation.SignOutMutationVariables
   >
 ) {
   const options = { ...defaultOptions, ...baseOptions };
   return Apollo.useMutation<
-    Operations.SignOutMutation,
-    Operations.SignOutMutationVariables
+    Operation.SignOutMutation,
+    Operation.SignOutMutationVariables
   >(SignOutDocument, options);
 }
 export type SignOutMutationHookResult = ReturnType<typeof useSignOutMutation>;
 export type SignOutMutationResult =
-  Apollo.MutationResult<Operations.SignOutMutation>;
+  Apollo.MutationResult<Operation.SignOutMutation>;
 export type SignOutMutationOptions = Apollo.BaseMutationOptions<
-  Operations.SignOutMutation,
-  Operations.SignOutMutationVariables
+  Operation.SignOutMutation,
+  Operation.SignOutMutationVariables
 >;
 export const ChangePasswordDocument = gql`
   mutation ChangePassword($input: ChangePasswordInput!) {
@@ -158,8 +158,8 @@ export const ChangePasswordDocument = gql`
   }
 `;
 export type ChangePasswordMutationFn = Apollo.MutationFunction<
-  Operations.ChangePasswordMutation,
-  Operations.ChangePasswordMutationVariables
+  Operation.ChangePasswordMutation,
+  Operation.ChangePasswordMutationVariables
 >;
 
 /**
@@ -181,24 +181,24 @@ export type ChangePasswordMutationFn = Apollo.MutationFunction<
  */
 export function useChangePasswordMutation(
   baseOptions?: Apollo.MutationHookOptions<
-    Operations.ChangePasswordMutation,
-    Operations.ChangePasswordMutationVariables
+    Operation.ChangePasswordMutation,
+    Operation.ChangePasswordMutationVariables
   >
 ) {
   const options = { ...defaultOptions, ...baseOptions };
   return Apollo.useMutation<
-    Operations.ChangePasswordMutation,
-    Operations.ChangePasswordMutationVariables
+    Operation.ChangePasswordMutation,
+    Operation.ChangePasswordMutationVariables
   >(ChangePasswordDocument, options);
 }
 export type ChangePasswordMutationHookResult = ReturnType<
   typeof useChangePasswordMutation
 >;
 export type ChangePasswordMutationResult =
-  Apollo.MutationResult<Operations.ChangePasswordMutation>;
+  Apollo.MutationResult<Operation.ChangePasswordMutation>;
 export type ChangePasswordMutationOptions = Apollo.BaseMutationOptions<
-  Operations.ChangePasswordMutation,
-  Operations.ChangePasswordMutationVariables
+  Operation.ChangePasswordMutation,
+  Operation.ChangePasswordMutationVariables
 >;
 export const SavePlaylistDocument = gql`
   mutation SavePlaylist($savePlaylistInput: SavePlaylistInput!) {
@@ -206,8 +206,8 @@ export const SavePlaylistDocument = gql`
   }
 `;
 export type SavePlaylistMutationFn = Apollo.MutationFunction<
-  Operations.SavePlaylistMutation,
-  Operations.SavePlaylistMutationVariables
+  Operation.SavePlaylistMutation,
+  Operation.SavePlaylistMutationVariables
 >;
 
 /**
@@ -229,24 +229,24 @@ export type SavePlaylistMutationFn = Apollo.MutationFunction<
  */
 export function useSavePlaylistMutation(
   baseOptions?: Apollo.MutationHookOptions<
-    Operations.SavePlaylistMutation,
-    Operations.SavePlaylistMutationVariables
+    Operation.SavePlaylistMutation,
+    Operation.SavePlaylistMutationVariables
   >
 ) {
   const options = { ...defaultOptions, ...baseOptions };
   return Apollo.useMutation<
-    Operations.SavePlaylistMutation,
-    Operations.SavePlaylistMutationVariables
+    Operation.SavePlaylistMutation,
+    Operation.SavePlaylistMutationVariables
   >(SavePlaylistDocument, options);
 }
 export type SavePlaylistMutationHookResult = ReturnType<
   typeof useSavePlaylistMutation
 >;
 export type SavePlaylistMutationResult =
-  Apollo.MutationResult<Operations.SavePlaylistMutation>;
+  Apollo.MutationResult<Operation.SavePlaylistMutation>;
 export type SavePlaylistMutationOptions = Apollo.BaseMutationOptions<
-  Operations.SavePlaylistMutation,
-  Operations.SavePlaylistMutationVariables
+  Operation.SavePlaylistMutation,
+  Operation.SavePlaylistMutationVariables
 >;
 export const RemovePlaylistDocument = gql`
   mutation RemovePlaylist($id: Int!) {
@@ -254,8 +254,8 @@ export const RemovePlaylistDocument = gql`
   }
 `;
 export type RemovePlaylistMutationFn = Apollo.MutationFunction<
-  Operations.RemovePlaylistMutation,
-  Operations.RemovePlaylistMutationVariables
+  Operation.RemovePlaylistMutation,
+  Operation.RemovePlaylistMutationVariables
 >;
 
 /**
@@ -277,24 +277,24 @@ export type RemovePlaylistMutationFn = Apollo.MutationFunction<
  */
 export function useRemovePlaylistMutation(
   baseOptions?: Apollo.MutationHookOptions<
-    Operations.RemovePlaylistMutation,
-    Operations.RemovePlaylistMutationVariables
+    Operation.RemovePlaylistMutation,
+    Operation.RemovePlaylistMutationVariables
   >
 ) {
   const options = { ...defaultOptions, ...baseOptions };
   return Apollo.useMutation<
-    Operations.RemovePlaylistMutation,
-    Operations.RemovePlaylistMutationVariables
+    Operation.RemovePlaylistMutation,
+    Operation.RemovePlaylistMutationVariables
   >(RemovePlaylistDocument, options);
 }
 export type RemovePlaylistMutationHookResult = ReturnType<
   typeof useRemovePlaylistMutation
 >;
 export type RemovePlaylistMutationResult =
-  Apollo.MutationResult<Operations.RemovePlaylistMutation>;
+  Apollo.MutationResult<Operation.RemovePlaylistMutation>;
 export type RemovePlaylistMutationOptions = Apollo.BaseMutationOptions<
-  Operations.RemovePlaylistMutation,
-  Operations.RemovePlaylistMutationVariables
+  Operation.RemovePlaylistMutation,
+  Operation.RemovePlaylistMutationVariables
 >;
 export const ReadPlaylistDocument = gql`
   mutation ReadPlaylist($link: String!) {
@@ -307,8 +307,8 @@ export const ReadPlaylistDocument = gql`
   }
 `;
 export type ReadPlaylistMutationFn = Apollo.MutationFunction<
-  Operations.ReadPlaylistMutation,
-  Operations.ReadPlaylistMutationVariables
+  Operation.ReadPlaylistMutation,
+  Operation.ReadPlaylistMutationVariables
 >;
 
 /**
@@ -330,24 +330,24 @@ export type ReadPlaylistMutationFn = Apollo.MutationFunction<
  */
 export function useReadPlaylistMutation(
   baseOptions?: Apollo.MutationHookOptions<
-    Operations.ReadPlaylistMutation,
-    Operations.ReadPlaylistMutationVariables
+    Operation.ReadPlaylistMutation,
+    Operation.ReadPlaylistMutationVariables
   >
 ) {
   const options = { ...defaultOptions, ...baseOptions };
   return Apollo.useMutation<
-    Operations.ReadPlaylistMutation,
-    Operations.ReadPlaylistMutationVariables
+    Operation.ReadPlaylistMutation,
+    Operation.ReadPlaylistMutationVariables
   >(ReadPlaylistDocument, options);
 }
 export type ReadPlaylistMutationHookResult = ReturnType<
   typeof useReadPlaylistMutation
 >;
 export type ReadPlaylistMutationResult =
-  Apollo.MutationResult<Operations.ReadPlaylistMutation>;
+  Apollo.MutationResult<Operation.ReadPlaylistMutation>;
 export type ReadPlaylistMutationOptions = Apollo.BaseMutationOptions<
-  Operations.ReadPlaylistMutation,
-  Operations.ReadPlaylistMutationVariables
+  Operation.ReadPlaylistMutation,
+  Operation.ReadPlaylistMutationVariables
 >;
 export const ConvertToYoutubePlaylistDocument = gql`
   mutation ConvertToYoutubePlaylist(
@@ -360,6 +360,7 @@ export const ConvertToYoutubePlaylistDocument = gql`
       authorizationCode: $authorizationCode
       state: $state
     ) {
+      __typename
       ... on ConvertedPlaylist {
         success
         message
@@ -376,8 +377,8 @@ export const ConvertToYoutubePlaylistDocument = gql`
   }
 `;
 export type ConvertToYoutubePlaylistMutationFn = Apollo.MutationFunction<
-  Operations.ConvertToYoutubePlaylistMutation,
-  Operations.ConvertToYoutubePlaylistMutationVariables
+  Operation.ConvertToYoutubePlaylistMutation,
+  Operation.ConvertToYoutubePlaylistMutationVariables
 >;
 
 /**
@@ -401,25 +402,25 @@ export type ConvertToYoutubePlaylistMutationFn = Apollo.MutationFunction<
  */
 export function useConvertToYoutubePlaylistMutation(
   baseOptions?: Apollo.MutationHookOptions<
-    Operations.ConvertToYoutubePlaylistMutation,
-    Operations.ConvertToYoutubePlaylistMutationVariables
+    Operation.ConvertToYoutubePlaylistMutation,
+    Operation.ConvertToYoutubePlaylistMutationVariables
   >
 ) {
   const options = { ...defaultOptions, ...baseOptions };
   return Apollo.useMutation<
-    Operations.ConvertToYoutubePlaylistMutation,
-    Operations.ConvertToYoutubePlaylistMutationVariables
+    Operation.ConvertToYoutubePlaylistMutation,
+    Operation.ConvertToYoutubePlaylistMutationVariables
   >(ConvertToYoutubePlaylistDocument, options);
 }
 export type ConvertToYoutubePlaylistMutationHookResult = ReturnType<
   typeof useConvertToYoutubePlaylistMutation
 >;
 export type ConvertToYoutubePlaylistMutationResult =
-  Apollo.MutationResult<Operations.ConvertToYoutubePlaylistMutation>;
+  Apollo.MutationResult<Operation.ConvertToYoutubePlaylistMutation>;
 export type ConvertToYoutubePlaylistMutationOptions =
   Apollo.BaseMutationOptions<
-    Operations.ConvertToYoutubePlaylistMutation,
-    Operations.ConvertToYoutubePlaylistMutationVariables
+    Operation.ConvertToYoutubePlaylistMutation,
+    Operation.ConvertToYoutubePlaylistMutationVariables
   >;
 export const ConvertToSpotifyPlaylistDocument = gql`
   mutation ConvertToSpotifyPlaylist(
@@ -432,6 +433,7 @@ export const ConvertToSpotifyPlaylistDocument = gql`
       authorizationCode: $authorizationCode
       state: $state
     ) {
+      __typename
       ... on ConvertedPlaylist {
         success
         message
@@ -448,8 +450,8 @@ export const ConvertToSpotifyPlaylistDocument = gql`
   }
 `;
 export type ConvertToSpotifyPlaylistMutationFn = Apollo.MutationFunction<
-  Operations.ConvertToSpotifyPlaylistMutation,
-  Operations.ConvertToSpotifyPlaylistMutationVariables
+  Operation.ConvertToSpotifyPlaylistMutation,
+  Operation.ConvertToSpotifyPlaylistMutationVariables
 >;
 
 /**
@@ -473,25 +475,25 @@ export type ConvertToSpotifyPlaylistMutationFn = Apollo.MutationFunction<
  */
 export function useConvertToSpotifyPlaylistMutation(
   baseOptions?: Apollo.MutationHookOptions<
-    Operations.ConvertToSpotifyPlaylistMutation,
-    Operations.ConvertToSpotifyPlaylistMutationVariables
+    Operation.ConvertToSpotifyPlaylistMutation,
+    Operation.ConvertToSpotifyPlaylistMutationVariables
   >
 ) {
   const options = { ...defaultOptions, ...baseOptions };
   return Apollo.useMutation<
-    Operations.ConvertToSpotifyPlaylistMutation,
-    Operations.ConvertToSpotifyPlaylistMutationVariables
+    Operation.ConvertToSpotifyPlaylistMutation,
+    Operation.ConvertToSpotifyPlaylistMutationVariables
   >(ConvertToSpotifyPlaylistDocument, options);
 }
 export type ConvertToSpotifyPlaylistMutationHookResult = ReturnType<
   typeof useConvertToSpotifyPlaylistMutation
 >;
 export type ConvertToSpotifyPlaylistMutationResult =
-  Apollo.MutationResult<Operations.ConvertToSpotifyPlaylistMutation>;
+  Apollo.MutationResult<Operation.ConvertToSpotifyPlaylistMutation>;
 export type ConvertToSpotifyPlaylistMutationOptions =
   Apollo.BaseMutationOptions<
-    Operations.ConvertToSpotifyPlaylistMutation,
-    Operations.ConvertToSpotifyPlaylistMutationVariables
+    Operation.ConvertToSpotifyPlaylistMutation,
+    Operation.ConvertToSpotifyPlaylistMutationVariables
   >;
 export const UpdateUserDocument = gql`
   mutation UpdateUser($updateUserInput: UpdateUserInput!) {
@@ -499,8 +501,8 @@ export const UpdateUserDocument = gql`
   }
 `;
 export type UpdateUserMutationFn = Apollo.MutationFunction<
-  Operations.UpdateUserMutation,
-  Operations.UpdateUserMutationVariables
+  Operation.UpdateUserMutation,
+  Operation.UpdateUserMutationVariables
 >;
 
 /**
@@ -522,24 +524,24 @@ export type UpdateUserMutationFn = Apollo.MutationFunction<
  */
 export function useUpdateUserMutation(
   baseOptions?: Apollo.MutationHookOptions<
-    Operations.UpdateUserMutation,
-    Operations.UpdateUserMutationVariables
+    Operation.UpdateUserMutation,
+    Operation.UpdateUserMutationVariables
   >
 ) {
   const options = { ...defaultOptions, ...baseOptions };
   return Apollo.useMutation<
-    Operations.UpdateUserMutation,
-    Operations.UpdateUserMutationVariables
+    Operation.UpdateUserMutation,
+    Operation.UpdateUserMutationVariables
   >(UpdateUserDocument, options);
 }
 export type UpdateUserMutationHookResult = ReturnType<
   typeof useUpdateUserMutation
 >;
 export type UpdateUserMutationResult =
-  Apollo.MutationResult<Operations.UpdateUserMutation>;
+  Apollo.MutationResult<Operation.UpdateUserMutation>;
 export type UpdateUserMutationOptions = Apollo.BaseMutationOptions<
-  Operations.UpdateUserMutation,
-  Operations.UpdateUserMutationVariables
+  Operation.UpdateUserMutation,
+  Operation.UpdateUserMutationVariables
 >;
 export const SaveStatisticDocument = gql`
   mutation SaveStatistic($saveStatisticInput: MutateStatisticInput!) {
@@ -547,8 +549,8 @@ export const SaveStatisticDocument = gql`
   }
 `;
 export type SaveStatisticMutationFn = Apollo.MutationFunction<
-  Operations.SaveStatisticMutation,
-  Operations.SaveStatisticMutationVariables
+  Operation.SaveStatisticMutation,
+  Operation.SaveStatisticMutationVariables
 >;
 
 /**
@@ -570,24 +572,24 @@ export type SaveStatisticMutationFn = Apollo.MutationFunction<
  */
 export function useSaveStatisticMutation(
   baseOptions?: Apollo.MutationHookOptions<
-    Operations.SaveStatisticMutation,
-    Operations.SaveStatisticMutationVariables
+    Operation.SaveStatisticMutation,
+    Operation.SaveStatisticMutationVariables
   >
 ) {
   const options = { ...defaultOptions, ...baseOptions };
   return Apollo.useMutation<
-    Operations.SaveStatisticMutation,
-    Operations.SaveStatisticMutationVariables
+    Operation.SaveStatisticMutation,
+    Operation.SaveStatisticMutationVariables
   >(SaveStatisticDocument, options);
 }
 export type SaveStatisticMutationHookResult = ReturnType<
   typeof useSaveStatisticMutation
 >;
 export type SaveStatisticMutationResult =
-  Apollo.MutationResult<Operations.SaveStatisticMutation>;
+  Apollo.MutationResult<Operation.SaveStatisticMutation>;
 export type SaveStatisticMutationOptions = Apollo.BaseMutationOptions<
-  Operations.SaveStatisticMutation,
-  Operations.SaveStatisticMutationVariables
+  Operation.SaveStatisticMutation,
+  Operation.SaveStatisticMutationVariables
 >;
 export const UpdateStatisticDocument = gql`
   mutation UpdateStatistic($updateStatisticInput: MutateStatisticInput!) {
@@ -613,8 +615,8 @@ export const UpdateStatisticDocument = gql`
   }
 `;
 export type UpdateStatisticMutationFn = Apollo.MutationFunction<
-  Operations.UpdateStatisticMutation,
-  Operations.UpdateStatisticMutationVariables
+  Operation.UpdateStatisticMutation,
+  Operation.UpdateStatisticMutationVariables
 >;
 
 /**
@@ -636,24 +638,24 @@ export type UpdateStatisticMutationFn = Apollo.MutationFunction<
  */
 export function useUpdateStatisticMutation(
   baseOptions?: Apollo.MutationHookOptions<
-    Operations.UpdateStatisticMutation,
-    Operations.UpdateStatisticMutationVariables
+    Operation.UpdateStatisticMutation,
+    Operation.UpdateStatisticMutationVariables
   >
 ) {
   const options = { ...defaultOptions, ...baseOptions };
   return Apollo.useMutation<
-    Operations.UpdateStatisticMutation,
-    Operations.UpdateStatisticMutationVariables
+    Operation.UpdateStatisticMutation,
+    Operation.UpdateStatisticMutationVariables
   >(UpdateStatisticDocument, options);
 }
 export type UpdateStatisticMutationHookResult = ReturnType<
   typeof useUpdateStatisticMutation
 >;
 export type UpdateStatisticMutationResult =
-  Apollo.MutationResult<Operations.UpdateStatisticMutation>;
+  Apollo.MutationResult<Operation.UpdateStatisticMutation>;
 export type UpdateStatisticMutationOptions = Apollo.BaseMutationOptions<
-  Operations.UpdateStatisticMutation,
-  Operations.UpdateStatisticMutationVariables
+  Operation.UpdateStatisticMutation,
+  Operation.UpdateStatisticMutationVariables
 >;
 export const RemoveStatisticDocument = gql`
   mutation RemoveStatistic($userId: ID!) {
@@ -679,8 +681,8 @@ export const RemoveStatisticDocument = gql`
   }
 `;
 export type RemoveStatisticMutationFn = Apollo.MutationFunction<
-  Operations.RemoveStatisticMutation,
-  Operations.RemoveStatisticMutationVariables
+  Operation.RemoveStatisticMutation,
+  Operation.RemoveStatisticMutationVariables
 >;
 
 /**
@@ -702,24 +704,24 @@ export type RemoveStatisticMutationFn = Apollo.MutationFunction<
  */
 export function useRemoveStatisticMutation(
   baseOptions?: Apollo.MutationHookOptions<
-    Operations.RemoveStatisticMutation,
-    Operations.RemoveStatisticMutationVariables
+    Operation.RemoveStatisticMutation,
+    Operation.RemoveStatisticMutationVariables
   >
 ) {
   const options = { ...defaultOptions, ...baseOptions };
   return Apollo.useMutation<
-    Operations.RemoveStatisticMutation,
-    Operations.RemoveStatisticMutationVariables
+    Operation.RemoveStatisticMutation,
+    Operation.RemoveStatisticMutationVariables
   >(RemoveStatisticDocument, options);
 }
 export type RemoveStatisticMutationHookResult = ReturnType<
   typeof useRemoveStatisticMutation
 >;
 export type RemoveStatisticMutationResult =
-  Apollo.MutationResult<Operations.RemoveStatisticMutation>;
+  Apollo.MutationResult<Operation.RemoveStatisticMutation>;
 export type RemoveStatisticMutationOptions = Apollo.BaseMutationOptions<
-  Operations.RemoveStatisticMutation,
-  Operations.RemoveStatisticMutationVariables
+  Operation.RemoveStatisticMutation,
+  Operation.RemoveStatisticMutationVariables
 >;
 export const CheckIdDocument = gql`
   mutation CheckId($id: String!) {
@@ -727,8 +729,8 @@ export const CheckIdDocument = gql`
   }
 `;
 export type CheckIdMutationFn = Apollo.MutationFunction<
-  Operations.CheckIdMutation,
-  Operations.CheckIdMutationVariables
+  Operation.CheckIdMutation,
+  Operation.CheckIdMutationVariables
 >;
 
 /**
@@ -750,22 +752,22 @@ export type CheckIdMutationFn = Apollo.MutationFunction<
  */
 export function useCheckIdMutation(
   baseOptions?: Apollo.MutationHookOptions<
-    Operations.CheckIdMutation,
-    Operations.CheckIdMutationVariables
+    Operation.CheckIdMutation,
+    Operation.CheckIdMutationVariables
   >
 ) {
   const options = { ...defaultOptions, ...baseOptions };
   return Apollo.useMutation<
-    Operations.CheckIdMutation,
-    Operations.CheckIdMutationVariables
+    Operation.CheckIdMutation,
+    Operation.CheckIdMutationVariables
   >(CheckIdDocument, options);
 }
 export type CheckIdMutationHookResult = ReturnType<typeof useCheckIdMutation>;
 export type CheckIdMutationResult =
-  Apollo.MutationResult<Operations.CheckIdMutation>;
+  Apollo.MutationResult<Operation.CheckIdMutation>;
 export type CheckIdMutationOptions = Apollo.BaseMutationOptions<
-  Operations.CheckIdMutation,
-  Operations.CheckIdMutationVariables
+  Operation.CheckIdMutation,
+  Operation.CheckIdMutationVariables
 >;
 export const CheckPasswordDocument = gql`
   mutation CheckPassword($password: String!) {
@@ -773,8 +775,8 @@ export const CheckPasswordDocument = gql`
   }
 `;
 export type CheckPasswordMutationFn = Apollo.MutationFunction<
-  Operations.CheckPasswordMutation,
-  Operations.CheckPasswordMutationVariables
+  Operation.CheckPasswordMutation,
+  Operation.CheckPasswordMutationVariables
 >;
 
 /**
@@ -796,24 +798,24 @@ export type CheckPasswordMutationFn = Apollo.MutationFunction<
  */
 export function useCheckPasswordMutation(
   baseOptions?: Apollo.MutationHookOptions<
-    Operations.CheckPasswordMutation,
-    Operations.CheckPasswordMutationVariables
+    Operation.CheckPasswordMutation,
+    Operation.CheckPasswordMutationVariables
   >
 ) {
   const options = { ...defaultOptions, ...baseOptions };
   return Apollo.useMutation<
-    Operations.CheckPasswordMutation,
-    Operations.CheckPasswordMutationVariables
+    Operation.CheckPasswordMutation,
+    Operation.CheckPasswordMutationVariables
   >(CheckPasswordDocument, options);
 }
 export type CheckPasswordMutationHookResult = ReturnType<
   typeof useCheckPasswordMutation
 >;
 export type CheckPasswordMutationResult =
-  Apollo.MutationResult<Operations.CheckPasswordMutation>;
+  Apollo.MutationResult<Operation.CheckPasswordMutation>;
 export type CheckPasswordMutationOptions = Apollo.BaseMutationOptions<
-  Operations.CheckPasswordMutation,
-  Operations.CheckPasswordMutationVariables
+  Operation.CheckPasswordMutation,
+  Operation.CheckPasswordMutationVariables
 >;
 export const GetUserDocument = gql`
   query GetUser {
@@ -842,34 +844,34 @@ export const GetUserDocument = gql`
  */
 export function useGetUserQuery(
   baseOptions?: Apollo.QueryHookOptions<
-    Operations.GetUserQuery,
-    Operations.GetUserQueryVariables
+    Operation.GetUserQuery,
+    Operation.GetUserQueryVariables
   >
 ) {
   const options = { ...defaultOptions, ...baseOptions };
   return Apollo.useQuery<
-    Operations.GetUserQuery,
-    Operations.GetUserQueryVariables
+    Operation.GetUserQuery,
+    Operation.GetUserQueryVariables
   >(GetUserDocument, options);
 }
 export function useGetUserLazyQuery(
   baseOptions?: Apollo.LazyQueryHookOptions<
-    Operations.GetUserQuery,
-    Operations.GetUserQueryVariables
+    Operation.GetUserQuery,
+    Operation.GetUserQueryVariables
   >
 ) {
   const options = { ...defaultOptions, ...baseOptions };
   return Apollo.useLazyQuery<
-    Operations.GetUserQuery,
-    Operations.GetUserQueryVariables
+    Operation.GetUserQuery,
+    Operation.GetUserQueryVariables
   >(GetUserDocument, options);
 }
 export function useGetUserSuspenseQuery(
   baseOptions?:
     | Apollo.SkipToken
     | Apollo.SuspenseQueryHookOptions<
-        Operations.GetUserQuery,
-        Operations.GetUserQueryVariables
+        Operation.GetUserQuery,
+        Operation.GetUserQueryVariables
       >
 ) {
   const options =
@@ -877,8 +879,8 @@ export function useGetUserSuspenseQuery(
       ? baseOptions
       : { ...defaultOptions, ...baseOptions };
   return Apollo.useSuspenseQuery<
-    Operations.GetUserQuery,
-    Operations.GetUserQueryVariables
+    Operation.GetUserQuery,
+    Operation.GetUserQueryVariables
   >(GetUserDocument, options);
 }
 export type GetUserQueryHookResult = ReturnType<typeof useGetUserQuery>;
@@ -887,8 +889,8 @@ export type GetUserSuspenseQueryHookResult = ReturnType<
   typeof useGetUserSuspenseQuery
 >;
 export type GetUserQueryResult = Apollo.QueryResult<
-  Operations.GetUserQuery,
-  Operations.GetUserQueryVariables
+  Operation.GetUserQuery,
+  Operation.GetUserQueryVariables
 >;
 export const GetPlaylistDocument = gql`
   query GetPlaylist($id: Int!) {
@@ -925,38 +927,38 @@ export const GetPlaylistDocument = gql`
  */
 export function useGetPlaylistQuery(
   baseOptions: Apollo.QueryHookOptions<
-    Operations.GetPlaylistQuery,
-    Operations.GetPlaylistQueryVariables
+    Operation.GetPlaylistQuery,
+    Operation.GetPlaylistQueryVariables
   > &
     (
-      | { variables: Operations.GetPlaylistQueryVariables; skip?: boolean }
+      | { variables: Operation.GetPlaylistQueryVariables; skip?: boolean }
       | { skip: boolean }
     )
 ) {
   const options = { ...defaultOptions, ...baseOptions };
   return Apollo.useQuery<
-    Operations.GetPlaylistQuery,
-    Operations.GetPlaylistQueryVariables
+    Operation.GetPlaylistQuery,
+    Operation.GetPlaylistQueryVariables
   >(GetPlaylistDocument, options);
 }
 export function useGetPlaylistLazyQuery(
   baseOptions?: Apollo.LazyQueryHookOptions<
-    Operations.GetPlaylistQuery,
-    Operations.GetPlaylistQueryVariables
+    Operation.GetPlaylistQuery,
+    Operation.GetPlaylistQueryVariables
   >
 ) {
   const options = { ...defaultOptions, ...baseOptions };
   return Apollo.useLazyQuery<
-    Operations.GetPlaylistQuery,
-    Operations.GetPlaylistQueryVariables
+    Operation.GetPlaylistQuery,
+    Operation.GetPlaylistQueryVariables
   >(GetPlaylistDocument, options);
 }
 export function useGetPlaylistSuspenseQuery(
   baseOptions?:
     | Apollo.SkipToken
     | Apollo.SuspenseQueryHookOptions<
-        Operations.GetPlaylistQuery,
-        Operations.GetPlaylistQueryVariables
+        Operation.GetPlaylistQuery,
+        Operation.GetPlaylistQueryVariables
       >
 ) {
   const options =
@@ -964,8 +966,8 @@ export function useGetPlaylistSuspenseQuery(
       ? baseOptions
       : { ...defaultOptions, ...baseOptions };
   return Apollo.useSuspenseQuery<
-    Operations.GetPlaylistQuery,
-    Operations.GetPlaylistQueryVariables
+    Operation.GetPlaylistQuery,
+    Operation.GetPlaylistQueryVariables
   >(GetPlaylistDocument, options);
 }
 export type GetPlaylistQueryHookResult = ReturnType<typeof useGetPlaylistQuery>;
@@ -976,8 +978,8 @@ export type GetPlaylistSuspenseQueryHookResult = ReturnType<
   typeof useGetPlaylistSuspenseQuery
 >;
 export type GetPlaylistQueryResult = Apollo.QueryResult<
-  Operations.GetPlaylistQuery,
-  Operations.GetPlaylistQueryVariables
+  Operation.GetPlaylistQuery,
+  Operation.GetPlaylistQueryVariables
 >;
 export const GetPlaylistsPageDocument = gql`
   query GetPlaylistsPage(
@@ -1025,38 +1027,38 @@ export const GetPlaylistsPageDocument = gql`
  */
 export function useGetPlaylistsPageQuery(
   baseOptions: Apollo.QueryHookOptions<
-    Operations.GetPlaylistsPageQuery,
-    Operations.GetPlaylistsPageQueryVariables
+    Operation.GetPlaylistsPageQuery,
+    Operation.GetPlaylistsPageQueryVariables
   > &
     (
-      | { variables: Operations.GetPlaylistsPageQueryVariables; skip?: boolean }
+      | { variables: Operation.GetPlaylistsPageQueryVariables; skip?: boolean }
       | { skip: boolean }
     )
 ) {
   const options = { ...defaultOptions, ...baseOptions };
   return Apollo.useQuery<
-    Operations.GetPlaylistsPageQuery,
-    Operations.GetPlaylistsPageQueryVariables
+    Operation.GetPlaylistsPageQuery,
+    Operation.GetPlaylistsPageQueryVariables
   >(GetPlaylistsPageDocument, options);
 }
 export function useGetPlaylistsPageLazyQuery(
   baseOptions?: Apollo.LazyQueryHookOptions<
-    Operations.GetPlaylistsPageQuery,
-    Operations.GetPlaylistsPageQueryVariables
+    Operation.GetPlaylistsPageQuery,
+    Operation.GetPlaylistsPageQueryVariables
   >
 ) {
   const options = { ...defaultOptions, ...baseOptions };
   return Apollo.useLazyQuery<
-    Operations.GetPlaylistsPageQuery,
-    Operations.GetPlaylistsPageQueryVariables
+    Operation.GetPlaylistsPageQuery,
+    Operation.GetPlaylistsPageQueryVariables
   >(GetPlaylistsPageDocument, options);
 }
 export function useGetPlaylistsPageSuspenseQuery(
   baseOptions?:
     | Apollo.SkipToken
     | Apollo.SuspenseQueryHookOptions<
-        Operations.GetPlaylistsPageQuery,
-        Operations.GetPlaylistsPageQueryVariables
+        Operation.GetPlaylistsPageQuery,
+        Operation.GetPlaylistsPageQueryVariables
       >
 ) {
   const options =
@@ -1064,8 +1066,8 @@ export function useGetPlaylistsPageSuspenseQuery(
       ? baseOptions
       : { ...defaultOptions, ...baseOptions };
   return Apollo.useSuspenseQuery<
-    Operations.GetPlaylistsPageQuery,
-    Operations.GetPlaylistsPageQueryVariables
+    Operation.GetPlaylistsPageQuery,
+    Operation.GetPlaylistsPageQueryVariables
   >(GetPlaylistsPageDocument, options);
 }
 export type GetPlaylistsPageQueryHookResult = ReturnType<
@@ -1078,8 +1080,8 @@ export type GetPlaylistsPageSuspenseQueryHookResult = ReturnType<
   typeof useGetPlaylistsPageSuspenseQuery
 >;
 export type GetPlaylistsPageQueryResult = Apollo.QueryResult<
-  Operations.GetPlaylistsPageQuery,
-  Operations.GetPlaylistsPageQueryVariables
+  Operation.GetPlaylistsPageQuery,
+  Operation.GetPlaylistsPageQueryVariables
 >;
 export const GetStatisticDocument = gql`
   query GetStatistic($userId: ID!) {
@@ -1123,38 +1125,38 @@ export const GetStatisticDocument = gql`
  */
 export function useGetStatisticQuery(
   baseOptions: Apollo.QueryHookOptions<
-    Operations.GetStatisticQuery,
-    Operations.GetStatisticQueryVariables
+    Operation.GetStatisticQuery,
+    Operation.GetStatisticQueryVariables
   > &
     (
-      | { variables: Operations.GetStatisticQueryVariables; skip?: boolean }
+      | { variables: Operation.GetStatisticQueryVariables; skip?: boolean }
       | { skip: boolean }
     )
 ) {
   const options = { ...defaultOptions, ...baseOptions };
   return Apollo.useQuery<
-    Operations.GetStatisticQuery,
-    Operations.GetStatisticQueryVariables
+    Operation.GetStatisticQuery,
+    Operation.GetStatisticQueryVariables
   >(GetStatisticDocument, options);
 }
 export function useGetStatisticLazyQuery(
   baseOptions?: Apollo.LazyQueryHookOptions<
-    Operations.GetStatisticQuery,
-    Operations.GetStatisticQueryVariables
+    Operation.GetStatisticQuery,
+    Operation.GetStatisticQueryVariables
   >
 ) {
   const options = { ...defaultOptions, ...baseOptions };
   return Apollo.useLazyQuery<
-    Operations.GetStatisticQuery,
-    Operations.GetStatisticQueryVariables
+    Operation.GetStatisticQuery,
+    Operation.GetStatisticQueryVariables
   >(GetStatisticDocument, options);
 }
 export function useGetStatisticSuspenseQuery(
   baseOptions?:
     | Apollo.SkipToken
     | Apollo.SuspenseQueryHookOptions<
-        Operations.GetStatisticQuery,
-        Operations.GetStatisticQueryVariables
+        Operation.GetStatisticQuery,
+        Operation.GetStatisticQueryVariables
       >
 ) {
   const options =
@@ -1162,8 +1164,8 @@ export function useGetStatisticSuspenseQuery(
       ? baseOptions
       : { ...defaultOptions, ...baseOptions };
   return Apollo.useSuspenseQuery<
-    Operations.GetStatisticQuery,
-    Operations.GetStatisticQueryVariables
+    Operation.GetStatisticQuery,
+    Operation.GetStatisticQueryVariables
   >(GetStatisticDocument, options);
 }
 export type GetStatisticQueryHookResult = ReturnType<
@@ -1176,6 +1178,6 @@ export type GetStatisticSuspenseQueryHookResult = ReturnType<
   typeof useGetStatisticSuspenseQuery
 >;
 export type GetStatisticQueryResult = Apollo.QueryResult<
-  Operations.GetStatisticQuery,
-  Operations.GetStatisticQueryVariables
+  Operation.GetStatisticQuery,
+  Operation.GetStatisticQueryVariables
 >;

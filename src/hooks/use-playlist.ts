@@ -210,22 +210,36 @@ interface ConversionResult {
   playlistUrl?: string;
   authUrl?: string;
 }
+interface ConvertToYoutubeParams {
+  data: PlaylistJson[];
+  authorizationCode: string | undefined;
+  state: string | undefined;
+  token: string | undefined;
+}
+interface ConvertToSpotifyParams {
+  data: PlaylistJson[];
+  authorizationCode: string | undefined;
+  state: string | undefined;
+  token: string | undefined;
+}
 
 const usePlaylistConverter = () => {
   const [convertToYoutubeMutate] = useConvertToYoutubePlaylistMutation();
   const [convertToSpotifyMutate] = useConvertToSpotifyPlaylistMutation();
 
-  const convertToYoutube = async (
-    data: PlaylistJson[],
-    authorizationCode: string | undefined = undefined,
-    state: string | undefined = undefined,
-    token: string | undefined = undefined
-  ): Promise<ConversionResult> => {
+  const convertToYoutube = async ({
+    data,
+    authorizationCode,
+    state,
+    token,
+  }: ConvertToYoutubeParams): Promise<ConversionResult> => {
+    console.log("convertToYoutube", data, authorizationCode, state, token);
     try {
       const { data: result } = await convertToYoutubeMutate({
         variables: { listJSON: data, authorizationCode, state },
         context: { headers: { Authorization: `Bearer ${token}` } },
       });
+      console.log("result", result);
 
       if (
         result?.convertToYoutubePlaylist.__typename === "AuthRequiredResponse"
@@ -245,6 +259,7 @@ const usePlaylistConverter = () => {
           };
         }
       }
+      console.log("result", result);
       throw new Error("Failed to convert to YouTube playlist");
     } catch (err) {
       console.log("Failed to convert to YouTube playlist:", err);
@@ -252,12 +267,12 @@ const usePlaylistConverter = () => {
     }
   };
 
-  const convertToSpotify = async (
-    data: PlaylistJson[],
-    authorizationCode: string | undefined = undefined,
-    state: string | undefined = undefined,
-    token: string | undefined = undefined
-  ): Promise<ConversionResult> => {
+  const convertToSpotify = async ({
+    data,
+    authorizationCode,
+    state,
+    token,
+  }: ConvertToSpotifyParams): Promise<ConversionResult> => {
     try {
       const { data: result } = await convertToSpotifyMutate({
         variables: { listJSON: data, authorizationCode, state },

@@ -54,7 +54,7 @@ export type ConvertToYoutubePlaylistMutationVariables = Types.Exact<{
 }>;
 
 
-export type ConvertToYoutubePlaylistMutation = { __typename?: 'Mutation', convertToYoutubePlaylist: { __typename?: 'AuthRequiredResponse', needsAuth: boolean, authUrl: string, apiDomain: Types.ApiDomain } | { __typename?: 'ConvertedPlaylist', success: boolean, message: string, playlistId?: string | null, playlistName?: string | null, playlistUrl?: string | null } };
+export type ConvertToYoutubePlaylistMutation = { __typename?: 'Mutation', convertToYoutubePlaylist: { __typename: 'AuthRequiredResponse', needsAuth: boolean, authUrl: string, apiDomain: Types.ApiDomain } | { __typename: 'ConvertedPlaylist', success: boolean, message: string, playlistId?: string | null, playlistName?: string | null, playlistUrl?: string | null } };
 
 export type ConvertToSpotifyPlaylistMutationVariables = Types.Exact<{
   listJSON: Array<Types.PlaylistJsonInput> | Types.PlaylistJsonInput;
@@ -63,7 +63,7 @@ export type ConvertToSpotifyPlaylistMutationVariables = Types.Exact<{
 }>;
 
 
-export type ConvertToSpotifyPlaylistMutation = { __typename?: 'Mutation', convertToSpotifyPlaylist: { __typename?: 'AuthRequiredResponse', needsAuth: boolean, authUrl: string, apiDomain: Types.ApiDomain } | { __typename?: 'ConvertedPlaylist', success: boolean, message: string, playlistId?: string | null, playlistName?: string | null, playlistUrl?: string | null } };
+export type ConvertToSpotifyPlaylistMutation = { __typename?: 'Mutation', convertToSpotifyPlaylist: { __typename: 'AuthRequiredResponse', needsAuth: boolean, authUrl: string, apiDomain: Types.ApiDomain } | { __typename: 'ConvertedPlaylist', success: boolean, message: string, playlistId?: string | null, playlistName?: string | null, playlistUrl?: string | null } };
 
 export type UpdateUserMutationVariables = Types.Exact<{
   updateUserInput: Types.UpdateUserInput;

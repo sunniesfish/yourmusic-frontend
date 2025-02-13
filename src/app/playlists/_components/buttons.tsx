@@ -42,15 +42,15 @@ export function ConvertToSpotifyPlaylistButton({
   const { convertToSpotify } = usePlaylist();
   const { toast } = useToast();
   useOAuthMessage({
-    onSuccess: async (authCode, redirectUri) => {
+    onSuccess: async (authCode, state) => {
       try {
         setIsLoading(true);
-        const result = await convertToSpotify(
-          playlistData,
-          authCode,
-          redirectUri,
-          token
-        );
+        const result = await convertToSpotify({
+          data: playlistData,
+          authorizationCode: authCode,
+          state,
+          token,
+        });
         if (result.converted) {
           toast({
             title: "Success",
@@ -75,7 +75,12 @@ export function ConvertToSpotifyPlaylistButton({
   });
   const handleClick = async () => {
     setIsLoading(true);
-    const result = await convertToSpotify(playlistData, token);
+    const result = await convertToSpotify({
+      data: playlistData,
+      authorizationCode: undefined,
+      token,
+      state: undefined,
+    });
     if (result.converted) {
       toast({
         title: "Success",
@@ -116,7 +121,12 @@ export function ConvertToYoutubePlaylistButton({
         if (state !== receivedState) {
           throw new Error("Invalid state");
         }
-        const result = await convertToYoutube(playlistData, authCode, token);
+        const result = await convertToYoutube({
+          data: playlistData,
+          authorizationCode: authCode,
+          state,
+          token,
+        });
         if (result.converted) {
           toast({
             title: "Success",
@@ -143,7 +153,12 @@ export function ConvertToYoutubePlaylistButton({
     const state = uuidv4();
     setState(state);
     setIsLoading(true);
-    const result = await convertToYoutube(playlistData, token, state);
+    const result = await convertToYoutube({
+      data: playlistData,
+      authorizationCode: undefined,
+      token,
+      state,
+    });
     if (result.converted) {
       console.log(result.authUrl);
       setIsLoading(false);
