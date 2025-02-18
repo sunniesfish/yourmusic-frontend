@@ -39,9 +39,9 @@ export function ConvertToSpotifyPlaylistButton({
   playlistData: PlaylistJson[];
   token: string | undefined;
 }) {
-  const [isLoading, setIsLoading] = useState(false);
   const { convertToSpotify } = usePlaylist();
   const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState(false);
   const [state, setState] = useState<OAuthState | null>(null);
   useOAuthMessage(
     {
@@ -95,18 +95,12 @@ export function ConvertToSpotifyPlaylistButton({
       state: JSON.stringify(newState),
     });
     if (result.converted) {
-      toast({
-        title: "Success",
-        description: "Converted to Spotify playlist",
-      });
-      window.open(result.playlistUrl, "_blank");
-    } else {
-      toast({
-        title: "Error",
-        description: "Failed to convert to Spotify playlist",
-      });
+      console.log(result.authUrl);
+      setIsLoading(false);
     }
-    setIsLoading(false);
+    if (result.authUrl) {
+      window.open(result.authUrl, "oauth_popup", "width=500,height=600");
+    }
   };
   return (
     <Button variant="spotify" onClick={handleClick} disabled={isLoading}>
@@ -122,10 +116,10 @@ export function ConvertToYoutubePlaylistButton({
   playlistData: PlaylistJson[];
   token: string | undefined;
 }) {
-  const [isLoading, setIsLoading] = useState(false);
-  const [state, setState] = useState<OAuthState | null>(null);
   const { convertToYoutube } = usePlaylist();
   const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState(false);
+  const [state, setState] = useState<OAuthState | null>(null);
 
   useOAuthMessage(
     {

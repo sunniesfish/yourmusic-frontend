@@ -44,6 +44,12 @@ export type ConvertedPlaylist = {
   success: Scalars['Boolean']['output'];
 };
 
+export type MutatePlaylistInput = {
+  id?: InputMaybe<Scalars['Float']['input']>;
+  listJson: Array<PlaylistJsonInput>;
+  name: Scalars['String']['input'];
+};
+
 export type MutateStatisticInput = {
   albumRankJson: StatisticRankInput;
   artistRankJson: StatisticRankInput;
@@ -66,6 +72,7 @@ export type Mutation = {
   signIn: SignInResponse;
   signOut: Scalars['Boolean']['output'];
   signUp: Scalars['Boolean']['output'];
+  updatePlaylist: Scalars['Boolean']['output'];
   updateStatistic: Statistic;
   updateUser: Scalars['Boolean']['output'];
 };
@@ -116,7 +123,7 @@ export type MutationRemoveStatisticArgs = {
 
 
 export type MutationSavePlaylistArgs = {
-  savePlaylistInput: SavePlaylistInput;
+  mutatePlaylistInput: MutatePlaylistInput;
 };
 
 
@@ -132,6 +139,11 @@ export type MutationSignInArgs = {
 
 export type MutationSignUpArgs = {
   signUpInput: SignUpInput;
+};
+
+
+export type MutationUpdatePlaylistArgs = {
+  mutatePlaylistInput: MutatePlaylistInput;
 };
 
 
@@ -151,6 +163,7 @@ export type Playlist = {
   listJson?: Maybe<Array<PlaylistJson>>;
   name: Scalars['String']['output'];
   thumbnail?: Maybe<Scalars['String']['output']>;
+  userId: Scalars['String']['output'];
 };
 
 export type PlaylistJson = {
@@ -197,11 +210,6 @@ export type QueryPlaylistsPageArgs = {
 
 export type QueryStatisticArgs = {
   userId: Scalars['ID']['input'];
-};
-
-export type SavePlaylistInput = {
-  listJson: Array<PlaylistJsonInput>;
-  name: Scalars['String']['input'];
 };
 
 export type SignInInput = {

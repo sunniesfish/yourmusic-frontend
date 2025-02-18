@@ -21,9 +21,13 @@ const sanitizeFileName = (name: string): string =>
 interface PlaylistDetailProps {
   playlistId: string;
   playlist: Playlist;
+  userId?: string;
 }
 
-export default function PlaylistDetail({ playlist }: PlaylistDetailProps) {
+export default function PlaylistDetail({
+  playlist,
+  userId,
+}: PlaylistDetailProps) {
   if (!playlist) return <div>No playlist found</div>;
   const { toast } = useToast();
   const { token } = useAuthStore();

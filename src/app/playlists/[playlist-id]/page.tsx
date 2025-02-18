@@ -18,16 +18,17 @@ export default async function PlaylistDetailPage({
     fetchPolicy: "cache-first",
     errorPolicy: "all",
   });
-  const playlistData = data;
-  console.log("playlistData", playlistData);
   if (error) {
-    console.log("error", error);
     return <NotFound />;
   }
 
   return (
     <Suspense fallback={<Loader />}>
-      <PlaylistDetail playlistId={playlistId} playlist={data?.playlist} />
+      <PlaylistDetail
+        playlistId={playlistId}
+        playlist={data?.playlist}
+        userId={data?.playlist.userId}
+      />
     </Suspense>
   );
 }

@@ -115,9 +115,15 @@ export default function NewPlaylistPage() {
               Convert To
             </p>
             <div className="flex items-center gap-2 ml-3 mr-3">
-              <ConvertToSpotifyPlaylistButton playlistData={playlistData} />
+              <ConvertToSpotifyPlaylistButton
+                playlistData={playlistData}
+                token={token}
+              />
               <p className="text-md font-medium text-blue-900 mb-1">or</p>
-              <ConvertToYoutubePlaylistButton playlistData={playlistData} />
+              <ConvertToYoutubePlaylistButton
+                playlistData={playlistData}
+                token={token}
+              />
             </div>
             <p className="text-md font-medium text-blue-900 mb-1">Playlist</p>
           </div>

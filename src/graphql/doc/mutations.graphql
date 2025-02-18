@@ -30,8 +30,8 @@ mutation ChangePassword($input: ChangePasswordInput!) {
 }
 
 # 새로운 플레이리스트 저장
-mutation SavePlaylist($savePlaylistInput: SavePlaylistInput!) {
-  savePlaylist(savePlaylistInput: $savePlaylistInput)
+mutation SavePlaylist($mutatePlaylistInput: MutatePlaylistInput!) {
+  savePlaylist(mutatePlaylistInput: $mutatePlaylistInput)
 }
 
 # 플레이리스트 제거
@@ -167,4 +167,9 @@ mutation CheckId($id: String!) {
 # 비밀번호 확인
 mutation CheckPassword($password: String!) {
   checkPassword(password: $password)
+}
+
+# 플레이리스트 업데이트
+mutation UpdatePlaylist($mutatePlaylistInput: MutatePlaylistInput!) {
+  updatePlaylist(mutatePlaylistInput: $mutatePlaylistInput)
 }

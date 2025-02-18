@@ -14,6 +14,7 @@ query GetPlaylist($id: Int!) {
     name
     createdAt
     thumbnail
+    userId
     listJson {
       title
       artist
@@ -36,6 +37,7 @@ query GetPlaylistsPage(
       name
       createdAt
       thumbnail
+      userId
       listJson @include(if: $includeListJson) {
         title
         artist

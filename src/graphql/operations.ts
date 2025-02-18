@@ -27,7 +27,7 @@ export type ChangePasswordMutationVariables = Types.Exact<{
 export type ChangePasswordMutation = { __typename?: 'Mutation', changePassword: { __typename?: 'User', id: string, name: string, profileImg?: string | null } };
 
 export type SavePlaylistMutationVariables = Types.Exact<{
-  savePlaylistInput: Types.SavePlaylistInput;
+  mutatePlaylistInput: Types.MutatePlaylistInput;
 }>;
 
 
@@ -107,6 +107,13 @@ export type CheckPasswordMutationVariables = Types.Exact<{
 
 export type CheckPasswordMutation = { __typename?: 'Mutation', checkPassword: boolean };
 
+export type UpdatePlaylistMutationVariables = Types.Exact<{
+  mutatePlaylistInput: Types.MutatePlaylistInput;
+}>;
+
+
+export type UpdatePlaylistMutation = { __typename?: 'Mutation', updatePlaylist: boolean };
+
 export type GetUserQueryVariables = Types.Exact<{ [key: string]: never; }>;
 
 
@@ -117,7 +124,7 @@ export type GetPlaylistQueryVariables = Types.Exact<{
 }>;
 
 
-export type GetPlaylistQuery = { __typename?: 'Query', playlist: { __typename?: 'Playlist', id: string, name: string, createdAt: any, thumbnail?: string | null, listJson?: Array<{ __typename?: 'PlaylistJSON', title?: string | null, artist?: string | null, album?: string | null, thumbnail?: string | null }> | null } };
+export type GetPlaylistQuery = { __typename?: 'Query', playlist: { __typename?: 'Playlist', id: string, name: string, createdAt: any, thumbnail?: string | null, userId: string, listJson?: Array<{ __typename?: 'PlaylistJSON', title?: string | null, artist?: string | null, album?: string | null, thumbnail?: string | null }> | null } };
 
 export type GetPlaylistsPageQueryVariables = Types.Exact<{
   page: Types.Scalars['Int']['input'];
@@ -127,7 +134,7 @@ export type GetPlaylistsPageQueryVariables = Types.Exact<{
 }>;
 
 
-export type GetPlaylistsPageQuery = { __typename?: 'Query', playlistsPage: { __typename?: 'PlaylistsResponse', totalPages: number, playlists: Array<{ __typename?: 'Playlist', id: string, name: string, createdAt: any, thumbnail?: string | null, listJson?: Array<{ __typename?: 'PlaylistJSON', title?: string | null, artist?: string | null, album?: string | null, thumbnail?: string | null }> | null }> } };
+export type GetPlaylistsPageQuery = { __typename?: 'Query', playlistsPage: { __typename?: 'PlaylistsResponse', totalPages: number, playlists: Array<{ __typename?: 'Playlist', id: string, name: string, createdAt: any, thumbnail?: string | null, userId: string, listJson?: Array<{ __typename?: 'PlaylistJSON', title?: string | null, artist?: string | null, album?: string | null, thumbnail?: string | null }> | null }> } };
 
 export type GetStatisticQueryVariables = Types.Exact<{
   userId: Types.Scalars['ID']['input'];
