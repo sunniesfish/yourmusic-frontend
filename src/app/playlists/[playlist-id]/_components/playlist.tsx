@@ -1,16 +1,19 @@
 "use client";
 
-import { Download } from "lucide-react";
+import { Download, Edit2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SongTable } from "@/app/playlists/_components/song-table";
 import {
   ConvertToSpotifyPlaylistButton,
   ConvertToYoutubePlaylistButton,
+  UpdatePlaylistTitleButton,
 } from "@/app/playlists/_components/buttons";
 import { useToast } from "@/hooks/use-toast";
 import { Playlist } from "@/graphql/types";
 import { useAuthStore } from "@/store/auth-store";
 import { useSanitizedData } from "@/hooks/use-sanitizedata";
+import { useState } from "react";
+import { Input } from "@/components/ui/input";
 
 const HEADERS = ["Title", "Artist", "Album"];
 const BOM = "\uFEFF";
@@ -31,7 +34,8 @@ export default function PlaylistDetail({
   if (!playlist) return <div>No playlist found</div>;
   const { toast } = useToast();
   const { token } = useAuthStore();
-
+  const [isEditingTitle, setIsEditingTitle] = useState(false);
+  const [playlistName, setPlaylistName] = useState(playlist.name);
   const sanitizedPlaylistJson = useSanitizedData(playlist.listJson);
   const handleDownloadCSV = () => {
     try {
@@ -76,11 +80,38 @@ export default function PlaylistDetail({
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-semibold tracking-tight">
-            {playlist.name}
-          </h1>
+      <div className="space-y-6 ">
+        <div className="flex items-center justify-between mb-6">
+          {isEditingTitle ? (
+            <Input
+              value={playlistName}
+              onChange={(e) => setPlaylistName(e.target.value)}
+              onBlur={() => setIsEditingTitle(false)}
+              autoFocus
+            />
+          ) : (
+            <h1 className="mr-10 text-2xl font-semibold tracking-tight">
+              {playlistName}
+            </h1>
+          )}
+          {userId === playlist.userId &&
+            token &&
+            (isEditingTitle ? (
+              <UpdatePlaylistTitleButton
+                playlistId={playlist.id}
+                playlistTitle={playlistName}
+                token={token}
+                onSuccess={() => setIsEditingTitle(false)}
+              />
+            ) : (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setIsEditingTitle(true)}
+              >
+                <Edit2 className="h-4 w-4" />
+              </Button>
+            ))}
         </div>
 
         <div className="flex flex-wrap gap-4">

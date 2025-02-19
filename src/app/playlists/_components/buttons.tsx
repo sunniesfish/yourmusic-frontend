@@ -4,11 +4,11 @@ import { Button } from "@/components/ui/button";
 import { GetPlaylistsPageDocument } from "@/graphql/hooks";
 import { ApiDomain, PlaylistJson } from "@/graphql/types";
 import { usePlaylist } from "@/hooks/use-playlist";
-import { useToast } from "@/hooks/use-toast";
+import { toast, useToast } from "@/hooks/use-toast";
 import { useOAuthMessage, validateOAuthState } from "@/lib/oauth";
 import { OAuthState } from "@/types/api";
 import { useApolloClient } from "@apollo/client/react/hooks/useApolloClient";
-import { ArrowRight, Check, Copy, Loader2 } from "lucide-react";
+import { ArrowRight, Check, Copy, Edit2, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 
@@ -257,6 +257,48 @@ export function CopyLinkButton({ playlistId }: { playlistId: string }) {
   return (
     <Button className="h-8 w-8" onClick={handleCopyLink}>
       <Copy className="h-4 w-4" />
+    </Button>
+  );
+}
+
+export function UpdatePlaylistTitleButton({
+  playlistId,
+  playlistTitle,
+  token,
+  onSuccess,
+}: {
+  playlistId: string;
+  playlistTitle: string;
+  token: string;
+  onSuccess: () => void;
+}) {
+  const { updatePlaylist } = usePlaylist();
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleClick = async () => {
+    setIsLoading(true);
+    const result = await updatePlaylist({
+      playlistId: parseInt(playlistId),
+      playlistTitle: playlistTitle,
+      token: token,
+    });
+    if (result) {
+      toast({
+        title: "Success",
+        description: "Title updated",
+      });
+    } else {
+      toast({
+        title: "Error",
+        description: "Failed to update title",
+      });
+    }
+    onSuccess();
+    setIsLoading(false);
+  };
+  return (
+    <Button onClick={handleClick} disabled={isLoading} size="sm">
+      {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Save"}
     </Button>
   );
 }

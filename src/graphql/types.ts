@@ -46,7 +46,7 @@ export type ConvertedPlaylist = {
 
 export type MutatePlaylistInput = {
   id?: InputMaybe<Scalars['Float']['input']>;
-  listJson: Array<PlaylistJsonInput>;
+  listJson?: InputMaybe<Array<PlaylistJsonInput>>;
   name: Scalars['String']['input'];
 };
 

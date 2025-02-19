@@ -10,6 +10,7 @@ import {
   useReadPlaylistMutation,
   useRemovePlaylistMutation,
   useSavePlaylistMutation,
+  useUpdatePlaylistMutation,
 } from "@/graphql/hooks";
 import { PlaylistQueryParams, PlaylistMutationParams } from "@/types/playlist";
 import { usePlaylistsStore } from "@/store/playlist-store";
@@ -83,7 +84,7 @@ const usePlaylistMutation = () => {
   const [readPlaylistMutate] = useReadPlaylistMutation();
   const [savePlaylistMutate] = useSavePlaylistMutation();
   const [removePlaylistMutate] = useRemovePlaylistMutation();
-
+  const [updatePlaylistMutate] = useUpdatePlaylistMutation();
   /**
    * Reads playlist data from a URL
    * @param {string} link - URL of the playlist
@@ -111,16 +112,14 @@ const usePlaylistMutation = () => {
     playlistTitle,
     playlistJson,
   }: PlaylistMutationParams): Promise<boolean> => {
-    console.log("props", token, playlistTitle, playlistJson);
     if (!playlistTitle || !playlistJson) return false;
     const cleanedPlaylistJson = playlistJson.map((item) =>
       omit(item, ["__typename"])
     );
-    console.log("cleanedPlaylistJson", cleanedPlaylistJson);
     try {
       const input = {
         variables: {
-          savePlaylistInput: {
+          mutatePlaylistInput: {
             name: playlistTitle,
             listJson: cleanedPlaylistJson,
           },
@@ -128,15 +127,44 @@ const usePlaylistMutation = () => {
         context: { headers: { Authorization: `Bearer ${token}` } },
       };
 
-      // mutation 실행 전 input 검사
-      console.log("Mutation Input:", JSON.stringify(input, null, 2));
-
       const result = await savePlaylistMutate(input);
 
-      // 전체 응답 로깅
-      console.log("Full Mutation Result:", JSON.stringify(result, null, 2));
-
       return Boolean(result.data?.savePlaylist);
+    } catch (err) {
+      if (err instanceof Error && "graphQLErrors" in err) {
+        console.error("GraphQL Errors:", err.graphQLErrors);
+      }
+      if (err instanceof Error && "networkError" in err) {
+        console.error("Network Error:", err.networkError);
+      }
+      console.error("Full Error:", err);
+      return false;
+    }
+  };
+
+  const updatePlaylist = async ({
+    token,
+    playlistId,
+    playlistTitle,
+    playlistJson,
+  }: PlaylistMutationParams): Promise<boolean> => {
+    if (!playlistTitle || !playlistJson) return false;
+    const cleanedPlaylistJson = playlistJson.map((item) =>
+      omit(item, ["__typename"])
+    );
+    try {
+      const input = {
+        variables: {
+          mutatePlaylistInput: {
+            id: playlistId,
+            name: playlistTitle,
+            listJson: cleanedPlaylistJson,
+          },
+        },
+        context: { headers: { Authorization: `Bearer ${token}` } },
+      };
+      const result = await updatePlaylistMutate(input);
+      return Boolean(result.data?.updatePlaylist);
     } catch (err) {
       if (err instanceof Error && "graphQLErrors" in err) {
         console.error("GraphQL Errors:", err.graphQLErrors);
@@ -158,7 +186,6 @@ const usePlaylistMutation = () => {
     token,
     playlistId,
   }: PlaylistMutationParams): Promise<boolean> => {
-    console.log("props", token, playlistId);
     if (!playlistId) return false;
     try {
       const { data } = await removePlaylistMutate({
@@ -202,7 +229,7 @@ const usePlaylistMutation = () => {
     }
   };
 
-  return { readPlaylist, savePlaylist, removePlaylist };
+  return { readPlaylist, savePlaylist, removePlaylist, updatePlaylist };
 };
 
 interface ConversionResult {
@@ -311,7 +338,8 @@ const usePlaylistConverter = () => {
  */
 export const usePlaylist = () => {
   const { getPlaylists, getPlaylistDetails } = usePlaylistQuery();
-  const { readPlaylist, savePlaylist, removePlaylist } = usePlaylistMutation();
+  const { readPlaylist, savePlaylist, removePlaylist, updatePlaylist } =
+    usePlaylistMutation();
   const { convertToYoutube, convertToSpotify } = usePlaylistConverter();
 
   return {
@@ -320,6 +348,7 @@ export const usePlaylist = () => {
     readPlaylist,
     savePlaylist,
     removePlaylist,
+    updatePlaylist,
     convertToYoutube,
     convertToSpotify,
   };

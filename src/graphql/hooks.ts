@@ -1,6 +1,7 @@
+import { gql } from "@apollo/client";
 import * as Apollo from "@apollo/client";
 import * as Operations from "./operations";
-import { gql } from "@apollo/client";
+
 const defaultOptions = {} as const;
 
 export const SignUpDocument = gql`
