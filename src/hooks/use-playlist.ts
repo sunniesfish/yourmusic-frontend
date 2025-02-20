@@ -148,8 +148,9 @@ const usePlaylistMutation = () => {
     playlistTitle,
     playlistJson,
   }: PlaylistMutationParams): Promise<boolean> => {
-    if (!playlistTitle || !playlistJson) return false;
-    const cleanedPlaylistJson = playlistJson.map((item) =>
+    console.log("updatePlaylist", playlistTitle);
+    if (!playlistTitle) return false;
+    const cleanedPlaylistJson = playlistJson?.map((item) =>
       omit(item, ["__typename"])
     );
     try {
@@ -162,8 +163,16 @@ const usePlaylistMutation = () => {
           },
         },
         context: { headers: { Authorization: `Bearer ${token}` } },
+        update: (cache: any) => {
+          cache.evict({
+            fieldName: "playlist",
+            args: { id: playlistId },
+          });
+          cache.gc();
+        },
       };
       const result = await updatePlaylistMutate(input);
+      console.log("updatePlaylist result", result);
       return Boolean(result.data?.updatePlaylist);
     } catch (err) {
       if (err instanceof Error && "graphQLErrors" in err) {

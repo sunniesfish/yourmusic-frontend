@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@apollo/client": "^3.11.10",
+    "@apollo/experimental-nextjs-app-support": "^0.11.9",
     "@radix-ui/react-dialog": "^1.1.2",
     "@radix-ui/react-label": "^2.1.1",
     "@radix-ui/react-select": "^2.1.5",

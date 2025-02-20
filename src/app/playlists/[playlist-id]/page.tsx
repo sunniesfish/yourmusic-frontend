@@ -1,4 +1,4 @@
-import { client } from "@/lib/apollo-client";
+import { getClient } from "@/lib/apollo-client";
 import PlaylistDetail from "./_components/playlist";
 import { GetPlaylistDocument } from "@/graphql/hooks";
 import { GetPlaylistQuery } from "@/graphql/operations";
@@ -12,11 +12,10 @@ export default async function PlaylistDetailPage({
   params: { "playlist-id": string };
 }) {
   const playlistId = params["playlist-id"];
+  const client = getClient();
   const { data, error } = await client.query<GetPlaylistQuery>({
     query: GetPlaylistDocument,
     variables: { id: parseInt(playlistId) },
-    fetchPolicy: "cache-first",
-    errorPolicy: "all",
   });
   if (error) {
     return <NotFound />;
@@ -24,11 +23,7 @@ export default async function PlaylistDetailPage({
 
   return (
     <Suspense fallback={<Loader />}>
-      <PlaylistDetail
-        playlistId={playlistId}
-        playlist={data?.playlist}
-        userId={data?.playlist.userId}
-      />
+      <PlaylistDetail playlistId={playlistId} userId={data?.playlist.userId} />
     </Suspense>
   );
 }
