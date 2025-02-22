@@ -15,7 +15,7 @@ interface SignUpFormData {
   password: string;
   confirmPassword: string;
 }
-export default function SignUp() {
+export default function SignUpPage() {
   const router = useRouter();
   const [idAvailable, setIdAvailable] = useState<boolean | null>(null);
   const { signUp, checkIdAvailability } = useAuth();

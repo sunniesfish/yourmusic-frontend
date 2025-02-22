@@ -25,12 +25,29 @@ export function PlaylistsItem({ playlist, onDelete }: PlaylistsItemProps) {
     >
       <div className="flex gap-4">
         <div className="relative h-20 w-20 shrink-0">
-          <Image
-            src={playlist.listJson?.[0]?.thumbnail ?? "/placeholder.svg"}
-            alt=""
-            fill
-            className="rounded-md object-cover"
-          />
+          {playlist.listJson?.[0]?.thumbnail ? (
+            <Image
+              src={playlist.listJson?.[0]?.thumbnail ?? "/placeholder.svg"}
+              alt=""
+              fill
+              className="rounded-md object-cover"
+            />
+          ) : (
+            <svg
+              width="80"
+              height="80"
+              viewBox="0 0 80 80"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <rect width="80" height="80" rx="8" fill="#5C7285" />
+              <g transform="translate(20,20) scale(1.6667)">
+                <path
+                  d="M12 3v10.55A4 4 0 1 0 14 17V7h4V3h-6z"
+                  fill="#FFFFFF"
+                />
+              </g>
+            </svg>
+          )}
         </div>
         <Link href={`/playlists/${playlist.id}`} prefetch={true}>
           <div className="flex-1 space-y-1">

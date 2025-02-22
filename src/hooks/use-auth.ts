@@ -2,18 +2,15 @@
 
 import { useApolloClient } from "@apollo/client";
 import { useAuthStore } from "@/store/auth-store";
-import { User } from "@/graphql/types";
 import { AuthHookResult } from "@/types/auth";
 import {
   useSignInMutation,
   useSignUpMutation,
   useSignOutMutation,
-  useUpdateUserMutation,
-  useChangePasswordMutation,
   useCheckIdMutation,
-  useCheckPasswordMutation,
 } from "@/graphql/hooks";
 import { useCallback } from "react";
+import { getClient } from "@/lib/apollo-client";
 
 /**
  * Hook for handling authentication-related operations
@@ -21,14 +18,11 @@ import { useCallback } from "react";
  */
 export const useAuth = (): AuthHookResult => {
   const client = useApolloClient();
-  const { setUser, setToken, logout, token, user } = useAuthStore();
+  const { setUser, setToken, logout, token } = useAuthStore();
   const [signInMutation] = useSignInMutation();
   const [signUpMutation] = useSignUpMutation();
   const [checkIdMutation] = useCheckIdMutation();
   const [signOutMutation] = useSignOutMutation();
-  const [checkPasswordMutation] = useCheckPasswordMutation();
-  const [updateUserMutation] = useUpdateUserMutation();
-  const [changePasswordMutation] = useChangePasswordMutation();
 
   /**
    * Checks if user is currently logged in
@@ -85,6 +79,10 @@ export const useAuth = (): AuthHookResult => {
   const signOut = async () => {
     const { data } = await signOutMutation({
       context: { headers: { Authorization: `Bearer ${token}` } },
+      update: () => {
+        const client = getClient();
+        client.clearStore();
+      },
     });
     if (data?.signOut) {
       logout();
@@ -106,59 +104,12 @@ export const useAuth = (): AuthHookResult => {
     return data?.checkId ? false : true;
   };
 
-  /**
-   * Updates user profile information
-   * @param {User} user - Updated user data
-   * @returns {Promise<boolean>} True if update was successful
-   * @throws {Error} When update fails
-   */
-  const updateUser = async (user: User): Promise<boolean> => {
-    try {
-      const { data } = await updateUserMutation({
-        variables: { updateUserInput: user },
-        context: { headers: { Authorization: `Bearer ${token}` } },
-      });
-      return data?.updateUser || false;
-    } catch (error) {
-      console.error("Update user failed:", error);
-      return false;
-    }
-  };
-
-  /**
-   * Changes user password
-   * @param {string} id - User ID
-   * @param {string} password - New password
-   * @returns {Promise<boolean>} True if password change was successful
-   */
-  const changePassword = async (id: string, password: string) => {
-    const { data } = await changePasswordMutation({
-      variables: { input: { id, password } },
-      context: { headers: { Authorization: `Bearer ${token}` } },
-    });
-    return data?.changePassword ? true : false;
-  };
-
-  /**
-   * Validates user password
-   * @param {string} password - Password to check
-   * @returns {Promise<boolean>} True if password is valid
-   */
-  const checkPassword = async (password: string) => {
-    const { data } = await checkPasswordMutation({
-      variables: { password },
-    });
-    return data?.checkPassword ? true : false;
-  };
-
   return {
     signIn,
     signUp,
     signOut,
-    changePassword,
-    updateUser,
     isLoggedIn,
     checkIdAvailability,
-    checkPassword,
+    token,
   };
 };

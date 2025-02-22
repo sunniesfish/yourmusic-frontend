@@ -7,30 +7,40 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useRouter } from "next/navigation";
+import { useToast } from "@/hooks/use-toast";
 
 interface SignInFormData {
   id: string;
   password: string;
+  formError?: string;
 }
 
-export default function SignIn() {
+export default function SignInPage() {
   const router = useRouter();
   const { signIn } = useAuth();
   const {
     register,
     handleSubmit,
     formState: { errors },
+    setError,
   } = useForm<SignInFormData>({
     mode: "onChange",
   });
+  const { toast } = useToast();
 
   const onSubmit = async (data: SignInFormData) => {
     const result = await signIn(data.id, data.password);
-    console.log(result);
     if (!result) {
-      alert("Invalid ID or password");
+      setError("formError", {
+        type: "manual",
+        message: "Invalid ID or password",
+      });
+    } else {
+      toast({
+        title: "Login successful",
+      });
+      router.push("/playlists/newplaylist");
     }
-    router.push("/playlists/newplaylist");
   };
 
   return (
@@ -88,6 +98,12 @@ export default function SignIn() {
           <Button type="submit" className="w-full">
             Sign In
           </Button>
+
+          {errors.formError && (
+            <p className="text-sm text-destructive text-center">
+              {errors.formError.message}
+            </p>
+          )}
         </form>
 
         <div className="text-center space-y-2">

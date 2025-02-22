@@ -39,12 +39,29 @@ export function SongTable({ songs }: SongTableProps) {
             <TableRow key={`${song.title}-${index}`}>
               <TableCell>
                 <div className="relative h-10 w-10">
-                  <Image
-                    src={song.thumbnail || "/placeholder.svg"}
-                    alt={song.title || ""}
-                    fill
-                    className="rounded object-cover"
-                  />
+                  {song.thumbnail ? (
+                    <Image
+                      src={song.thumbnail}
+                      alt={song.title || ""}
+                      fill
+                      className="rounded object-cover"
+                    />
+                  ) : (
+                    <svg
+                      width="40"
+                      height="40"
+                      viewBox="0 0 40 40"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <rect width="40" height="40" rx="4" fill="#5C7285" />
+                      <g transform="translate(10,10) scale(0.8333)">
+                        <path
+                          d="M12 3v10.55A4 4 0 1 0 14 17V7h4V3h-6z"
+                          fill="#FFFFFF"
+                        />
+                      </g>
+                    </svg>
+                  )}
                 </div>
               </TableCell>
               <TableCell className="font-medium">{song.title}</TableCell>

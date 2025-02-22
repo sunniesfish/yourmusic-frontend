@@ -59,37 +59,56 @@ export function Title({
     }, 0);
   };
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="flex items-center gap-2">
-      {isBelongsToUser && isEditingTitle && token ? (
-        <Input
-          {...register("name", {
-            required: "Title is required",
-            minLength: {
-              value: 1,
-              message: "Title must be at least 1 character long",
-            },
-          })}
-          onBlur={(e) => {
-            if (!e.relatedTarget?.closest("form")) {
-              setIsEditingTitle(false);
-            }
-          }}
-        />
-      ) : (
-        <h1 className="text-2xl font-semibold tracking-tight">
-          {playlistName}
-        </h1>
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className="relative inline-flex items-center gap-4 pb-2"
+    >
+      {isBelongsToUser && !isEditingTitle && (
+        <Button
+          onClick={handleEditTitle}
+          size="sm"
+          variant="ghost"
+          className="bg-white text-black hover:bg-white/90"
+        >
+          <Edit2 className="h-3 w-3" />
+        </Button>
       )}
 
-      {isBelongsToUser && isEditingTitle && token ? (
-        <Button type="submit" disabled={isLoading}>
-          {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Update"}
-        </Button>
-      ) : (
-        <Button onClick={handleEditTitle}>
-          <Edit2 className="h-4 w-4" />
-        </Button>
-      )}
+      <div className="flex items-center gap-4">
+        {isBelongsToUser && isEditingTitle && token ? (
+          <>
+            <Button type="submit" disabled={isLoading} size="sm">
+              {isLoading ? (
+                <Loader2 className="h-3 w-3 animate-spin" />
+              ) : (
+                "Update"
+              )}
+            </Button>
+            <Input
+              {...register("name", {
+                required: "Title is required",
+                minLength: {
+                  value: 1,
+                  message: "Title must be at least 1 character long",
+                },
+              })}
+              onBlur={(e) => {
+                if (!e.relatedTarget?.closest("form")) {
+                  setIsEditingTitle(false);
+                }
+              }}
+              className="text-2xl font-semibold min-w-[200px] max-w-[300px] md:min-w-[300px] md:max-w-[600px] xl:min-w-[400px] xl:max-w-[800px] text-center border-none outline-none focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0 focus:ring-offset-0 focus-visible:ring-offset-0 shadow-none focus:shadow-none [&:not(:placeholder-shown)]:text-2xl"
+              style={{ fontSize: "1.5rem" }}
+              autoFocus
+            />
+          </>
+        ) : (
+          <h1 className="text-2xl font-semibold min-w-[200px] max-w-[300px] md:min-w-[300px] md:max-w-[600px] xl:min-w-[400px] xl:max-w-[800px] text-center">
+            {playlistName}
+          </h1>
+        )}
+      </div>
+      <div className="absolute bottom-0 left-[-4px] right-[-4px] h-[1px] bg-black" />
     </form>
   );
 }

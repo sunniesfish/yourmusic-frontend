@@ -18,6 +18,7 @@ interface MenuItem {
 const MENU_ITEMS: MenuItem[] = [
   { href: "/playlists/newplaylist", label: "New Playlist" },
   { href: "/playlists", label: "My Playlists" },
+  // { href: "/statistics", label: "Statistics" },
 ];
 
 export default function Navbar() {
@@ -120,14 +121,38 @@ export default function Navbar() {
                 }}
                 aria-expanded={isDropdownOpen}
               >
-                <Image
-                  src={user.profileImg || "/placeholder.svg"}
-                  alt=""
-                  width={24}
-                  height={24}
-                  className="rounded-full"
-                  priority
-                />
+                {user.profileImg ? (
+                  <Image
+                    src={user.profileImg}
+                    alt=""
+                    width={24}
+                    height={24}
+                    className="rounded-full"
+                    priority
+                  />
+                ) : (
+                  <svg
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <circle
+                      cx="12"
+                      cy="8"
+                      r="4"
+                      stroke="currentColor"
+                      strokeWidth={2}
+                    />
+                    <path
+                      d="M4 20c0-4 4-6 8-6s8 2 8 6"
+                      stroke="currentColor"
+                      strokeWidth={2}
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                )}
                 <span className="hidden md:inline">{user.name}</span>
               </Button>
             ) : (
@@ -139,20 +164,16 @@ export default function Navbar() {
             {/* Dropdown menu */}
             {isDropdownOpen && (
               <div className="absolute right-0 mt-2 w-48 rounded-md border bg-background shadow-lg">
-                <div className="p-1">
+                <div className="flex flex-col p-1">
                   <Link
                     href="/mypage"
-                    className={cn(
-                      "relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground",
-                      pathname === "/mypage" &&
-                        "bg-accent text-accent-foreground"
-                    )}
+                    className="rounded-sm px-2 py-1.5 text-sm hover:bg-accent hover:text-accent-foreground"
                   >
                     MyPage
                   </Link>
                   <button
                     onClick={handleSignOut}
-                    className="relative flex w-full cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground"
+                    className="rounded-sm px-2 py-1.5 text-sm text-left hover:bg-accent hover:text-accent-foreground"
                   >
                     Sign Out
                   </button>

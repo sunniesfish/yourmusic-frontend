@@ -22,7 +22,7 @@ export default async function PlaylistDetailPage({
   }
 
   return (
-    <Suspense fallback={<Loader />}>
+    <Suspense fallback={<Loader message="Loading playlist..." />}>
       <PlaylistDetail playlistId={playlistId} userId={data?.playlist.userId} />
     </Suspense>
   );

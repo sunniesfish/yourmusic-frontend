@@ -1,11 +1,12 @@
 import * as Dialog from "@radix-ui/react-dialog";
-import { X } from "lucide-react";
+import { Loader2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
-import { useAuth } from "@/hooks/use-auth";
-
+import { useChangePasswordMutation } from "@/graphql/hooks";
+import { useAuthStore } from "@/store/auth-store";
+import { useToast } from "@/hooks/use-toast";
 interface ChangePasswordModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -18,14 +19,29 @@ export default function ChangePasswordModal({
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const { changePassword } = useAuth();
+  const [changePasswordMutation, { loading }] = useChangePasswordMutation();
+  const { user, token } = useAuthStore();
+  const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Implement password change logic here
-    const result = await changePassword(oldPassword, newPassword);
+    const result = await changePasswordMutation({
+      variables: { input: { id: user?.id ?? "", password: newPassword } },
+      context: { headers: { Authorization: `Bearer ${token}` } },
+      update: (cache) => {
+        cache.evict({ fieldName: "user" });
+        cache.gc();
+      },
+    });
     if (!result) {
-      alert("Failed to change password");
+      toast({
+        title: "Failed to change password",
+        description: "Please try again",
+      });
+    } else {
+      toast({
+        title: "Password changed successfully",
+      });
     }
     onClose();
   };
@@ -77,7 +93,10 @@ export default function ChangePasswordModal({
               <Button type="button" variant="outline" onClick={onClose}>
                 Cancel
               </Button>
-              <Button type="submit">Change Password</Button>
+              <Button type="submit" disabled={loading}>
+                {loading && <Loader2 className="ml-2 h-4 w-4 animate-spin" />}
+                Change Password
+              </Button>
             </div>
           </form>
 
