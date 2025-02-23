@@ -12,10 +12,11 @@ import ChangePasswordModal from "./changepwd-modal";
 import { useUpdateUserMutation } from "@/graphql/hooks";
 import { Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useSanitizedData } from "@/hooks/use-sanitizedata";
 
 export default function MyPage() {
   const { isLoggedIn, token } = useAuth();
-  const { user } = useAuthStore();
+  const { user, setUser } = useAuthStore();
   const [isEditingNickname, setIsEditingNickname] = useState(false);
   const [newNickname, setNewNickname] = useState(user?.name ?? "");
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
@@ -27,22 +28,29 @@ export default function MyPage() {
     }
   }, [isLoggedIn]);
 
+  const sanitizedUser = useSanitizedData(user);
+
   const handleNicknameEdit = async () => {
-    if (isEditingNickname && user) {
+    if (isEditingNickname && sanitizedUser) {
       const result = await updateUserMutation({
-        variables: { updateUserInput: { ...user, name: newNickname } },
+        variables: { updateUserInput: { ...sanitizedUser, name: newNickname } },
         context: { headers: { Authorization: `Bearer ${token}` } },
         update: (cache) => {
           cache.evict({ fieldName: "user" });
           cache.gc();
         },
       });
+      console.log("result", result);
       if (!result) {
         toast({
           title: "Failed to update nickname",
           description: "Please try again",
         });
       } else {
+        setUser({
+          ...sanitizedUser,
+          name: newNickname,
+        });
         toast({
           title: "Nickname updated successfully",
         });
