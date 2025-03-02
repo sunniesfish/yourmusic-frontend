@@ -7,24 +7,36 @@ import { useState } from "react";
 import { useChangePasswordMutation } from "@/graphql/hooks";
 import { useAuthStore } from "@/store/auth-store";
 import { useToast } from "@/hooks/use-toast";
+import { User } from "@/graphql/types";
 interface ChangePasswordModalProps {
   isOpen: boolean;
   onClose: () => void;
+  user: User;
 }
 
 export default function ChangePasswordModal({
   isOpen,
   onClose,
+  user,
 }: ChangePasswordModalProps) {
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [changePasswordMutation, { loading }] = useChangePasswordMutation();
-  const { user, token } = useAuthStore();
+  const { token } = useAuthStore();
   const { toast } = useToast();
 
+  //need to add validation for password
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (newPassword !== confirmPassword) {
+      toast({
+        title: "Passwords do not match",
+        description: "Please try again",
+      });
+      return;
+    }
+    console.log("newPassword", newPassword);
     const result = await changePasswordMutation({
       variables: { input: { id: user?.id ?? "", password: newPassword } },
       context: { headers: { Authorization: `Bearer ${token}` } },

@@ -140,10 +140,13 @@ export default function MyPage() {
         </div>
       </div>
 
-      <ChangePasswordModal
-        isOpen={isPasswordModalOpen}
-        onClose={() => setIsPasswordModalOpen(false)}
-      />
+      {sanitizedUser && (
+        <ChangePasswordModal
+          isOpen={isPasswordModalOpen}
+          onClose={() => setIsPasswordModalOpen(false)}
+          user={sanitizedUser}
+        />
+      )}
     </div>
   );
 }

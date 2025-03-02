@@ -40,7 +40,10 @@ export default function PlaylistDetail({
 
   const { data } = useGetPlaylistSuspenseQuery({
     variables: { id: parseInt(playlistId) },
+    fetchPolicy: "cache-first",
   });
+
+  console.log("playlist detail data", data);
 
   const sanitizedPlaylistJson = useSanitizedData(data?.playlist.listJson);
   const handleDownloadCSV = () => {

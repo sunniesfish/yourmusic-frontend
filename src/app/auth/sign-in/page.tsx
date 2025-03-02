@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
+import { useEffect } from "react";
 
 interface SignInFormData {
   id: string;
@@ -25,22 +26,46 @@ export default function SignInPage() {
     setError,
   } = useForm<SignInFormData>({
     mode: "onChange",
+    criteriaMode: "all",
+    shouldFocusError: true,
   });
   const { toast } = useToast();
 
+  useEffect(() => {
+    console.log("Form state changed:", { errors });
+  }, [errors]);
+
   const onSubmit = async (data: SignInFormData) => {
-    const result = await signIn(data.id, data.password);
-    if (!result) {
-      setError("formError", {
-        type: "manual",
-        message: "Invalid ID or password",
-      });
-    } else {
+    console.log("Form submission started", { data });
+
+    try {
+      console.log("Before signin mutation");
+      const result = await signIn(data.id, data.password);
+      console.log("After signin mutation", { result });
+
+      if (!result) {
+        setError("password", {
+          type: "manual",
+          message: "Invalid ID or password",
+        });
+        return;
+      }
+
       toast({
         title: "Login successful",
       });
       router.push("/playlists/newplaylist");
+    } catch (error) {
+      console.error("Detailed error:", error);
+      setError("root.serverError", {
+        type: "manual",
+        message: "An error occurred during sign in",
+      });
     }
+  };
+
+  const onError = (errors: any) => {
+    console.log("Form validation errors:", errors);
   };
 
   return (
@@ -55,7 +80,11 @@ export default function SignInPage() {
           </p>
         </div>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <form
+          onSubmit={handleSubmit(onSubmit, onError)}
+          className="space-y-4"
+          noValidate
+        >
           <div className="space-y-2">
             <Label htmlFor="id">ID</Label>
             <Input
@@ -78,10 +107,6 @@ export default function SignInPage() {
             <Input
               {...register("password", {
                 required: "Password is required",
-                minLength: {
-                  value: 6,
-                  message: "Password must be at least 6 characters",
-                },
               })}
               type="password"
               id="password"
@@ -95,13 +120,22 @@ export default function SignInPage() {
             )}
           </div>
 
-          <Button type="submit" className="w-full">
+          <Button
+            type="submit"
+            className="w-full"
+            disabled={Object.keys(errors).length > 0}
+          >
             Sign In
           </Button>
 
-          {errors.formError && (
+          {errors.root?.serverError && (
             <p className="text-sm text-destructive text-center">
-              {errors.formError.message}
+              {errors.root.serverError.message}
+            </p>
+          )}
+          {errors.password?.type === "manual" && (
+            <p className="text-sm text-destructive text-center">
+              {errors.password.message}
             </p>
           )}
         </form>

@@ -6,7 +6,8 @@ export function useOAuthMessage(
     onSuccess: (code: string, state: string) => Promise<void>;
     onError: (error: Error) => void;
   },
-  apiDomain: ApiDomain
+  apiDomain: ApiDomain,
+  dependencies: any[]
 ) {
   const { onSuccess, onError } = options;
 
@@ -18,14 +19,14 @@ export function useOAuthMessage(
         if (event.origin !== window.location.origin) {
           throw new Error("Invalid origin");
         }
+        if (!state) {
+          throw new Error("State is required");
+        }
         if (apiDomain !== JSON.parse(state).domain) {
           return;
         }
         if (type !== "OAUTH_CALLBACK") {
           throw new Error("Invalid type");
-        }
-        if (!state) {
-          throw new Error("State is required");
         }
         await onSuccess(code, state);
       } catch (error) {
@@ -36,15 +37,17 @@ export function useOAuthMessage(
     return () => {
       window.removeEventListener("message", handleMessage);
     };
-  }, [onSuccess, onError]);
+  }, dependencies);
 }
 
 export function validateOAuthState(state: OAuthState, receivedState: string) {
-  if (state.domain !== JSON.parse(receivedState).domain) {
+  try {
+    if (!receivedState) {
+      return false;
+    }
+    const parsedState = JSON.parse(receivedState);
+    return state.domain === parsedState.domain && state.id === parsedState.id;
+  } catch {
     return false;
   }
-  if (state.id !== JSON.parse(receivedState).id) {
-    return false;
-  }
-  return true;
 }

@@ -6,10 +6,11 @@ import { ApiDomain, PlaylistJson } from "@/graphql/types";
 import { usePlaylist } from "@/hooks/use-playlist";
 import { toast, useToast } from "@/hooks/use-toast";
 import { useOAuthMessage, validateOAuthState } from "@/lib/oauth";
+import { openInNewTab } from "@/lib/utils";
 import { OAuthState } from "@/types/api";
 import { useApolloClient } from "@apollo/client/react/hooks/useApolloClient";
 import { ArrowRight, Check, Copy, Edit2, Loader2 } from "lucide-react";
-import { useState } from "react";
+import { useState, memo } from "react";
 import { v4 as uuidv4 } from "uuid";
 
 export function GetListButton({
@@ -32,161 +33,171 @@ export function GetListButton({
   );
 }
 
-export function ConvertToSpotifyPlaylistButton({
-  playlistData,
-  token,
-}: {
-  playlistData: PlaylistJson[];
-  token: string | undefined;
-}) {
-  const { convertToSpotify } = usePlaylist();
-  const { toast } = useToast();
-  const [isLoading, setIsLoading] = useState(false);
-  const [state, setState] = useState<OAuthState | null>(null);
-  useOAuthMessage(
-    {
-      onSuccess: async (authCode, receivedState) => {
-        try {
-          setIsLoading(true);
-          if (!state) {
-            throw new Error("State is null");
-          }
-          if (!validateOAuthState(state, receivedState)) {
-            throw new Error("Invalid state");
-          }
-          const result = await convertToSpotify({
-            data: playlistData,
-            authorizationCode: authCode,
-            state: undefined,
-            token,
-          });
-          if (result.converted) {
-            toast({
-              title: "Success",
-              description: "Converted to Spotify playlist",
+export const ConvertToSpotifyPlaylistButton = memo(
+  function ConvertToSpotifyPlaylistButton({
+    playlistData,
+    token,
+  }: {
+    playlistData: PlaylistJson[];
+    token: string | undefined;
+  }) {
+    const { convertToSpotify } = usePlaylist();
+    const { toast } = useToast();
+    const [isLoading, setIsLoading] = useState(false);
+    const [state, setState] = useState<OAuthState | null>(null);
+    useOAuthMessage(
+      {
+        onSuccess: async (authCode, receivedState) => {
+          try {
+            setIsLoading(true);
+            if (!state) {
+              throw new Error("State is null");
+            }
+            if (!validateOAuthState(state, receivedState)) {
+              throw new Error("Invalid state");
+            }
+            const result = await convertToSpotify({
+              data: playlistData,
+              authorizationCode: authCode,
+              state: undefined,
+              token,
             });
-            window.open(result.playlistUrl, "_blank");
-          } else {
-            toast({
-              title: "Error",
-              description: "Failed to convert to Spotify playlist",
-            });
+            if (result.converted) {
+              if (result.playlistUrl) {
+                openInNewTab(result.playlistUrl);
+              }
+              toast({
+                title: "Success",
+                description: "Converted to Spotify playlist",
+              });
+            } else {
+              toast({
+                title: "Error",
+                description: "Failed to convert to Spotify playlist",
+              });
+            }
+          } catch (error) {
+            console.error(error);
+          } finally {
+            setIsLoading(false);
           }
-        } catch (error) {
+        },
+        onError: (error) => {
           console.error(error);
-        } finally {
-          setIsLoading(false);
-        }
+        },
       },
-      onError: (error) => {
-        console.error(error);
-      },
-    },
-    ApiDomain.Spotify
-  );
-  const handleClick = async () => {
-    const newState: OAuthState = { domain: ApiDomain.Spotify, id: uuidv4() };
-    setState(newState);
-    setIsLoading(true);
-    const result = await convertToSpotify({
-      data: playlistData,
-      authorizationCode: undefined,
-      token,
-      state: JSON.stringify(newState),
-    });
-    if (result.converted) {
-      console.log(result.authUrl);
+      ApiDomain.Spotify,
+      [state]
+    );
+    const handleClick = async () => {
+      const newState: OAuthState = { domain: ApiDomain.Spotify, id: uuidv4() };
+      setState(newState);
+      setIsLoading(true);
+      const result = await convertToSpotify({
+        data: playlistData,
+        authorizationCode: undefined,
+        token,
+        state: JSON.stringify(newState),
+      });
+      if (result.converted) {
+        setIsLoading(false);
+      }
+      if (result.authUrl) {
+        window.open(result.authUrl, "oauth_popup", "width=500,height=600");
+      }
       setIsLoading(false);
-    }
-    if (result.authUrl) {
-      window.open(result.authUrl, "oauth_popup", "width=500,height=600");
-    }
-  };
-  return (
-    <Button variant="spotify" onClick={handleClick} disabled={isLoading}>
-      Spotify
-    </Button>
-  );
-}
+    };
+    return (
+      <Button variant="spotify" onClick={handleClick} disabled={isLoading}>
+        Spotify
+      </Button>
+    );
+  }
+);
 
-export function ConvertToYoutubePlaylistButton({
-  playlistData,
-  token,
-}: {
-  playlistData: PlaylistJson[];
-  token: string | undefined;
-}) {
-  const { convertToYoutube } = usePlaylist();
-  const { toast } = useToast();
-  const [isLoading, setIsLoading] = useState(false);
-  const [state, setState] = useState<OAuthState | null>(null);
+export const ConvertToYoutubePlaylistButton = memo(
+  function ConvertToYoutubePlaylistButton({
+    playlistData,
+    token,
+  }: {
+    playlistData: PlaylistJson[];
+    token: string | undefined;
+  }) {
+    const { convertToYoutube } = usePlaylist();
+    const { toast } = useToast();
+    const [isLoading, setIsLoading] = useState(false);
+    const [state, setState] = useState<OAuthState | null>(null);
 
-  useOAuthMessage(
-    {
-      onSuccess: async (authCode, receivedState) => {
-        try {
-          setIsLoading(true);
-          if (!state) {
-            throw new Error("State is null");
-          }
-          if (!validateOAuthState(state, receivedState)) {
-            throw new Error("Invalid state");
-          }
-          const result = await convertToYoutube({
-            data: playlistData,
-            authorizationCode: authCode,
-            state: undefined,
-            token,
-          });
-          if (result.converted) {
-            toast({
-              title: "Success",
-              description: "Converted to Youtube playlist",
+    useOAuthMessage(
+      {
+        onSuccess: async (authCode, receivedState) => {
+          try {
+            setIsLoading(true);
+            if (!state) {
+              throw new Error("State is null");
+            }
+            if (!validateOAuthState(state, receivedState)) {
+              throw new Error("Invalid state");
+            }
+            const result = await convertToYoutube({
+              data: playlistData,
+              authorizationCode: authCode,
+              state: undefined,
+              token,
             });
-            window.open(result.playlistUrl, "_blank");
-          } else {
-            toast({
-              title: "Error",
-              description: "Failed to convert to Youtube playlist",
-            });
+            if (result.converted) {
+              if (result.playlistUrl) {
+                openInNewTab(result.playlistUrl);
+              }
+              toast({
+                title: "Success",
+                description: "Converted to Youtube playlist",
+              });
+            } else {
+              toast({
+                title: "Error",
+                description: "Failed to convert to Youtube playlist",
+              });
+            }
+          } catch (error) {
+            console.error(error);
+          } finally {
+            setIsLoading(false);
           }
-        } catch (error) {
+        },
+        onError: (error) => {
+          console.log("onError called");
           console.error(error);
-        } finally {
-          setIsLoading(false);
-        }
+        },
       },
-      onError: (error) => {
-        console.log("onError called");
-        console.error(error);
-      },
-    },
-    ApiDomain.Youtube
-  );
-  const handleClick = async () => {
-    const newState: OAuthState = { domain: ApiDomain.Youtube, id: uuidv4() };
-    setState(newState);
-    setIsLoading(true);
-    const result = await convertToYoutube({
-      data: playlistData,
-      authorizationCode: undefined,
-      token,
-      state: JSON.stringify(newState),
-    });
-    if (result.converted) {
-      console.log(result.authUrl);
-      setIsLoading(false);
-    }
-    if (result.authUrl) {
-      window.open(result.authUrl, "oauth_popup", "width=500,height=600");
-    }
-  };
-  return (
-    <Button variant="youtube" onClick={handleClick} disabled={isLoading}>
-      Youtube
-    </Button>
-  );
-}
+      ApiDomain.Youtube,
+      [state]
+    );
+    const handleClick = async () => {
+      const newState: OAuthState = { domain: ApiDomain.Youtube, id: uuidv4() };
+      setState(newState);
+      setIsLoading(true);
+      const result = await convertToYoutube({
+        data: playlistData,
+        authorizationCode: undefined,
+        token,
+        state: JSON.stringify(newState),
+      });
+      if (result.converted) {
+        console.log(result.authUrl);
+        setIsLoading(false);
+      }
+      if (result.authUrl) {
+        window.open(result.authUrl, "oauth_popup", "width=500,height=600");
+      }
+    };
+    return (
+      <Button variant="youtube" onClick={handleClick} disabled={isLoading}>
+        Youtube
+      </Button>
+    );
+  }
+);
 
 export function SavePlaylistButton({
   playlistData,

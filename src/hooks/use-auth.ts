@@ -38,20 +38,24 @@ export const useAuth = (): AuthHookResult => {
    * @param {string} password - User password
    * @returns {Promise<boolean>} Success status
    */
-  const signIn = async (id: string, password: string) => {
+  const signIn = async (id: string, password: string): Promise<boolean> => {
     try {
-      const { data } = await signInMutation({
-        variables: {
-          signInInput: { id, password },
-        },
+      const response = await signInMutation({
+        variables: { signInInput: { id, password } },
       });
-      console.log("signIn data", data);
-      if (data) {
-        setUser(data.signIn.user);
-        setToken(data.signIn.accessToken);
-        return true;
+
+      if (response.errors) {
+        throw new Error(response.errors[0].message);
       }
-      return false;
+
+      if (!response.data?.signIn) {
+        throw new Error("Login failed");
+      }
+
+      const { user, accessToken } = response.data.signIn;
+      setUser(user);
+      setToken(accessToken);
+      return true;
     } catch (error) {
       console.error("Sign in failed:", error);
       return false;

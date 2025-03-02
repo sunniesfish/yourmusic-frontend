@@ -9,6 +9,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Search, X } from "lucide-react";
 import Image from "next/image";
+import { memo } from "react";
 
 interface Song {
   title?: string | null;
@@ -21,7 +22,7 @@ interface SongTableProps {
   songs: Song[];
 }
 
-export function SongTable({ songs }: SongTableProps) {
+export const SongTable = memo(function SongTable({ songs }: SongTableProps) {
   return (
     <div className="rounded-md border">
       <Table>
@@ -81,4 +82,4 @@ export function SongTable({ songs }: SongTableProps) {
       </Table>
     </div>
   );
-}
+});

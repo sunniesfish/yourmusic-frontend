@@ -14,6 +14,7 @@ import {
   GetListButton,
   SavePlaylistButton,
 } from "../_components/buttons";
+import { useSanitizedData } from "@/hooks/use-sanitizedata";
 
 export default function NewPlaylistPage() {
   const { token, user } = useAuthStore();
@@ -24,6 +25,8 @@ export default function NewPlaylistPage() {
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [playlistLink, setPlaylistLink] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
+  const sanitizedPlaylistData = useSanitizedData(playlistData);
 
   const handleTitleEdit = () => {
     setIsEditingTitle(!isEditingTitle);
@@ -102,7 +105,7 @@ export default function NewPlaylistPage() {
         </div>
       </div>
       {isLoading && <Loader2 className="animate-spin h-4 w-4 " />}
-      {playlistData && (
+      {sanitizedPlaylistData && (
         <>
           <div className="flex items-center justify-center mb-2 mt-6">
             <p className="text-md font-medium text-blue-900 mb-1 ">
@@ -110,12 +113,12 @@ export default function NewPlaylistPage() {
             </p>
             <div className="flex items-center gap-2 ml-3 mr-3">
               <ConvertToSpotifyPlaylistButton
-                playlistData={playlistData}
+                playlistData={sanitizedPlaylistData}
                 token={token}
               />
               <p className="text-md font-medium text-blue-900 mb-1">or</p>
               <ConvertToYoutubePlaylistButton
-                playlistData={playlistData}
+                playlistData={sanitizedPlaylistData}
                 token={token}
               />
             </div>
@@ -125,13 +128,13 @@ export default function NewPlaylistPage() {
             <div className="flex justify-end mb-2">
               {token && (
                 <SavePlaylistButton
-                  playlistData={playlistData}
+                  playlistData={sanitizedPlaylistData}
                   playlistTitle={playlistTitle}
                   token={token}
                 />
               )}
             </div>
-            <SongTable songs={playlistData} />
+            <SongTable songs={sanitizedPlaylistData} />
           </div>
         </>
       )}

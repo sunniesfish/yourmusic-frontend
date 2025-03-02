@@ -309,10 +309,13 @@ const usePlaylistConverter = () => {
     token,
   }: ConvertToSpotifyParams): Promise<ConversionResult> => {
     try {
-      const { data: result } = await convertToSpotifyMutate({
+      const input = {
         variables: { listJSON: data, authorizationCode, state },
-        context: { headers: { Authorization: `Bearer ${token}` } },
-      });
+        context: token ? { headers: { Authorization: `Bearer ${token}` } } : {},
+      };
+      console.log("input", input);
+      const { data: result } = await convertToSpotifyMutate(input);
+      console.log("in useplaylist result", result);
       if (
         result?.convertToSpotifyPlaylist.__typename === "AuthRequiredResponse"
       ) {
