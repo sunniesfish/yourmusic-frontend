@@ -13,20 +13,21 @@ import { useUpdateUserMutation } from "@/graphql/hooks";
 import { Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useSanitizedData } from "@/hooks/use-sanitizedata";
+import { useHydration } from "@/hooks/use-hydration";
 
 export default function MyPage() {
-  const { isLoggedIn, token } = useAuth();
-  const { user, setUser } = useAuthStore();
+  const { user, setUser, token } = useAuthStore();
+  const isHydrated = useHydration();
   const [isEditingNickname, setIsEditingNickname] = useState(false);
   const [newNickname, setNewNickname] = useState(user?.name ?? "");
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
   const [updateUserMutation, { loading }] = useUpdateUserMutation();
   const { toast } = useToast();
   useEffect(() => {
-    if (!isLoggedIn()) {
+    if (!user && isHydrated) {
       redirect("/auth/sign-in");
     }
-  }, [isLoggedIn]);
+  }, [user, isHydrated]);
 
   const sanitizedUser = useSanitizedData(user);
 
@@ -83,18 +84,12 @@ export default function MyPage() {
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
               >
-                <circle
-                  cx="64"
-                  cy="40"
-                  r="24"
-                  stroke="black"
-                  stroke-width="8"
-                />
+                <circle cx="64" cy="40" r="24" stroke="black" strokeWidth="8" />
                 <path
                   d="M16 112c0-24 24-36 48-36s48 12 48 36"
                   stroke="black"
-                  stroke-width="8"
-                  stroke-linecap="round"
+                  strokeWidth="8"
+                  strokeLinecap="round"
                 />
               </svg>
             )}

@@ -5,16 +5,18 @@ import { useAuthStore } from "@/store/auth-store";
 import { useStatistic } from "@/hooks/use-statistic";
 import { redirect } from "next/navigation";
 import { RankCard } from "../../components/rank-card";
+import { useHydration } from "@/hooks/use-hydration";
 
 export default function StatisticsPage() {
   const { user } = useAuthStore();
+  const isHydrated = useHydration();
   const { statistic, isLoading } = useStatistic(user?.id ?? "");
 
   useEffect(() => {
-    if (!user || user.id === "") {
+    if (!user && isHydrated) {
       redirect("/auth/sign-in");
     }
-  }, [user]);
+  }, [user, isHydrated]);
   return (
     <>
       {isLoading || !statistic ? (

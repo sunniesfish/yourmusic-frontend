@@ -18,7 +18,7 @@ interface MenuItem {
 const MENU_ITEMS: MenuItem[] = [
   { href: "/playlists/newplaylist", label: "New Playlist" },
   { href: "/playlists", label: "My Playlists" },
-  // { href: "/statistics", label: "Statistics" },
+  { href: "/statistics", label: "Statistics" },
 ];
 
 export default function Navbar() {

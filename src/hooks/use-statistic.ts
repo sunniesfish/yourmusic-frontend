@@ -4,6 +4,7 @@ import {
   useSaveStatisticMutation,
 } from "@/graphql/hooks";
 import { MutateStatisticInput, Playlist, Statistic } from "@/graphql/types";
+import { useAuthStore } from "@/store/auth-store";
 import { useCallback, useState, useEffect } from "react";
 
 const ERROR_CODES = {
@@ -35,14 +36,21 @@ interface RankItem {
  * @param {string} userId - ID of the user to get statistics for
  * @returns {Object} Object containing statistic data and loading state
  */
-export const useStatistic = (userId: string) => {
+export const useStatistic = (
+  userId: string
+): {
+  statistic: Partial<Statistic> | null;
+  isLoading: boolean;
+} => {
   const [calculatedStatistic, setCalculatedStatistic] =
     useState<Partial<Statistic> | null>(null);
+  const { token } = useAuthStore();
   const { data: statisticData, loading: statisticLoading } =
     useGetStatisticQuery({
       variables: { userId },
       skip: !userId,
     });
+  console.log("statisticData", statisticData);
 
   const { data: playlistData, loading: playlistLoading } =
     useGetPlaylistsPageQuery({
@@ -52,12 +60,13 @@ export const useStatistic = (userId: string) => {
         page: 1,
         includeListJson: true,
       },
+      context: { headers: { Authorization: `Bearer ${token}` } },
       skip:
         !userId ||
         (statisticData?.statistic &&
           !isStatisticOutdated(statisticData.statistic)),
     });
-
+  console.log("playlistData", playlistData);
   const [saveStatistic] = useSaveStatisticMutation();
 
   const calculateStatisticWithWorker = useCallback(
@@ -139,6 +148,7 @@ export const useStatistic = (userId: string) => {
         setCalculatedStatistic(statisticInput);
       } catch (err) {
         console.error(err);
+        console.log("error", err);
         // 에러 처리를 위한 상태 관리가 필요하다면 여기에 추가
       }
     };
