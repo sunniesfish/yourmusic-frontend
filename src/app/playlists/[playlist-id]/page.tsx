@@ -11,8 +11,7 @@ export default async function PlaylistDetailPage({
 }: {
   params: { "playlist-id": string };
 }) {
-  const paramsData = await params;
-  const playlistId = paramsData["playlist-id"];
+  const playlistId = params["playlist-id"];
   const client = getClient();
   const { data, error } = await client.query<GetPlaylistQuery>({
     query: GetPlaylistDocument,
