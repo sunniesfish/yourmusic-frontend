@@ -6,6 +6,7 @@ import NotFound from "@/app/not-found";
 import { Suspense } from "react";
 import Loader from "@/components/loader";
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export default async function PlaylistDetailPage(props: any) {
   const playlistId = props.params["playlist-id"];
   const client = getClient();
