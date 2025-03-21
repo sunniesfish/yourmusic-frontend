@@ -6,12 +6,8 @@ import NotFound from "@/app/not-found";
 import { Suspense } from "react";
 import Loader from "@/components/loader";
 
-export default async function PlaylistDetailPage({
-  params,
-}: {
-  params: { "playlist-id": string };
-}) {
-  const playlistId = params["playlist-id"];
+export default async function PlaylistDetailPage(props: any) {
+  const playlistId = props.params["playlist-id"];
   const client = getClient();
   const { data, error } = await client.query<GetPlaylistQuery>({
     query: GetPlaylistDocument,
