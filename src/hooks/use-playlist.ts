@@ -5,7 +5,6 @@ import {
   useConvertToSpotifyPlaylistMutation,
   useConvertToYoutubePlaylistMutation,
   useGetPlaylistLazyQuery,
-  useGetPlaylistQuery,
   useGetPlaylistsPageLazyQuery,
   useReadPlaylistMutation,
   useRemovePlaylistMutation,
@@ -16,7 +15,7 @@ import { PlaylistQueryParams, PlaylistMutationParams } from "@/types/playlist";
 import { usePlaylistsStore } from "@/store/playlist-store";
 import { PlaylistJson, PlaylistsResponse } from "@/graphql/types";
 import { omit } from "lodash";
-import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
 /**
  * Hook for handling playlist-related queries
  * @returns Object containing playlist query methods
@@ -24,6 +23,7 @@ import { useState } from "react";
 const usePlaylistQuery = () => {
   const [getPlaylistsQuery] = useGetPlaylistsPageLazyQuery();
   const [getPlaylistQuery] = useGetPlaylistLazyQuery();
+  const { toast } = useToast();
 
   /**
    * Fetches playlists with pagination and sorting
@@ -49,7 +49,11 @@ const usePlaylistQuery = () => {
       }
       return null;
     } catch (err) {
-      console.error("Failed to fetch playlists:", err);
+      console.log(err);
+      toast({
+        title: "Error",
+        description: "Failed to fetch playlists",
+      });
       return null;
     }
   };
@@ -68,7 +72,11 @@ const usePlaylistQuery = () => {
       });
       return data || null;
     } catch (err) {
-      console.error("Failed to fetch playlist details:", err);
+      console.log(err);
+      toast({
+        title: "Error",
+        description: "Failed to fetch playlist",
+      });
       return null;
     }
   };
@@ -85,6 +93,7 @@ const usePlaylistMutation = () => {
   const [savePlaylistMutate] = useSavePlaylistMutation();
   const [removePlaylistMutate] = useRemovePlaylistMutation();
   const [updatePlaylistMutate] = useUpdatePlaylistMutation();
+  const { toast } = useToast();
   /**
    * Reads playlist data from a URL
    * @param {string} link - URL of the playlist
@@ -97,7 +106,11 @@ const usePlaylistMutation = () => {
       });
       return data?.readPlaylist || null;
     } catch (err) {
-      console.error("Failed to read playlist:", err);
+      console.log(err);
+      toast({
+        title: "Error",
+        description: "Failed to read playlist",
+      });
       return null;
     }
   };
@@ -131,24 +144,34 @@ const usePlaylistMutation = () => {
 
       return Boolean(result.data?.savePlaylist);
     } catch (err) {
+      console.log(err);
       if (err instanceof Error && "graphQLErrors" in err) {
-        console.error("GraphQL Errors:", err.graphQLErrors);
+        toast({
+          title: "Error",
+          description: "Failed to save playlist",
+        });
       }
       if (err instanceof Error && "networkError" in err) {
-        console.error("Network Error:", err.networkError);
+        toast({
+          title: "Error",
+          description: "Failed to save playlist",
+        });
       }
-      console.error("Full Error:", err);
       return false;
     }
   };
 
+  /**
+   * Updates a playlist
+   * @param {PlaylistMutationParams} params - Playlist ID, title, and JSON data
+   * @returns {Promise<boolean>} True if update was successful
+   */
   const updatePlaylist = async ({
     token,
     playlistId,
     playlistTitle,
     playlistJson,
   }: PlaylistMutationParams): Promise<boolean> => {
-    console.log("updatePlaylist", playlistTitle);
     if (!playlistTitle) return false;
     const cleanedPlaylistJson = playlistJson?.map((item) =>
       omit(item, ["__typename"])
@@ -163,6 +186,7 @@ const usePlaylistMutation = () => {
           },
         },
         context: { headers: { Authorization: `Bearer ${token}` } },
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         update: (cache: any) => {
           cache.evict({
             fieldName: "playlist",
@@ -172,16 +196,21 @@ const usePlaylistMutation = () => {
         },
       };
       const result = await updatePlaylistMutate(input);
-      console.log("updatePlaylist result", result);
       return Boolean(result.data?.updatePlaylist);
     } catch (err) {
+      console.log(err);
       if (err instanceof Error && "graphQLErrors" in err) {
-        console.error("GraphQL Errors:", err.graphQLErrors);
+        toast({
+          title: "Error",
+          description: "Failed to update playlist",
+        });
       }
       if (err instanceof Error && "networkError" in err) {
-        console.error("Network Error:", err.networkError);
+        toast({
+          title: "Error",
+          description: "Failed to update playlist",
+        });
       }
-      console.error("Full Error:", err);
       return false;
     }
   };
@@ -212,12 +241,11 @@ const usePlaylistMutation = () => {
           },
         ],
         update: (cache) => {
-          console.log("cache", cache);
-          // 캐시에서 해당 플레이리스트 제거
           cache.modify({
             fields: {
               playlists: (existingPlaylists = [], { readField }) => {
                 return existingPlaylists.filter(
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
                   (playlistRef: any) =>
                     readField("id", playlistRef) !== playlistId
                 );
@@ -226,14 +254,21 @@ const usePlaylistMutation = () => {
           });
         },
         onError: (error) => {
-          console.log("Failed to remove playlist:", error);
+          console.log(error);
+          toast({
+            title: "Error",
+            description: "Failed to remove playlist",
+          });
         },
       });
-      console.log("data", data);
 
       return !!data?.removePlaylist;
     } catch (err) {
-      console.error("Failed to remove playlist:", err);
+      console.log(err);
+      toast({
+        title: "Error",
+        description: "Failed to remove playlist",
+      });
       return false;
     }
   };
@@ -262,7 +297,7 @@ interface ConvertToSpotifyParams {
 const usePlaylistConverter = () => {
   const [convertToYoutubeMutate] = useConvertToYoutubePlaylistMutation();
   const [convertToSpotifyMutate] = useConvertToSpotifyPlaylistMutation();
-
+  const { toast } = useToast();
   const convertToYoutube = async ({
     data,
     authorizationCode,
@@ -274,7 +309,6 @@ const usePlaylistConverter = () => {
         variables: { listJSON: data, authorizationCode, state },
         context: { headers: { Authorization: `Bearer ${token}` } },
       });
-      console.log("result", result);
 
       if (
         result?.convertToYoutubePlaylist.__typename === "AuthRequiredResponse"
@@ -294,10 +328,13 @@ const usePlaylistConverter = () => {
           };
         }
       }
-      console.log("result", result);
       throw new Error("Failed to convert to YouTube playlist");
     } catch (err) {
-      console.log("Failed to convert to YouTube playlist:", err);
+      console.log(err);
+      toast({
+        title: "Error",
+        description: "Failed to convert to YouTube playlist",
+      });
       throw err;
     }
   };
@@ -313,9 +350,7 @@ const usePlaylistConverter = () => {
         variables: { listJSON: data, authorizationCode, state },
         context: token ? { headers: { Authorization: `Bearer ${token}` } } : {},
       };
-      console.log("input", input);
       const { data: result } = await convertToSpotifyMutate(input);
-      console.log("in useplaylist result", result);
       if (
         result?.convertToSpotifyPlaylist.__typename === "AuthRequiredResponse"
       ) {
@@ -336,7 +371,11 @@ const usePlaylistConverter = () => {
       }
       throw new Error("Failed to convert to Spotify playlist");
     } catch (err) {
-      console.log("Failed to convert to Spotify playlist:", err);
+      console.log(err);
+      toast({
+        title: "Error",
+        description: "Failed to convert to Spotify playlist",
+      });
       throw err;
     }
   };

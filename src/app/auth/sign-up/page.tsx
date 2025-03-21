@@ -31,7 +31,6 @@ export default function SignUpPage() {
   const handleIdCheck = async () => {
     const id = watch("id");
     const isAvailable = await checkIdAvailability(id);
-    console.log(isAvailable);
     if (isAvailable) {
       setIdAvailable(true);
     } else {

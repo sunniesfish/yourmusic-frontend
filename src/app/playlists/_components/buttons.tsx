@@ -4,12 +4,12 @@ import { Button } from "@/components/ui/button";
 import { GetPlaylistsPageDocument } from "@/graphql/hooks";
 import { ApiDomain, PlaylistJson } from "@/graphql/types";
 import { usePlaylist } from "@/hooks/use-playlist";
-import { toast, useToast } from "@/hooks/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { useOAuthMessage, validateOAuthState } from "@/lib/oauth";
 import { openInNewTab } from "@/lib/utils";
 import { OAuthState } from "@/types/api";
 import { useApolloClient } from "@apollo/client/react/hooks/useApolloClient";
-import { ArrowRight, Check, Copy, Edit2, Loader2 } from "lucide-react";
+import { ArrowRight, Check, Copy, Loader2 } from "lucide-react";
 import { useState, memo } from "react";
 import { v4 as uuidv4 } from "uuid";
 
@@ -146,6 +146,7 @@ export const ConvertToYoutubePlaylistButton = memo(
               token,
             });
             if (result.converted) {
+              console.log("converted result", result);
               if (result.playlistUrl) {
                 openInNewTab(result.playlistUrl);
               }
@@ -166,7 +167,6 @@ export const ConvertToYoutubePlaylistButton = memo(
           }
         },
         onError: (error) => {
-          console.log("onError called");
           console.error(error);
         },
       },
@@ -183,6 +183,7 @@ export const ConvertToYoutubePlaylistButton = memo(
         token,
         state: JSON.stringify(newState),
       });
+      console.log("result", result);
       if (result.converted) {
         console.log(result.authUrl);
         setIsLoading(false);
@@ -256,7 +257,7 @@ export function CopyLinkButton({ playlistId }: { playlistId: string }) {
   const handleCopyLink = () => {
     if (!playlistId) return;
     navigator.clipboard.writeText(
-      "http://" + process.env.NEXT_PUBLIC_DOMAIN + `/playlists/${playlistId}`
+      process.env.NEXT_PUBLIC_DOMAIN + `/playlists/${playlistId}`
     );
     toast({
       title: "Copied to clipboard",

@@ -1,4 +1,5 @@
 "use client";
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useMemo } from "react";
 
 /**
@@ -9,6 +10,7 @@ import { useMemo } from "react";
  */
 export const useSanitizedData = <T>(data: T): T => {
   return useMemo(() => {
+    if (!data) return data;
     const cache = new WeakMap<object, any>();
 
     const deepOmitTypename = (value: any): any => {

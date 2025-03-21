@@ -30,7 +30,7 @@ export default function Navbar() {
   const pathname = usePathname();
 
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
+    const handleClickOutside = () => {
       if (isDropdownOpen) {
         setIsDropdownOpen(false);
       }

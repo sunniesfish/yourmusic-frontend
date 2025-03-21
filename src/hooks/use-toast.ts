@@ -1,6 +1,5 @@
 "use client";
-
-// Inspired by react-hot-toast library
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import * as React from "react";
 
 import type { ToastActionElement, ToastProps } from "@/components/ui/toast";

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useAuthStore } from "@/store/auth-store";
 import { useStatistic } from "@/hooks/use-statistic";
 import { redirect } from "next/navigation";

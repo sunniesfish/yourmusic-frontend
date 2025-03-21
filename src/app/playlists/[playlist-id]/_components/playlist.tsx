@@ -1,6 +1,6 @@
 "use client";
 
-import { Download, Edit2 } from "lucide-react";
+import { Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SongTable } from "@/app/playlists/_components/song-table";
 import {
@@ -8,16 +8,10 @@ import {
   ConvertToYoutubePlaylistButton,
 } from "@/app/playlists/_components/buttons";
 import { useToast } from "@/hooks/use-toast";
-import { Playlist } from "@/graphql/types";
 import { useAuthStore } from "@/store/auth-store";
 import { useSanitizedData } from "@/hooks/use-sanitizedata";
 import { Title } from "./title";
-import {
-  GetPlaylistDocument,
-  useGetPlaylistLazyQuery,
-  useGetPlaylistQuery,
-  useGetPlaylistSuspenseQuery,
-} from "@/graphql/hooks";
+import { useGetPlaylistSuspenseQuery } from "@/graphql/hooks";
 
 const HEADERS = ["Title", "Artist", "Album"];
 const BOM = "\uFEFF";
@@ -34,18 +28,17 @@ export default function PlaylistDetail({
   playlistId,
   userId,
 }: PlaylistDetailProps) {
-  if (!playlistId) return <div>Playlist not found</div>;
   const { toast } = useToast();
   const { token, user } = useAuthStore();
 
   const { data } = useGetPlaylistSuspenseQuery({
     variables: { id: parseInt(playlistId) },
     fetchPolicy: "cache-first",
+    skip: !playlistId,
   });
-
-  console.log("playlist detail data", data);
-
   const sanitizedPlaylistJson = useSanitizedData(data?.playlist.listJson);
+  if (!playlistId) return <div>Playlist not found</div>;
+
   const handleDownloadCSV = () => {
     try {
       if (!sanitizedPlaylistJson) return;
@@ -79,6 +72,7 @@ export default function PlaylistDetail({
 
       setTimeout(() => URL.revokeObjectURL(url), 100);
     } catch (error) {
+      console.log(error);
       toast({
         variant: "destructive",
         title: "Error",

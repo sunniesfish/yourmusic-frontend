@@ -1,9 +1,7 @@
-# 사용자 회원가입
 mutation SignUp($signUpInput: SignUpInput!) {
   signUp(signUpInput: $signUpInput)
 }
 
-# 사용자 로그인
 mutation SignIn($signInInput: SignInInput!) {
   signIn(signInInput: $signInInput) {
     accessToken
@@ -15,12 +13,10 @@ mutation SignIn($signInInput: SignInInput!) {
   }
 }
 
-# 사용자 로그아웃
 mutation SignOut {
   signOut
 }
 
-# 비밀번호 변경
 mutation ChangePassword($input: ChangePasswordInput!) {
   changePassword(input: $input) {
     id
@@ -29,17 +25,14 @@ mutation ChangePassword($input: ChangePasswordInput!) {
   }
 }
 
-# 새로운 플레이리스트 저장
 mutation SavePlaylist($mutatePlaylistInput: MutatePlaylistInput!) {
   savePlaylist(mutatePlaylistInput: $mutatePlaylistInput)
 }
 
-# 플레이리스트 제거
 mutation RemovePlaylist($id: Int!) {
   removePlaylist(id: $id)
 }
 
-# 플레이리스트 읽기
 mutation ReadPlaylist($link: String!) {
   readPlaylist(link: $link) {
     title
@@ -49,7 +42,6 @@ mutation ReadPlaylist($link: String!) {
   }
 }
 
-# 플레이리스트를 YouTube로 변환
 mutation ConvertToYoutubePlaylist(
   $listJSON: [PlaylistJSONInput!]!
   $authorizationCode: String
@@ -76,7 +68,6 @@ mutation ConvertToYoutubePlaylist(
   }
 }
 
-# 플레이리스트를 Spotify로 변환
 mutation ConvertToSpotifyPlaylist(
   $listJSON: [PlaylistJSONInput!]!
   $authorizationCode: String
@@ -103,17 +94,14 @@ mutation ConvertToSpotifyPlaylist(
   }
 }
 
-# 사용자 업데이트
 mutation UpdateUser($updateUserInput: UpdateUserInput!) {
   updateUser(updateUserInput: $updateUserInput)
 }
 
-# 통계 저장
 mutation SaveStatistic($saveStatisticInput: MutateStatisticInput!) {
   saveStatistic(saveStatisticInput: $saveStatisticInput)
 }
 
-# 통계 업데이트
 mutation UpdateStatistic($updateStatisticInput: MutateStatisticInput!) {
   updateStatistic(updateStatisticInput: $updateStatisticInput) {
     userId
@@ -136,7 +124,6 @@ mutation UpdateStatistic($updateStatisticInput: MutateStatisticInput!) {
   }
 }
 
-# 통계 제거
 mutation RemoveStatistic($userId: ID!) {
   removeStatistic(userId: $userId) {
     userId
@@ -159,17 +146,14 @@ mutation RemoveStatistic($userId: ID!) {
   }
 }
 
-# 아이디 중복 확인
 mutation CheckId($id: String!) {
   checkId(id: $id)
 }
 
-# 비밀번호 확인
 mutation CheckPassword($password: String!) {
   checkPassword(password: $password)
 }
 
-# 플레이리스트 업데이트
 mutation UpdatePlaylist($mutatePlaylistInput: MutatePlaylistInput!) {
   updatePlaylist(mutatePlaylistInput: $mutatePlaylistInput)
 }

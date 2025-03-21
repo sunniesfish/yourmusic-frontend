@@ -50,7 +50,6 @@ export const useStatistic = (
       variables: { userId },
       skip: !userId,
     });
-  console.log("statisticData", statisticData);
 
   const { data: playlistData, loading: playlistLoading } =
     useGetPlaylistsPageQuery({
@@ -66,7 +65,6 @@ export const useStatistic = (
         (statisticData?.statistic &&
           !isStatisticOutdated(statisticData.statistic)),
     });
-  console.log("playlistData", playlistData);
   const [saveStatistic] = useSaveStatisticMutation();
 
   const calculateStatisticWithWorker = useCallback(
@@ -147,9 +145,8 @@ export const useStatistic = (
 
         setCalculatedStatistic(statisticInput);
       } catch (err) {
+        // need to handle error
         console.error(err);
-        console.log("error", err);
-        // 에러 처리를 위한 상태 관리가 필요하다면 여기에 추가
       }
     };
 

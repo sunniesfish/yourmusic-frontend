@@ -83,7 +83,7 @@ export default function PlaylistsPage() {
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-semibold tracking-tight">
-            {user?.name}'s Playlists
+            {user?.name} &apos;s Playlists
           </h1>
           <div className="flex items-center gap-4">
             <Select

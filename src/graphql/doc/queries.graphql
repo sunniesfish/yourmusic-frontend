@@ -1,4 +1,3 @@
-# User 정보를 가져오는 쿼리
 query GetUser {
   user {
     id
@@ -7,7 +6,6 @@ query GetUser {
   }
 }
 
-# 단일 플레이리스트 정보를 가져오는 쿼리
 query GetPlaylist($id: Int!) {
   playlist(id: $id) {
     id
@@ -24,7 +22,6 @@ query GetPlaylist($id: Int!) {
   }
 }
 
-# 플레이리스트 페이지네이션 쿼리
 query GetPlaylistsPage(
   $page: Int!
   $limit: Int!
@@ -49,7 +46,6 @@ query GetPlaylistsPage(
   }
 }
 
-# 사용자 통계 정보를 가져오는 쿼리
 query GetStatistic($userId: ID!) {
   statistic(userId: $userId) {
     userId

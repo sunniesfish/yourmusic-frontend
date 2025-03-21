@@ -8,7 +8,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
-import { useEffect } from "react";
 
 interface SignInFormData {
   id: string;
@@ -31,17 +30,9 @@ export default function SignInPage() {
   });
   const { toast } = useToast();
 
-  useEffect(() => {
-    console.log("Form state changed:", { errors });
-  }, [errors]);
-
   const onSubmit = async (data: SignInFormData) => {
-    console.log("Form submission started", { data });
-
     try {
-      console.log("Before signin mutation");
       const result = await signIn(data.id, data.password);
-      console.log("After signin mutation", { result });
 
       if (!result) {
         setError("password", {
@@ -56,18 +47,12 @@ export default function SignInPage() {
       });
       router.push("/playlists/newplaylist");
     } catch (error) {
-      console.error("Detailed error:", error);
       setError("root.serverError", {
         type: "manual",
-        message: "An error occurred during sign in",
+        message: "An error occurred during sign in : " + error,
       });
     }
   };
-
-  const onError = (errors: any) => {
-    console.log("Form validation errors:", errors);
-  };
-
   return (
     <>
       <div className="space-y-6">
@@ -81,7 +66,7 @@ export default function SignInPage() {
         </div>
 
         <form
-          onSubmit={handleSubmit(onSubmit, onError)}
+          onSubmit={handleSubmit(onSubmit)}
           className="space-y-4"
           noValidate
         >
@@ -142,7 +127,7 @@ export default function SignInPage() {
 
         <div className="text-center space-y-2">
           <p className="text-sm text-muted-foreground">
-            Don't have an account?{" "}
+            Don&apos;t have an account?{" "}
             <Link
               href="/auth/sign-up"
               className="underline underline-offset-4 hover:text-primary"

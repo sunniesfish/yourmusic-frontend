@@ -1,10 +1,5 @@
 import { PlaylistsResponse, Playlist, Statistic } from "@/graphql/types";
-import {
-  ApolloClient,
-  InMemoryCache,
-  createHttpLink,
-  FieldFunctionOptions,
-} from "@apollo/client";
+import { ApolloClient, InMemoryCache, createHttpLink } from "@apollo/client";
 
 export function getClient() {
   return new ApolloClient({
@@ -17,6 +12,7 @@ export function getClient() {
               merge(
                 existing: PlaylistsResponse | undefined,
                 incoming: PlaylistsResponse,
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 { args }: any
               ) {
                 if (!existing || !args?.page || args.page === 1) {
