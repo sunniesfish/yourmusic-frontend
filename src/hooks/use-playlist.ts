@@ -104,7 +104,10 @@ const usePlaylistMutation = () => {
       const { data } = await readPlaylistMutate({
         variables: { link },
       });
-      return data?.readPlaylist || null;
+      console.log("readPlaylist", data);
+      if (!data || !data.readPlaylist) throw Error("Failed to read playlist");
+
+      return data.readPlaylist;
     } catch (err) {
       console.log(err);
       toast({
