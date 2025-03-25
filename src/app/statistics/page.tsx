@@ -19,9 +19,15 @@ export default function StatisticsPage() {
   }, [user, isHydrated]);
   return (
     <>
-      {isLoading || !statistic ? (
+      {isLoading && !statistic ? (
         <div className="container mx-auto px-4 py-8">
           <div className="text-center text-muted-foreground">Loading...</div>
+        </div>
+      ) : !isLoading && !statistic ? (
+        <div className="container mx-auto px-4 py-8">
+          <div className="text-center text-muted-foreground">
+            No statistic data
+          </div>
         </div>
       ) : (
         <div className="container mx-auto px-4 py-8">

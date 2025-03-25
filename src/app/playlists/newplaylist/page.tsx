@@ -17,6 +17,7 @@ import {
 import { useSanitizedData } from "@/hooks/use-sanitizedata";
 
 export default function NewPlaylistPage() {
+  console.log("NewPlaylistPage");
   const { token, user } = useAuthStore();
   const { readPlaylist } = usePlaylist();
 

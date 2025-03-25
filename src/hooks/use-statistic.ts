@@ -5,12 +5,13 @@ import {
 } from "@/graphql/hooks";
 import { MutateStatisticInput, Playlist, Statistic } from "@/graphql/types";
 import { useAuthStore } from "@/store/auth-store";
-import { useCallback, useState, useEffect } from "react";
+import { useCallback, useState, useEffect, useMemo } from "react";
 
 const ERROR_CODES = {
   NO_USER: "NO_USER",
   FETCH_ERROR: "FETCH_ERROR",
   SAVE_ERROR: "SAVE_ERROR",
+  NO_DATA: "NO_DATA",
 } as const;
 
 type StatisticErrorCode = keyof typeof ERROR_CODES;
@@ -42,13 +43,15 @@ export const useStatistic = (
   statistic: Partial<Statistic> | null;
   isLoading: boolean;
 } => {
+  const [isCalculating, setIsCalculating] = useState(false);
+
   const [calculatedStatistic, setCalculatedStatistic] =
     useState<Partial<Statistic> | null>(null);
   const { token } = useAuthStore();
   const { data: statisticData, loading: statisticLoading } =
     useGetStatisticQuery({
       variables: { userId },
-      skip: !userId,
+      skip: !userId || userId === "",
     });
 
   const { data: playlistData, loading: playlistLoading } =
@@ -62,6 +65,7 @@ export const useStatistic = (
       context: { headers: { Authorization: `Bearer ${token}` } },
       skip:
         !userId ||
+        userId === "" ||
         (statisticData?.statistic &&
           !isStatisticOutdated(statisticData.statistic)),
     });
@@ -69,24 +73,35 @@ export const useStatistic = (
 
   const calculateStatisticWithWorker = useCallback(
     (playlists: Playlist[]): Promise<TopRanks> => {
-      return new Promise((resolve, reject) => {
-        const worker = new Worker(
-          new URL("../../public/statistics.js", import.meta.url)
+      if (playlists.length === 0) {
+        throw createStatisticError(
+          ERROR_CODES.NO_DATA,
+          "No data to calculate statistic"
         );
+      }
 
-        const cleanup = () => worker.terminate();
+      return new Promise((resolve, reject) => {
+        try {
+          const worker = new Worker(
+            new URL("../../public/statistics.js", import.meta.url)
+          );
 
-        worker.onmessage = (event) => {
-          cleanup();
-          resolve(event.data);
-        };
+          const cleanup = () => worker.terminate();
 
-        worker.onerror = (error) => {
-          cleanup();
+          worker.onmessage = (event) => {
+            cleanup();
+            resolve(event.data);
+          };
+
+          worker.onerror = (error) => {
+            cleanup();
+            reject(error);
+          };
+
+          worker.postMessage({ playlists });
+        } catch (error) {
           reject(error);
-        };
-
-        worker.postMessage({ playlists });
+        }
       });
     },
     []
@@ -94,9 +109,10 @@ export const useStatistic = (
 
   useEffect(() => {
     const calculateAndSetStatistic = async () => {
-      if (!userId) {
+      if (!userId || userId === "" || isCalculating) {
         return;
       }
+      setIsCalculating(true);
 
       try {
         if (
@@ -117,7 +133,12 @@ export const useStatistic = (
         const topRanks = await calculateStatisticWithWorker(
           playlistData.playlistsPage.playlists
         );
-
+        if (topRanks.titleRank.length === 0) {
+          throw createStatisticError(
+            ERROR_CODES.NO_DATA,
+            "No data to calculate statistic"
+          );
+        }
         const statisticInput: MutateStatisticInput = {
           userId,
           artistRankJson: {
@@ -145,8 +166,9 @@ export const useStatistic = (
 
         setCalculatedStatistic(statisticInput);
       } catch (err) {
-        // need to handle error
-        console.error(err);
+        setCalculatedStatistic(null);
+      } finally {
+        setIsCalculating(false);
       }
     };
 
@@ -155,18 +177,24 @@ export const useStatistic = (
     }
   }, [
     userId,
-    statisticData,
-    playlistData,
+    calculateStatisticWithWorker,
+    isCalculating,
+    statisticData?.statistic?.updatedAt,
+    !!playlistData?.playlistsPage?.playlists,
+    saveStatistic,
     statisticLoading,
     playlistLoading,
-    saveStatistic,
-    calculateStatisticWithWorker,
   ]);
 
-  return {
-    statistic: calculatedStatistic,
-    isLoading: statisticLoading || playlistLoading,
-  };
+  const result = useMemo(
+    () => ({
+      statistic: calculatedStatistic,
+      isLoading: isCalculating,
+    }),
+    [calculatedStatistic, isCalculating]
+  );
+
+  return result;
 };
 
 function isStatisticOutdated(statistic: { updatedAt: string }): boolean {

@@ -54,7 +54,9 @@ export default function SignUpPage() {
 
   return (
     <>
-      <h1 className="text-2xl font-semibold text-center mb-6">Sign Up</h1>
+      <h1 className="text-xl font-medium text-center text-muted-foreground">
+        Sign Up
+      </h1>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <div className="space-y-2">
           <Label htmlFor="id">ID</Label>
