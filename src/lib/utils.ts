@@ -52,6 +52,7 @@ export function openInNewTab(url: string): void {
       }, 100);
     }
   } catch (error) {
+    console.log(error);
     toast({
       title: "Error",
       description: "An error occurred while opening the URL",
