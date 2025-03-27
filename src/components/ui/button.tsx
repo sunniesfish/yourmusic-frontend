@@ -20,15 +20,16 @@ const buttonVariants = cva(
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
         spotify:
-          "bg-[#1DB954] text-white shadow-sm hover:bg-[#1ed760] active:bg-[#169c46] rounded-full",
+          "bg-[#1DB954] w-56 text-white shadow-sm hover:bg-[#1ed760] active:bg-[#169c46]",
         youtube:
-          "bg-[#FF0000] text-white shadow-sm hover:bg-[#ff1a1a] active:bg-[#cc0000]",
+          "bg-[#FF0000] w-56 text-white shadow-sm hover:bg-[#ff1a1a] active:bg-[#cc0000]",
       },
       size: {
         default: "h-9 px-4 py-2",
         sm: "h-8 rounded-md px-3 text-xs",
         lg: "h-10 rounded-md px-8",
         icon: "h-9 w-9",
+        convert: "px-2 py-2 h-9",
       },
     },
     defaultVariants: {

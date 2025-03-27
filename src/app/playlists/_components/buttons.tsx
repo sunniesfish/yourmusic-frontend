@@ -1,12 +1,12 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { GetPlaylistsPageDocument } from "@/graphql/hooks";
 import { ApiDomain, PlaylistJson } from "@/graphql/types";
 import { usePlaylist } from "@/hooks/use-playlist";
 import { useToast } from "@/hooks/use-toast";
 import { useOAuthMessage, validateOAuthState } from "@/lib/oauth";
-import { openInNewTab } from "@/lib/utils";
 import { OAuthState } from "@/types/api";
 import { useApolloClient } from "@apollo/client/react/hooks/useApolloClient";
 import { ArrowRight, Check, Copy, Loader2 } from "lucide-react";
@@ -45,11 +45,11 @@ export const ConvertToSpotifyPlaylistButton = memo(
     const { toast } = useToast();
     const [isLoading, setIsLoading] = useState(false);
     const [state, setState] = useState<OAuthState | null>(null);
+    const [spotifyPlaylistUrl, setSpotifyPlaylistUrl] = useState<string>("");
     useOAuthMessage(
       {
         onSuccess: async (authCode, receivedState) => {
           try {
-            setIsLoading(true);
             if (!state) {
               throw new Error("State is null");
             }
@@ -63,9 +63,6 @@ export const ConvertToSpotifyPlaylistButton = memo(
               token,
             });
             if (result.converted) {
-              if (result.playlistUrl) {
-                openInNewTab(result.playlistUrl);
-              }
               toast({
                 title: "Success",
                 description: "Converted to Spotify playlist",
@@ -77,40 +74,70 @@ export const ConvertToSpotifyPlaylistButton = memo(
               });
             }
           } catch (error) {
-            console.error(error);
+            console.log(error);
+            toast({
+              title: "Error",
+              description: "Failed to convert to Spotify playlist",
+            });
           } finally {
             setIsLoading(false);
           }
         },
         onError: (error) => {
           console.error(error);
+          toast({
+            title: "Error",
+            description: "Failed to convert to Spotify playlist",
+          });
         },
       },
       ApiDomain.Spotify,
       [state]
     );
     const handleClick = async () => {
+      setIsLoading(true);
       const newState: OAuthState = { domain: ApiDomain.Spotify, id: uuidv4() };
       setState(newState);
-      setIsLoading(true);
       const result = await convertToSpotify({
         data: playlistData,
         authorizationCode: undefined,
         token,
         state: JSON.stringify(newState),
       });
-      if (result.converted) {
+      if (result.converted && result.playlistUrl) {
+        setSpotifyPlaylistUrl(result.playlistUrl);
         setIsLoading(false);
       }
       if (result.authUrl) {
         window.open(result.authUrl, "oauth_popup", "width=500,height=600");
       }
-      setIsLoading(false);
     };
     return (
-      <Button variant="spotify" onClick={handleClick} disabled={isLoading}>
-        Spotify
-      </Button>
+      <div className="flex w-full gap-2">
+        <Button
+          variant="spotify"
+          onClick={handleClick}
+          disabled={isLoading}
+          size="convert"
+        >
+          {isLoading ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            <>
+              Convert to Spotify
+              <ArrowRight className="h-4 w-4" />
+            </>
+          )}
+        </Button>
+
+        <Input
+          className="grow text-center"
+          type="text"
+          placeholder="Spotify playlist URL"
+          value={spotifyPlaylistUrl}
+          readOnly
+        />
+      </div>
     );
   }
 );
@@ -127,6 +154,7 @@ export const ConvertToYoutubePlaylistButton = memo(
     const { toast } = useToast();
     const [isLoading, setIsLoading] = useState(false);
     const [state, setState] = useState<OAuthState | null>(null);
+    const [youtubePlaylistUrl, setYoutubePlaylistUrl] = useState<string>("");
 
     useOAuthMessage(
       {
@@ -146,10 +174,6 @@ export const ConvertToYoutubePlaylistButton = memo(
               token,
             });
             if (result.converted) {
-              console.log("converted result", result);
-              if (result.playlistUrl) {
-                openInNewTab(result.playlistUrl);
-              }
               toast({
                 title: "Success",
                 description: "Converted to Youtube playlist",
@@ -162,30 +186,37 @@ export const ConvertToYoutubePlaylistButton = memo(
             }
           } catch (error) {
             console.error(error);
+            toast({
+              title: "Error",
+              description: "Failed to convert to Youtube playlist",
+            });
           } finally {
             setIsLoading(false);
           }
         },
         onError: (error) => {
           console.error(error);
+          toast({
+            title: "Error",
+            description: "Failed to convert to Youtube playlist",
+          });
         },
       },
       ApiDomain.Youtube,
       [state]
     );
     const handleClick = async () => {
+      setIsLoading(true);
       const newState: OAuthState = { domain: ApiDomain.Youtube, id: uuidv4() };
       setState(newState);
-      setIsLoading(true);
       const result = await convertToYoutube({
         data: playlistData,
         authorizationCode: undefined,
         token,
         state: JSON.stringify(newState),
       });
-      console.log("result", result);
-      if (result.converted) {
-        console.log(result.authUrl);
+      if (result.converted && result.playlistUrl) {
+        setYoutubePlaylistUrl(result.playlistUrl);
         setIsLoading(false);
       }
       if (result.authUrl) {
@@ -193,9 +224,30 @@ export const ConvertToYoutubePlaylistButton = memo(
       }
     };
     return (
-      <Button variant="youtube" onClick={handleClick} disabled={isLoading}>
-        Youtube
-      </Button>
+      <div className="flex w-full gap-2">
+        <Button
+          variant="youtube"
+          onClick={handleClick}
+          disabled={isLoading}
+          size="convert"
+        >
+          {isLoading ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            <>
+              Convert to Youtube
+              <ArrowRight className=" h-4 w-4" />
+            </>
+          )}
+        </Button>
+        <Input
+          className="grow text-center"
+          type="text"
+          placeholder="Youtube playlist URL"
+          value={youtubePlaylistUrl}
+          readOnly
+        />
+      </div>
     );
   }
 );

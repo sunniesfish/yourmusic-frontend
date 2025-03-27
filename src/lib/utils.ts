@@ -6,44 +6,56 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export function openInNewTab(url: string) {
-  console.log("openInNewTab called", url);
+export function openInNewTab(url: string): void {
   try {
-    new URL(url);
-  } catch {
-    toast({
-      title: "Error",
-      description: "Invalid URL provided",
-      variant: "destructive",
-    });
-    return;
-  }
+    const urlObj = new URL(url);
 
-  const newWindow = window.open(
-    url,
-    "_blank",
-    [
+    if (!["http:", "https:"].includes(urlObj.protocol)) {
+      toast({
+        title: "Invalid URL",
+        description: "Not a safe web address",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const popupFeatures = [
       "noopener",
       "noreferrer",
       "width=500",
       "height=600",
-      "left=" + (window.screenX + (window.outerWidth - 500) / 2),
-      "top=" + (window.screenY + (window.outerHeight - 600) / 2),
-    ].join(",")
-  );
+      `left=${window.screenX + (window.outerWidth - 500) / 2}`,
+      `top=${window.screenY + (window.outerHeight - 600) / 2}`,
+    ].join(",");
 
-  // 팝업 차단 확인
-  if (!newWindow) {
+    const newWindow = window.open(url, "_blank", popupFeatures);
+
+    if (
+      !newWindow ||
+      newWindow.closed ||
+      typeof newWindow.closed === "undefined"
+    ) {
+      toast({
+        title: "Popup blocked",
+        description: "Please allow popups in your browser settings",
+        variant: "destructive",
+      });
+
+      setTimeout(() => {
+        const link = document.createElement("a");
+        link.href = url;
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }, 100);
+    }
+  } catch (error) {
     toast({
-      title: "팝업이 차단됨",
-      description: "브라우저 설정에서 팝업을 허용해주세요",
+      title: "Error",
+      description: "An error occurred while opening the URL",
       variant: "destructive",
     });
-    // 대체 방법 제공
-    const link = document.createElement("a");
-    link.href = url;
-    link.target = "_blank";
-    link.rel = "noopener noreferrer";
-    link.click();
   }
 }

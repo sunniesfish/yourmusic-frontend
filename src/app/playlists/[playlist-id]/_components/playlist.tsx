@@ -93,7 +93,7 @@ export default function PlaylistDetail({
           />
         </div>
 
-        <div className="flex flex-wrap gap-4">
+        <div className="flex flex-col md:flex gap-4 w-full">
           <ConvertToYoutubePlaylistButton
             playlistData={sanitizedPlaylistJson || []}
             token={token}
