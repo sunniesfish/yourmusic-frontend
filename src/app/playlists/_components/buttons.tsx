@@ -50,6 +50,7 @@ export const ConvertToSpotifyPlaylistButton = memo(
       {
         onSuccess: async (authCode, receivedState) => {
           try {
+            setIsLoading(true);
             if (!state) {
               throw new Error("State is null");
             }
@@ -62,6 +63,7 @@ export const ConvertToSpotifyPlaylistButton = memo(
               state: undefined,
               token,
             });
+            console.log("on success", result);
             if (result.converted) {
               toast({
                 title: "Success",
@@ -104,6 +106,7 @@ export const ConvertToSpotifyPlaylistButton = memo(
         token,
         state: JSON.stringify(newState),
       });
+      console.log("handle click", result);
       if (result.converted && result.playlistUrl) {
         setSpotifyPlaylistUrl(result.playlistUrl);
         setIsLoading(false);
@@ -173,6 +176,7 @@ export const ConvertToYoutubePlaylistButton = memo(
               state: undefined,
               token,
             });
+            console.log("on success", result);
             if (result.converted) {
               toast({
                 title: "Success",
@@ -215,6 +219,7 @@ export const ConvertToYoutubePlaylistButton = memo(
         token,
         state: JSON.stringify(newState),
       });
+      console.log("handle click", result);
       if (result.converted && result.playlistUrl) {
         setYoutubePlaylistUrl(result.playlistUrl);
         setIsLoading(false);
