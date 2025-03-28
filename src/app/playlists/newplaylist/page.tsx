@@ -109,21 +109,16 @@ export default function NewPlaylistPage() {
       {sanitizedPlaylistData && (
         <>
           <div className="flex items-center justify-center mb-2 mt-6">
-            <p className="text-md font-medium text-blue-900 mb-1 ">
-              Convert To
-            </p>
-            <div className="flex items-center gap-2 ml-3 mr-3">
+            <div className="flex flex-col md:flex gap-4 w-full">
               <ConvertToSpotifyPlaylistButton
                 playlistData={sanitizedPlaylistData}
                 token={token}
               />
-              <p className="text-md font-medium text-blue-900 mb-1">or</p>
               <ConvertToYoutubePlaylistButton
                 playlistData={sanitizedPlaylistData}
                 token={token}
               />
             </div>
-            <p className="text-md font-medium text-blue-900 mb-1">Playlist</p>
           </div>
           <div className="flex flex-col mb-6 mt-6">
             <div className="flex justify-end mb-2">

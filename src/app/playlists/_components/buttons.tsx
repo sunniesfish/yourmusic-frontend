@@ -64,7 +64,8 @@ export const ConvertToSpotifyPlaylistButton = memo(
               token,
             });
             console.log("on success", result);
-            if (result.converted) {
+            if (result.converted && result.playlistUrl) {
+              setSpotifyPlaylistUrl(result.playlistUrl);
               toast({
                 title: "Success",
                 description: "Converted to Spotify playlist",
@@ -106,7 +107,6 @@ export const ConvertToSpotifyPlaylistButton = memo(
         token,
         state: JSON.stringify(newState),
       });
-      console.log("handle click", result);
       if (result.converted && result.playlistUrl) {
         setSpotifyPlaylistUrl(result.playlistUrl);
         setIsLoading(false);
@@ -177,7 +177,8 @@ export const ConvertToYoutubePlaylistButton = memo(
               token,
             });
             console.log("on success", result);
-            if (result.converted) {
+            if (result.converted && result.playlistUrl) {
+              setYoutubePlaylistUrl(result.playlistUrl);
               toast({
                 title: "Success",
                 description: "Converted to Youtube playlist",
@@ -219,7 +220,6 @@ export const ConvertToYoutubePlaylistButton = memo(
         token,
         state: JSON.stringify(newState),
       });
-      console.log("handle click", result);
       if (result.converted && result.playlistUrl) {
         setYoutubePlaylistUrl(result.playlistUrl);
         setIsLoading(false);
