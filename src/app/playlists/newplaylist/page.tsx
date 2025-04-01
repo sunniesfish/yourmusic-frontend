@@ -17,7 +17,6 @@ import {
 import { useSanitizedData } from "@/hooks/use-sanitizedata";
 
 export default function NewPlaylistPage() {
-  console.log("NewPlaylistPage");
   const { token, user } = useAuthStore();
   const { readPlaylist } = usePlaylist();
 
@@ -60,7 +59,7 @@ export default function NewPlaylistPage() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <>
       <div className="relative inline-flex items-center gap-4 pb-2">
         {user && (
           <Button
@@ -134,6 +133,6 @@ export default function NewPlaylistPage() {
           </div>
         </>
       )}
-    </div>
+    </>
   );
 }

@@ -35,7 +35,6 @@ export default function ChangePasswordModal({
       });
       return;
     }
-    console.log("newPassword", newPassword);
     const result = await changePasswordMutation({
       variables: {
         input: { id: id ?? "", password: newPassword },

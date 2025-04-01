@@ -21,6 +21,7 @@ export function Title({
 }: TitleProps) {
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [title, setTitle] = useState(playlistName);
   const { register, handleSubmit, setFocus } = useForm<{ name: string }>({
     defaultValues: {
       name: playlistName,
@@ -36,8 +37,8 @@ export function Title({
       playlistTitle: data.name,
       token,
     });
-    console.log(res);
     if (res) {
+      setTitle(data.name);
       toast({
         title: "Playlist title updated",
       });
@@ -104,7 +105,7 @@ export function Title({
           </>
         ) : (
           <h1 className="text-2xl font-semibold min-w-[200px] max-w-[300px] md:min-w-[300px] md:max-w-[600px] xl:min-w-[400px] xl:max-w-[800px] text-center">
-            {playlistName}
+            {title}
           </h1>
         )}
       </div>

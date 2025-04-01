@@ -11,7 +11,6 @@ import Id from "./_components/id";
 import ProfileImg from "./_components/profileImg";
 
 export default function MyPage() {
-  console.log("MyPage");
   const { isLoggedIn } = useAuth();
   const isHydrated = useHydration();
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
