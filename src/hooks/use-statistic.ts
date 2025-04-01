@@ -106,86 +106,76 @@ export const useStatistic = (
     },
     []
   );
+  const calculateAndSetStatistic = async () => {
+    if (!userId || userId === "" || isCalculating) {
+      return;
+    }
+    setIsCalculating(true);
 
-  useEffect(() => {
-    const calculateAndSetStatistic = async () => {
-      if (!userId || userId === "" || isCalculating) {
+    try {
+      if (
+        statisticData?.statistic &&
+        !isStatisticOutdated(statisticData.statistic)
+      ) {
+        setCalculatedStatistic(statisticData.statistic);
         return;
       }
-      setIsCalculating(true);
 
-      try {
-        if (
-          statisticData?.statistic &&
-          !isStatisticOutdated(statisticData.statistic)
-        ) {
-          setCalculatedStatistic(statisticData.statistic);
-          return;
-        }
-
-        if (!playlistData?.playlistsPage?.playlists) {
-          throw createStatisticError(
-            ERROR_CODES.FETCH_ERROR,
-            "Fail to fetch playlist data"
-          );
-        }
-
-        const topRanks = await calculateStatisticWithWorker(
-          playlistData.playlistsPage.playlists
+      if (!playlistData?.playlistsPage?.playlists) {
+        throw createStatisticError(
+          ERROR_CODES.FETCH_ERROR,
+          "Fail to fetch playlist data"
         );
-        if (topRanks.titleRank.length === 0) {
-          throw createStatisticError(
-            ERROR_CODES.NO_DATA,
-            "No data to calculate statistic"
-          );
-        }
-        const statisticInput: MutateStatisticInput = {
-          userId,
-          artistRankJson: {
-            first: topRanks.artistRank[0]?.name ?? "",
-            second: topRanks.artistRank[1]?.name ?? "",
-            third: topRanks.artistRank[2]?.name ?? "",
-          },
-          albumRankJson: {
-            first: topRanks.albumRank[0]?.name ?? "",
-            second: topRanks.albumRank[1]?.name ?? "",
-            third: topRanks.albumRank[2]?.name ?? "",
-          },
-          titleRankJson: {
-            first: topRanks.titleRank[0]?.name ?? "",
-            second: topRanks.titleRank[1]?.name ?? "",
-            third: topRanks.titleRank[2]?.name ?? "",
-          },
-        };
-
-        await saveStatistic({
-          variables: {
-            saveStatisticInput: statisticInput,
-          },
-        });
-
-        setCalculatedStatistic(statisticInput);
-      } catch (err) {
-        console.log(err);
-        setCalculatedStatistic(null);
-      } finally {
-        setIsCalculating(false);
       }
-    };
 
-    if (!statisticLoading && !playlistLoading) {
+      const topRanks = await calculateStatisticWithWorker(
+        playlistData.playlistsPage.playlists
+      );
+      if (topRanks.titleRank.length === 0) {
+        throw createStatisticError(
+          ERROR_CODES.NO_DATA,
+          "No data to calculate statistic"
+        );
+      }
+      const statisticInput: MutateStatisticInput = {
+        userId,
+        artistRankJson: {
+          first: topRanks.artistRank[0]?.name ?? "",
+          second: topRanks.artistRank[1]?.name ?? "",
+          third: topRanks.artistRank[2]?.name ?? "",
+        },
+        albumRankJson: {
+          first: topRanks.albumRank[0]?.name ?? "",
+          second: topRanks.albumRank[1]?.name ?? "",
+          third: topRanks.albumRank[2]?.name ?? "",
+        },
+        titleRankJson: {
+          first: topRanks.titleRank[0]?.name ?? "",
+          second: topRanks.titleRank[1]?.name ?? "",
+          third: topRanks.titleRank[2]?.name ?? "",
+        },
+      };
+
+      await saveStatistic({
+        variables: {
+          saveStatisticInput: statisticInput,
+        },
+      });
+
+      setCalculatedStatistic(statisticInput);
+    } catch (err) {
+      console.log(err);
+      setCalculatedStatistic(null);
+    } finally {
+      setIsCalculating(false);
+    }
+  };
+
+  useEffect(() => {
+    if (!statisticLoading && !playlistLoading && !isCalculating) {
       calculateAndSetStatistic();
     }
-  }, [
-    userId,
-    calculateStatisticWithWorker,
-    isCalculating,
-    statisticData?.statistic?.updatedAt,
-    !!playlistData?.playlistsPage?.playlists,
-    saveStatistic,
-    statisticLoading,
-    playlistLoading,
-  ]);
+  }, [userId, statisticLoading, playlistLoading]);
 
   const result = useMemo(
     () => ({
