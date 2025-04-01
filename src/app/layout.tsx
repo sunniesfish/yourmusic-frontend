@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import ApolloProvider from "@/providers/apollo-provider";
 import { Toaster } from "@/components/ui/toaster";
 
 export const metadata: Metadata = {
@@ -16,7 +15,7 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body>
-        <ApolloProvider>{children}</ApolloProvider>
+        {children}
         <Toaster />
       </body>
     </html>

@@ -3,8 +3,6 @@ import PlaylistDetail from "./_components/playlist";
 import { GetPlaylistDocument } from "@/graphql/hooks";
 import { GetPlaylistQuery } from "@/graphql/operations";
 import NotFound from "@/app/not-found";
-import { Suspense } from "react";
-import Loader from "@/components/loader";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export default async function PlaylistDetailPage(props: any) {
@@ -14,13 +12,20 @@ export default async function PlaylistDetailPage(props: any) {
     query: GetPlaylistDocument,
     variables: { id: parseInt(playlistId) },
   });
+
   if (error) {
     return <NotFound />;
   }
 
   return (
-    <Suspense fallback={<Loader message="Loading playlist..." />}>
-      <PlaylistDetail playlistId={playlistId} userId={data?.playlist.userId} />
-    </Suspense>
+    <div className="container mx-auto px-4 py-8">
+      <div className="space-y-6 w-full">
+        <PlaylistDetail
+          playlistId={playlistId}
+          userId={data?.playlist.userId}
+          playlistData={data}
+        />
+      </div>
+    </div>
   );
 }

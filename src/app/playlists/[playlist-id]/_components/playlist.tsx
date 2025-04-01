@@ -11,7 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuthStore } from "@/store/auth-store";
 import { useSanitizedData } from "@/hooks/use-sanitizedata";
 import { Title } from "./title";
-import { useGetPlaylistSuspenseQuery } from "@/graphql/hooks";
+import { GetPlaylistQuery } from "@/graphql/operations";
 
 const HEADERS = ["Title", "Artist", "Album"];
 const BOM = "\uFEFF";
@@ -22,21 +22,20 @@ const sanitizeFileName = (name: string): string =>
 interface PlaylistDetailProps {
   playlistId: string;
   userId?: string;
+  playlistData: GetPlaylistQuery;
 }
 
 export default function PlaylistDetail({
   playlistId,
   userId,
+  playlistData,
 }: PlaylistDetailProps) {
   const { toast } = useToast();
   const { token, user } = useAuthStore();
 
-  const { data } = useGetPlaylistSuspenseQuery({
-    variables: { id: parseInt(playlistId) },
-    fetchPolicy: "cache-first",
-    skip: !playlistId,
-  });
-  const sanitizedPlaylistJson = useSanitizedData(data?.playlist.listJson);
+  const sanitizedPlaylistJson = useSanitizedData(
+    playlistData?.playlist.listJson
+  );
   if (!playlistId) return <div>Playlist not found</div>;
 
   const handleDownloadCSV = () => {
@@ -54,7 +53,9 @@ export default function PlaylistDetail({
         );
       }, headerString);
 
-      const sanitizedFileName = sanitizeFileName(data?.playlist.name || "");
+      const sanitizedFileName = sanitizeFileName(
+        playlistData?.playlist.name || ""
+      );
 
       const blob = new Blob([BOM + rows], {
         type: "text/csv;charset=utf-8",
@@ -82,39 +83,37 @@ export default function PlaylistDetail({
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="space-y-6 ">
-        <div className="flex items-center justify-between mb-6">
-          <Title
-            isBelongsToUser={userId === user?.id}
-            token={token}
-            playlistId={playlistId}
-            playlistName={data?.playlist.name || ""}
-          />
-        </div>
-
-        <div className="flex flex-col md:flex gap-4 w-full">
-          <ConvertToYoutubePlaylistButton
-            playlistData={sanitizedPlaylistJson || []}
-            token={token}
-          />
-          <ConvertToSpotifyPlaylistButton
-            playlistData={sanitizedPlaylistJson || []}
-            token={token}
-          />
-          <Button
-            variant="outline"
-            size="sm"
-            className="gap-2"
-            onClick={handleDownloadCSV}
-          >
-            <Download className="h-4 w-4" />
-            Download CSV
-          </Button>
-        </div>
-
-        <SongTable songs={sanitizedPlaylistJson || []} />
+    <>
+      <div className="flex items-center justify-between mb-6">
+        <Title
+          isBelongsToUser={userId === user?.id}
+          token={token}
+          playlistId={playlistId}
+          playlistName={playlistData?.playlist.name || ""}
+        />
       </div>
-    </div>
+
+      <div className="flex flex-col md:flex gap-4 w-full">
+        <ConvertToYoutubePlaylistButton
+          playlistData={sanitizedPlaylistJson || []}
+          token={token}
+        />
+        <ConvertToSpotifyPlaylistButton
+          playlistData={sanitizedPlaylistJson || []}
+          token={token}
+        />
+        <Button
+          variant="outline"
+          size="sm"
+          className="gap-2"
+          onClick={handleDownloadCSV}
+        >
+          <Download className="h-4 w-4" />
+          Download CSV
+        </Button>
+      </div>
+
+      <SongTable songs={sanitizedPlaylistJson || []} />
+    </>
   );
 }
