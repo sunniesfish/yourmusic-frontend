@@ -7,33 +7,42 @@ export function useOAuthMessage(
     onError: (error: Error) => void;
   },
   apiDomain: ApiDomain,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   dependencies: any[]
 ) {
   const { onSuccess, onError } = options;
 
   useEffect(() => {
+    if (!dependencies[0]) return;
+
     const handleMessage = async (event: MessageEvent) => {
       const { code, state, type } = event.data;
-      console.log("handleMessage called", event.data);
+
+      if (
+        event.origin !== window.location.origin ||
+        type !== "OAUTH_CALLBACK" ||
+        !state
+      ) {
+        return;
+      }
+
       try {
-        if (event.origin !== window.location.origin) {
-          throw new Error("Invalid origin");
-        }
-        if (!state) {
-          throw new Error("State is required");
-        }
-        if (apiDomain !== JSON.parse(state).domain) {
+        let parsedState;
+        try {
+          parsedState = JSON.parse(state);
+        } catch (e) {
           return;
         }
-        if (type !== "OAUTH_CALLBACK") {
-          throw new Error("Invalid type");
+
+        if (apiDomain !== parsedState.domain) {
+          return;
         }
+
         await onSuccess(code, state);
       } catch (error) {
         onError(error as Error);
       }
     };
+
     window.addEventListener("message", handleMessage);
     return () => {
       window.removeEventListener("message", handleMessage);

@@ -1,7 +1,9 @@
 import { PlaylistsResponse, Playlist, Statistic } from "@/graphql/types";
 import { ApolloClient, InMemoryCache, createHttpLink } from "@apollo/client";
 
-export function getClient() {
+let apolloClient: ApolloClient<any> | undefined;
+
+function createApolloClient() {
   return new ApolloClient({
     cache: new InMemoryCache({
       typePolicies: {
@@ -68,4 +70,16 @@ export function getClient() {
       },
     },
   });
+}
+
+export function getClient() {
+  if (typeof window === "undefined") {
+    return createApolloClient();
+  }
+
+  if (!apolloClient) {
+    apolloClient = createApolloClient();
+  }
+
+  return apolloClient;
 }
