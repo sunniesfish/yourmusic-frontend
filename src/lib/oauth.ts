@@ -7,6 +7,7 @@ export function useOAuthMessage(
     onError: (error: Error) => void;
   },
   apiDomain: ApiDomain,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   dependencies: any[]
 ) {
   const { onSuccess, onError } = options;
