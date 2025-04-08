@@ -82,39 +82,37 @@ export default function PlaylistDetail({
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="space-y-6 ">
-        <div className="flex items-center justify-between mb-6">
-          <Title
-            isBelongsToUser={userId === user?.id}
-            token={token}
-            playlistId={playlistId}
-            playlistName={data?.playlist.name || ""}
-          />
-        </div>
+    <main className="container mx-auto px-4 py-8 space-y-6">
+      <header className="flex items-center justify-between mb-6">
+        <Title
+          isBelongsToUser={userId === user?.id}
+          token={token}
+          playlistId={playlistId}
+          playlistName={data?.playlist.name || ""}
+        />
+      </header>
 
-        <div className="flex flex-col md:flex gap-4 w-full">
-          <ConvertToYoutubePlaylistButton
-            playlistData={sanitizedPlaylistJson || []}
-            token={token}
-          />
-          <ConvertToSpotifyPlaylistButton
-            playlistData={sanitizedPlaylistJson || []}
-            token={token}
-          />
-          <Button
-            variant="outline"
-            size="sm"
-            className="gap-2"
-            onClick={handleDownloadCSV}
-          >
-            <Download className="h-4 w-4" />
-            Download CSV
-          </Button>
-        </div>
+      <section className="flex flex-col md:flex gap-4 w-full">
+        <ConvertToYoutubePlaylistButton
+          playlistData={sanitizedPlaylistJson || []}
+          token={token}
+        />
+        <ConvertToSpotifyPlaylistButton
+          playlistData={sanitizedPlaylistJson || []}
+          token={token}
+        />
+        <Button
+          variant="outline"
+          size="sm"
+          className="gap-2"
+          onClick={handleDownloadCSV}
+        >
+          <Download className="h-4 w-4" />
+          Download CSV
+        </Button>
+      </section>
 
-        <SongTable songs={sanitizedPlaylistJson || []} />
-      </div>
-    </div>
+      <SongTable songs={sanitizedPlaylistJson || []} />
+    </main>
   );
 }

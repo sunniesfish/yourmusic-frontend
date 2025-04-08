@@ -6,9 +6,9 @@ export default function MyPageLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen frutiger-aero-bg">
+    <>
       <Navbar />
-      <div className="container mx-auto px-4 py-8">{children}</div>
-    </div>
+      <main className="container mx-auto max-w-2xl px-4 py-8">{children}</main>
+    </>
   );
 }

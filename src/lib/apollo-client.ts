@@ -1,6 +1,7 @@
 import { PlaylistsResponse, Playlist, Statistic } from "@/graphql/types";
 import { ApolloClient, InMemoryCache, createHttpLink } from "@apollo/client";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 let apolloClient: ApolloClient<any> | undefined;
 
 function createApolloClient() {

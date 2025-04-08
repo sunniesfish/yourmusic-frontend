@@ -23,8 +23,15 @@ interface SongTableProps {
 }
 
 export const SongTable = memo(function SongTable({ songs }: SongTableProps) {
+  const handleSearch = (song: Song) => {
+    window.open(
+      `https://www.youtube.com/results?search_query=${song.title} ${song.artist}`,
+      "_blank"
+    );
+  };
+
   return (
-    <div className="rounded-md border">
+    <section className="rounded-md border">
       <Table>
         <TableHeader>
           <TableRow>
@@ -71,7 +78,11 @@ export const SongTable = memo(function SongTable({ songs }: SongTableProps) {
                 {song.album}
               </TableCell>
               <TableCell>
-                <Button variant="ghost" size="sm">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => handleSearch(song)}
+                >
                   <Search className="h-4 w-4" />
                   <span className="sr-only">Search song</span>
                 </Button>
@@ -80,6 +91,6 @@ export const SongTable = memo(function SongTable({ songs }: SongTableProps) {
           ))}
         </TableBody>
       </Table>
-    </div>
+    </section>
   );
 });

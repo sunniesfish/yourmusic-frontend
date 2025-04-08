@@ -55,87 +55,80 @@ export default function SignInPage() {
   };
   return (
     <>
-      <div className="space-y-4">
-        <div className="space-y-1 text-center">
-          <h1 className="text-xl font-medium tracking-tight text-muted-foreground">
-            Welcome back
-          </h1>
-          <p className="text-sm text-muted-foreground">
-            Enter your credentials to sign in
-          </p>
-        </div>
-
-        <form
-          onSubmit={handleSubmit(onSubmit)}
-          className="space-y-4"
-          noValidate
-        >
-          <div className="space-y-2">
-            <Label htmlFor="id">ID</Label>
-            <Input
-              {...register("id", {
-                required: "ID is required",
-              })}
-              id="id"
-              placeholder="Enter your ID"
-              aria-describedby={errors.id ? "id-error" : undefined}
-            />
-            {errors.id && (
-              <p className="text-sm text-destructive" id="id-error">
-                {errors.id.message}
-              </p>
-            )}
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
-            <Input
-              {...register("password", {
-                required: "Password is required",
-              })}
-              type="password"
-              id="password"
-              placeholder="Enter your password"
-              aria-describedby={errors.password ? "password-error" : undefined}
-            />
-            {errors.password && (
-              <p className="text-sm text-destructive" id="password-error">
-                {errors.password.message}
-              </p>
-            )}
-          </div>
-
-          <Button
-            type="submit"
-            className="w-full"
-            disabled={Object.keys(errors).length > 0}
-          >
-            Sign In
-          </Button>
-
-          {errors.root?.serverError && (
-            <p className="text-sm text-destructive text-center">
-              {errors.root.serverError.message}
+      <div className="space-y-1 text-center">
+        <h1 className="text-xl font-medium tracking-tight text-muted-foreground">
+          Welcome back
+        </h1>
+        <p className="text-sm text-muted-foreground">
+          Enter your credentials to sign in
+        </p>
+      </div>
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
+        <div className="space-y-2">
+          <Label htmlFor="id">ID</Label>
+          <Input
+            {...register("id", {
+              required: "ID is required",
+            })}
+            id="id"
+            placeholder="Enter your ID"
+            aria-describedby={errors.id ? "id-error" : undefined}
+          />
+          {errors.id && (
+            <p className="text-sm text-destructive" id="id-error">
+              {errors.id.message}
             </p>
           )}
-          {errors.password?.type === "manual" && (
-            <p className="text-sm text-destructive text-center">
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="password">Password</Label>
+          <Input
+            {...register("password", {
+              required: "Password is required",
+            })}
+            type="password"
+            id="password"
+            placeholder="Enter your password"
+            aria-describedby={errors.password ? "password-error" : undefined}
+          />
+          {errors.password && (
+            <p className="text-sm text-destructive" id="password-error">
               {errors.password.message}
             </p>
           )}
-        </form>
-
-        <div className="text-center space-y-2">
-          <p className="text-sm text-muted-foreground">
-            Don&apos;t have an account?{" "}
-            <Link
-              href="/auth/sign-up"
-              className="underline underline-offset-4 hover:text-primary"
-            >
-              Sign Up
-            </Link>
-          </p>
         </div>
+
+        <Button
+          type="submit"
+          className="w-full"
+          disabled={Object.keys(errors).length > 0}
+        >
+          Sign In
+        </Button>
+
+        {errors.root?.serverError && (
+          <p className="text-sm text-destructive text-center">
+            {errors.root.serverError.message}
+          </p>
+        )}
+        {errors.password?.type === "manual" && (
+          <p className="text-sm text-destructive text-center">
+            {errors.password.message}
+          </p>
+        )}
+      </form>
+
+      <div className="text-center space-y-2">
+        <p className="text-sm text-muted-foreground">
+          Don&apos;t have an account?{" "}
+          <Link
+            href="/auth/sign-up"
+            className="underline underline-offset-4 hover:text-primary"
+          >
+            Sign Up
+          </Link>
+        </p>
       </div>
     </>
   );

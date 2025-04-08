@@ -17,7 +17,6 @@ import {
 import { useSanitizedData } from "@/hooks/use-sanitizedata";
 
 export default function NewPlaylistPage() {
-  console.log("NewPlaylistPage");
   const { token, user } = useAuthStore();
   const { readPlaylist } = usePlaylist();
 
@@ -60,8 +59,8 @@ export default function NewPlaylistPage() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="relative inline-flex items-center gap-4 pb-2">
+    <main className="container mx-auto px-4 py-8">
+      <header className="relative inline-flex items-center gap-4 pb-2">
         {user && (
           <Button
             onClick={handleTitleEdit}
@@ -88,8 +87,8 @@ export default function NewPlaylistPage() {
           </h1>
         )}
         <div className="absolute bottom-0 left-[-4px] right-[-4px] h-[1px] bg-black" />
-      </div>
-      <div className="space-y-4">
+      </header>
+      <section className="space-y-4">
         <div className="flex gap-2 items-center mt-8">
           <Input
             id="playlist-link"
@@ -104,11 +103,11 @@ export default function NewPlaylistPage() {
             handleClick={handleGetPlaylist}
           />
         </div>
-      </div>
+      </section>
       {isLoading && <Loader2 className="animate-spin h-4 w-4 " />}
       {sanitizedPlaylistData && (
         <>
-          <div className="flex items-center justify-center mb-2 mt-6">
+          <section className="flex items-center justify-center mb-2 mt-6">
             <div className="flex flex-col md:flex gap-4 w-full">
               <ConvertToSpotifyPlaylistButton
                 playlistData={sanitizedPlaylistData}
@@ -119,8 +118,8 @@ export default function NewPlaylistPage() {
                 token={token}
               />
             </div>
-          </div>
-          <div className="flex flex-col mb-6 mt-6">
+          </section>
+          <section className="flex flex-col mb-6 mt-6">
             <div className="flex justify-end mb-2">
               {token && (
                 <SavePlaylistButton
@@ -131,9 +130,9 @@ export default function NewPlaylistPage() {
               )}
             </div>
             <SongTable songs={sanitizedPlaylistData} />
-          </div>
+          </section>
         </>
       )}
-    </div>
+    </main>
   );
 }

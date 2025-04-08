@@ -15,7 +15,7 @@ export default async function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>
+      <body className="min-h-screen ">
         <ApolloProvider>{children}</ApolloProvider>
         <Toaster />
       </body>

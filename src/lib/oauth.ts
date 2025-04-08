@@ -30,7 +30,7 @@ export function useOAuthMessage(
         let parsedState;
         try {
           parsedState = JSON.parse(state);
-        } catch (e) {
+        } catch {
           return;
         }
 
@@ -39,6 +39,7 @@ export function useOAuthMessage(
         }
 
         await onSuccess(code, state);
+        // eslint-disable-next-line no-unused-vars
       } catch (error) {
         onError(error as Error);
       }
