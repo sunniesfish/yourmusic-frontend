@@ -13,7 +13,7 @@ export function Pagination({
   onPageChange,
 }: PaginationProps) {
   return (
-    <div className="flex justify-center mt-4">
+    <nav className="flex justify-center mt-4">
       <Button
         onClick={() => onPageChange(currentPage - 1)}
         disabled={currentPage === 1}
@@ -29,6 +29,6 @@ export function Pagination({
       >
         Next
       </Button>
-    </div>
+    </nav>
   );
 }

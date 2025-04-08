@@ -62,10 +62,19 @@ export default function ChangePasswordModal({
     <Dialog.Root open={isOpen} onOpenChange={onClose}>
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 bg-black/50" />
-        <Dialog.Content className="fixed left-1/2 top-1/2 w-full max-w-md -translate-x-1/2 -translate-y-1/2 rounded-lg border bg-background p-6 shadow-sm">
+        <Dialog.Content
+          className="z-50 fixed left-1/2 top-1/2 w-full max-w-md -translate-x-1/2 -translate-y-1/2 rounded-lg border bg-background p-6 shadow-sm"
+          aria-describedby="change-password-modal"
+        >
           <Dialog.Title className="text-lg font-semibold">
             Change Password
           </Dialog.Title>
+          <Dialog.Description
+            id="change-password-description"
+            className="text-sm text-muted-foreground mt-1"
+          >
+            Change your password to secure your account.
+          </Dialog.Description>
 
           <form onSubmit={handleSubmit} className="mt-4 space-y-4">
             <div className="space-y-2">
@@ -75,6 +84,7 @@ export default function ChangePasswordModal({
                 type="password"
                 value={oldPassword}
                 onChange={(e) => setOldPassword(e.target.value)}
+                autoComplete="current-password"
                 required
               />
             </div>
@@ -86,6 +96,7 @@ export default function ChangePasswordModal({
                 type="password"
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
+                autoComplete="new-password"
                 required
               />
             </div>
@@ -97,6 +108,7 @@ export default function ChangePasswordModal({
                 type="password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
+                autoComplete="new-password"
                 required
               />
             </div>

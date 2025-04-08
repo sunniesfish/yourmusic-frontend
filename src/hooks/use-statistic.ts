@@ -175,6 +175,7 @@ export const useStatistic = (
     if (!statisticLoading && !playlistLoading && !isCalculating) {
       calculateAndSetStatistic();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId, statisticLoading, playlistLoading]);
 
   const result = useMemo(

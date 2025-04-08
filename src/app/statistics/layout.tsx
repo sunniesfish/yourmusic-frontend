@@ -6,11 +6,11 @@ export default function StatisticsLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen">
+    <>
       <ApolloProvider>
         <Navbar />
         {children}
       </ApolloProvider>
-    </div>
+    </>
   );
 }

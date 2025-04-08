@@ -22,8 +22,8 @@ export default function MyPage() {
   }, [isLoggedIn, isHydrated]);
 
   return (
-    <div className="container mx-auto max-w-2xl px-4 py-8">
-      <div className="rounded-lg border bg-card p-8 shadow-sm">
+    <>
+      <section className="rounded-lg border bg-card p-8 shadow-sm">
         <div className="flex flex-col items-center space-y-6">
           <ProfileImg />
           <div className="space-y-4 text-center">
@@ -37,14 +37,13 @@ export default function MyPage() {
             </Button>
           </div>
         </div>
-      </div>
-
+      </section>
       {isPasswordModalOpen && (
         <ChangePasswordModal
           isOpen={isPasswordModalOpen}
           onClose={() => setIsPasswordModalOpen(false)}
         />
       )}
-    </div>
+    </>
   );
 }

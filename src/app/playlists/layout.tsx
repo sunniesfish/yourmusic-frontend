@@ -9,11 +9,11 @@ export default async function PlaylistsLayout({
   children,
 }: PlaylistsLayoutProps) {
   return (
-    <div className="min-h-screen">
+    <>
       <ApolloProvider>
         <Navbar />
       </ApolloProvider>
       {children}
-    </div>
+    </>
   );
 }

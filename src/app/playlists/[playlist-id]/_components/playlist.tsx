@@ -79,16 +79,16 @@ export default function PlaylistDetail({
 
   return (
     <>
-      <div className="flex items-center justify-between mb-6">
+      <header className="flex items-center justify-between mb-6">
         <Title
           isBelongsToUser={userId === user?.id}
           token={token}
           playlistId={playlistId}
           playlistName={playlistName}
         />
-      </div>
+      </header>
 
-      <div className="flex flex-col md:flex gap-4 w-full">
+      <section className="flex flex-col md:flex gap-4 w-full">
         <ConvertToYoutubePlaylistButton
           playlistData={playlistData || []}
           token={token}
@@ -106,7 +106,7 @@ export default function PlaylistDetail({
           <Download className="h-4 w-4" />
           Download CSV
         </Button>
-      </div>
+      </section>
     </>
   );
 }
