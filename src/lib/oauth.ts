@@ -31,6 +31,7 @@ export function useOAuthMessage(
         try {
           parsedState = JSON.parse(state);
         } catch (e) {
+          console.log(e)
           return;
         }
 
