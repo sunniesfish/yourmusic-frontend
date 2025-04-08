@@ -18,4 +18,14 @@ const config = {
   },
 };
 
-export default config;
+const applyBundleAnalyzer = async () => {
+  if (process.env.ANALYZE === "true") {
+    const { default: withBundleAnalyzer } = await import(
+      "@next/bundle-analyzer"
+    );
+    return withBundleAnalyzer({ enabled: true })(config);
+  }
+  return config;
+};
+
+export default applyBundleAnalyzer;
