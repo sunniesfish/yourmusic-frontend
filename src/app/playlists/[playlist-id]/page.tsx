@@ -3,6 +3,9 @@ import PlaylistDetail from "./_components/playlist";
 import { GetPlaylistDocument } from "@/graphql/hooks";
 import { GetPlaylistQuery } from "@/graphql/operations";
 import NotFound from "@/app/not-found";
+import ApolloProvider from "@/providers/apollo-provider";
+import { sanitizeData } from "@/lib/sanitize-data";
+import { SongTable } from "../_components/song-table";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export default async function PlaylistDetailPage(props: any) {
@@ -12,11 +15,23 @@ export default async function PlaylistDetailPage(props: any) {
     query: GetPlaylistDocument,
     variables: { id: parseInt(playlistId) },
   });
+  const sanitizedData = sanitizeData(data?.playlist.listJson);
+
   if (error) {
     return <NotFound />;
   }
 
   return (
-    <PlaylistDetail playlistId={playlistId} userId={data?.playlist.userId} />
+    <>
+      <ApolloProvider>
+        <PlaylistDetail
+          playlistId={playlistId}
+          userId={data?.playlist.userId}
+          playlistData={sanitizedData || []}
+          playlistName={data?.playlist.name}
+        />
+      </ApolloProvider>
+      <SongTable songs={sanitizedData || []} />
+    </>
   );
 }

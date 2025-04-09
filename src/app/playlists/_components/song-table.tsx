@@ -6,30 +6,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import { Search } from "lucide-react";
+import { SongTableProps } from "@/types/playlist";
+
 import Image from "next/image";
-import { memo } from "react";
+import SearchSongBtn from "./search-song_btn";
 
-interface Song {
-  title?: string | null;
-  artist?: string | null;
-  album?: string | null;
-  thumbnail?: string | null;
-}
-
-interface SongTableProps {
-  songs: Song[];
-}
-
-export const SongTable = memo(function SongTable({ songs }: SongTableProps) {
-  const handleSearch = (song: Song) => {
-    window.open(
-      `https://www.youtube.com/results?search_query=${song.title} ${song.artist}`,
-      "_blank"
-    );
-  };
-
+export const SongTable = ({ songs }: SongTableProps) => {
   return (
     <section className="rounded-md border">
       <Table>
@@ -78,14 +60,10 @@ export const SongTable = memo(function SongTable({ songs }: SongTableProps) {
                 {song.album}
               </TableCell>
               <TableCell>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => handleSearch(song)}
-                >
-                  <Search className="h-4 w-4" />
-                  <span className="sr-only">Search song</span>
-                </Button>
+                <SearchSongBtn
+                  songTitle={song.title || ""}
+                  songArtist={song.artist || ""}
+                />
               </TableCell>
             </TableRow>
           ))}
@@ -93,4 +71,4 @@ export const SongTable = memo(function SongTable({ songs }: SongTableProps) {
       </Table>
     </section>
   );
-});
+};

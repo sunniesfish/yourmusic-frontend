@@ -5,21 +5,21 @@ import { Trash2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { CopyLinkButton } from "./buttons";
+import React from "react";
 
 interface PlaylistsItemProps {
   playlist: Partial<Playlist>;
   onDelete: (id: number) => void;
 }
 
-export function PlaylistsItem({ playlist, onDelete }: PlaylistsItemProps) {
-  console.log("playlist item", playlist);
+function PlaylistsItem({ playlist, onDelete }: PlaylistsItemProps) {
   const handleDelete = () => {
     if (!playlist.id) return;
     onDelete(Number(playlist.id));
   };
 
   return (
-    <div
+    <article
       key={playlist.id}
       className="group relative rounded-lg border bg-card p-4 hover:shadow-sm transition-shadow"
     >
@@ -65,6 +65,8 @@ export function PlaylistsItem({ playlist, onDelete }: PlaylistsItemProps) {
           </Button>
         </div>
       </div>
-    </div>
+    </article>
   );
 }
+
+export default React.memo(PlaylistsItem);

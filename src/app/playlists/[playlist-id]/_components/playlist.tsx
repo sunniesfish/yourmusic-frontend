@@ -2,16 +2,14 @@
 
 import { Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { SongTable } from "@/app/playlists/_components/song-table";
 import {
   ConvertToSpotifyPlaylistButton,
   ConvertToYoutubePlaylistButton,
 } from "@/app/playlists/_components/buttons";
 import { useToast } from "@/hooks/use-toast";
 import { useAuthStore } from "@/store/auth-store";
-import { useSanitizedData } from "@/hooks/use-sanitizedata";
 import { Title } from "./title";
-import { useGetPlaylistSuspenseQuery } from "@/graphql/hooks";
+import { PlaylistJson } from "@/graphql/types";
 
 const HEADERS = ["Title", "Artist", "Album"];
 const BOM = "\uFEFF";
@@ -22,29 +20,27 @@ const sanitizeFileName = (name: string): string =>
 interface PlaylistDetailProps {
   playlistId: string;
   userId?: string;
+  playlistData: PlaylistJson[];
+  playlistName: string;
 }
 
 export default function PlaylistDetail({
   playlistId,
   userId,
+  playlistData,
+  playlistName,
 }: PlaylistDetailProps) {
   const { toast } = useToast();
   const { token, user } = useAuthStore();
 
-  const { data } = useGetPlaylistSuspenseQuery({
-    variables: { id: parseInt(playlistId) },
-    fetchPolicy: "cache-first",
-    skip: !playlistId,
-  });
-  const sanitizedPlaylistJson = useSanitizedData(data?.playlist.listJson);
   if (!playlistId) return <div>Playlist not found</div>;
 
   const handleDownloadCSV = () => {
     try {
-      if (!sanitizedPlaylistJson) return;
+      if (!playlistData) return;
       const headerString = HEADERS.map((header) => `"${header}"`).join(",");
 
-      const rows = sanitizedPlaylistJson.reduce((acc, song) => {
+      const rows = playlistData.reduce((acc, song) => {
         return (
           acc +
           "\n" +
@@ -54,7 +50,7 @@ export default function PlaylistDetail({
         );
       }, headerString);
 
-      const sanitizedFileName = sanitizeFileName(data?.playlist.name || "");
+      const sanitizedFileName = sanitizeFileName(playlistName);
 
       const blob = new Blob([BOM + rows], {
         type: "text/csv;charset=utf-8",
@@ -82,23 +78,23 @@ export default function PlaylistDetail({
   };
 
   return (
-    <main className="container mx-auto px-4 py-8 space-y-6">
+    <>
       <header className="flex items-center justify-between mb-6">
         <Title
           isBelongsToUser={userId === user?.id}
           token={token}
           playlistId={playlistId}
-          playlistName={data?.playlist.name || ""}
+          playlistName={playlistName}
         />
       </header>
 
       <section className="flex flex-col md:flex gap-4 w-full">
         <ConvertToYoutubePlaylistButton
-          playlistData={sanitizedPlaylistJson || []}
+          playlistData={playlistData || []}
           token={token}
         />
         <ConvertToSpotifyPlaylistButton
-          playlistData={sanitizedPlaylistJson || []}
+          playlistData={playlistData || []}
           token={token}
         />
         <Button
@@ -111,8 +107,6 @@ export default function PlaylistDetail({
           Download CSV
         </Button>
       </section>
-
-      <SongTable songs={sanitizedPlaylistJson || []} />
-    </main>
+    </>
   );
 }

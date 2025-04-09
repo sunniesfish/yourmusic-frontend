@@ -9,8 +9,7 @@ import {
   useSignOutMutation,
   useCheckIdMutation,
 } from "@/graphql/hooks";
-import { useCallback } from "react";
-import { getClient } from "@/lib/apollo-client";
+import { useMemo } from "react";
 
 /**
  * Hook for handling authentication-related operations
@@ -28,7 +27,7 @@ export const useAuth = (): AuthHookResult => {
    * Checks if user is currently logged in
    * @returns {boolean} True if user is logged in
    */
-  const isLoggedIn = useCallback(() => {
+  const isLoggedIn = useMemo(() => {
     return !!token;
   }, [token]);
 
@@ -83,14 +82,10 @@ export const useAuth = (): AuthHookResult => {
   const signOut = async () => {
     const { data } = await signOutMutation({
       context: { headers: { Authorization: `Bearer ${token}` } },
-      update: () => {
-        const client = getClient();
-        client.clearStore();
-      },
     });
     if (data?.signOut) {
-      logout();
       client.clearStore();
+      logout();
     } else {
       alert("Failed to sign out");
     }
@@ -112,7 +107,7 @@ export const useAuth = (): AuthHookResult => {
     signIn,
     signUp,
     signOut,
-    isLoggedIn,
+    isLoggedIn: () => isLoggedIn,
     checkIdAvailability,
     token,
   };
