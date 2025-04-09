@@ -51,8 +51,7 @@ export function openInNewTab(url: string): void {
         document.body.removeChild(link);
       }, 100);
     }
-  } catch (error) {
-    console.log(error);
+  } catch {
     toast({
       title: "Error",
       description: "An error occurred while opening the URL",

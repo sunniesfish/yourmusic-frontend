@@ -52,6 +52,7 @@ export const useStatistic = (
     useGetStatisticQuery({
       variables: { userId },
       skip: !userId || userId === "",
+      fetchPolicy: "cache-first",
     });
 
   const { data: playlistData, loading: playlistLoading } =
@@ -68,6 +69,7 @@ export const useStatistic = (
         userId === "" ||
         (statisticData?.statistic &&
           !isStatisticOutdated(statisticData.statistic)),
+      fetchPolicy: "cache-first",
     });
   const [saveStatistic] = useSaveStatisticMutation();
 
@@ -163,8 +165,7 @@ export const useStatistic = (
       });
 
       setCalculatedStatistic(statisticInput);
-    } catch (err) {
-      console.log(err);
+    } catch {
       setCalculatedStatistic(null);
     } finally {
       setIsCalculating(false);

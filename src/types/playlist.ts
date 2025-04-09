@@ -14,3 +14,14 @@ export interface PlaylistMutationParams {
   playlistJson?: PlaylistJson[];
   playlistId?: number;
 }
+
+export interface Song {
+  title?: string | null;
+  artist?: string | null;
+  album?: string | null;
+  thumbnail?: string | null;
+}
+
+export interface SongTableProps {
+  songs: Song[];
+}

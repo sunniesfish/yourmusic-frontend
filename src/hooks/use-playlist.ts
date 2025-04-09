@@ -4,85 +4,16 @@ import {
   GetPlaylistsPageDocument,
   useConvertToSpotifyPlaylistMutation,
   useConvertToYoutubePlaylistMutation,
-  useGetPlaylistLazyQuery,
-  useGetPlaylistsPageLazyQuery,
   useReadPlaylistMutation,
   useRemovePlaylistMutation,
   useSavePlaylistMutation,
   useUpdatePlaylistMutation,
 } from "@/graphql/hooks";
-import { PlaylistQueryParams, PlaylistMutationParams } from "@/types/playlist";
-import { usePlaylistsStore } from "@/store/playlist-store";
-import { PlaylistJson, PlaylistsResponse } from "@/graphql/types";
+import { PlaylistMutationParams } from "@/types/playlist";
+import { PlaylistJson } from "@/graphql/types";
 import { omit } from "lodash";
 import { useToast } from "@/hooks/use-toast";
-/**
- * Hook for handling playlist-related queries
- * @returns Object containing playlist query methods
- */
-const usePlaylistQuery = () => {
-  const [getPlaylistsQuery] = useGetPlaylistsPageLazyQuery();
-  const [getPlaylistQuery] = useGetPlaylistLazyQuery();
-  const { toast } = useToast();
-
-  /**
-   * Fetches playlists with pagination and sorting
-   * @param {PlaylistQueryParams} params - Query parameters including token, page, limit, and sorting
-   * @returns {Promise<PlaylistsResponse | null>} Paginated playlist data or null if failed
-   */
-  const getPlaylists = async ({
-    token,
-    page,
-    limit,
-    orderBy,
-    includeListJson = false,
-  }: PlaylistQueryParams): Promise<PlaylistsResponse | null> => {
-    try {
-      const { data } = await getPlaylistsQuery({
-        variables: { page, limit, orderBy, includeListJson },
-        context: { headers: { Authorization: `Bearer ${token}` } },
-      });
-
-      if (data) {
-        usePlaylistsStore.getState().setPlaylists(data.playlistsPage.playlists);
-        return data.playlistsPage;
-      }
-      return null;
-    } catch (err) {
-      console.log(err);
-      toast({
-        title: "Error",
-        description: "Failed to fetch playlists",
-      });
-      return null;
-    }
-  };
-
-  /**
-   * Fetches details of a specific playlist
-   * @param {string} token - Authentication token
-   * @param {number} playlistId - ID of the playlist to fetch
-   * @returns {Promise<GetPlaylistQuery | null>} Playlist details or null if failed
-   */
-  const getPlaylistDetails = async (token: string, playlistId: number) => {
-    try {
-      const { data } = await getPlaylistQuery({
-        variables: { id: playlistId },
-        context: { headers: { Authorization: `Bearer ${token}` } },
-      });
-      return data || null;
-    } catch (err) {
-      console.log(err);
-      toast({
-        title: "Error",
-        description: "Failed to fetch playlist",
-      });
-      return null;
-    }
-  };
-
-  return { getPlaylists, getPlaylistDetails };
-};
+import { ApolloCache } from "@apollo/client/cache/core/cache";
 
 /**
  * Hook for handling playlist mutations
@@ -104,12 +35,10 @@ const usePlaylistMutation = () => {
       const { data } = await readPlaylistMutate({
         variables: { link },
       });
-      console.log("readPlaylist", data);
       if (!data || !data.readPlaylist) throw Error("Failed to read playlist");
 
       return data.readPlaylist;
-    } catch (err) {
-      console.log(err);
+    } catch {
       toast({
         title: "Error",
         description: "Failed to read playlist",
@@ -147,7 +76,6 @@ const usePlaylistMutation = () => {
 
       return Boolean(result.data?.savePlaylist);
     } catch (err) {
-      console.log(err);
       if (err instanceof Error && "graphQLErrors" in err) {
         toast({
           title: "Error",
@@ -175,7 +103,7 @@ const usePlaylistMutation = () => {
     playlistTitle,
     playlistJson,
   }: PlaylistMutationParams): Promise<boolean> => {
-    if (!playlistTitle) return false;
+    if (!playlistTitle || !playlistId) return false;
     const cleanedPlaylistJson = playlistJson?.map((item) =>
       omit(item, ["__typename"])
     );
@@ -190,7 +118,7 @@ const usePlaylistMutation = () => {
         },
         context: { headers: { Authorization: `Bearer ${token}` } },
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        update: (cache: any) => {
+        update: async (cache: ApolloCache<any>) => {
           cache.evict({
             fieldName: "playlist",
             args: { id: playlistId },
@@ -201,17 +129,16 @@ const usePlaylistMutation = () => {
       const result = await updatePlaylistMutate(input);
       return Boolean(result.data?.updatePlaylist);
     } catch (err) {
-      console.log(err);
       if (err instanceof Error && "graphQLErrors" in err) {
         toast({
           title: "Error",
-          description: "Failed to update playlist",
+          description: "GraphQL Error: Failed to update playlist",
         });
       }
       if (err instanceof Error && "networkError" in err) {
         toast({
           title: "Error",
-          description: "Failed to update playlist",
+          description: "Network Error: Failed to update playlist",
         });
       }
       return false;
@@ -256,8 +183,7 @@ const usePlaylistMutation = () => {
             },
           });
         },
-        onError: (error) => {
-          console.log(error);
+        onError: () => {
           toast({
             title: "Error",
             description: "Failed to remove playlist",
@@ -266,8 +192,7 @@ const usePlaylistMutation = () => {
       });
 
       return !!data?.removePlaylist;
-    } catch (err) {
-      console.log(err);
+    } catch {
       toast({
         title: "Error",
         description: "Failed to remove playlist",
@@ -333,7 +258,6 @@ const usePlaylistConverter = () => {
       }
       throw new Error("Failed to convert to YouTube playlist");
     } catch (err) {
-      console.log(err);
       toast({
         title: "Error",
         description: "Failed to convert to YouTube playlist",
@@ -374,7 +298,6 @@ const usePlaylistConverter = () => {
       }
       throw new Error("Failed to convert to Spotify playlist");
     } catch (err) {
-      console.log(err);
       toast({
         title: "Error",
         description: "Failed to convert to Spotify playlist",
@@ -391,14 +314,11 @@ const usePlaylistConverter = () => {
  * @returns {Object} Combined playlist operations
  */
 export const usePlaylist = () => {
-  const { getPlaylists, getPlaylistDetails } = usePlaylistQuery();
   const { readPlaylist, savePlaylist, removePlaylist, updatePlaylist } =
     usePlaylistMutation();
   const { convertToYoutube, convertToSpotify } = usePlaylistConverter();
 
   return {
-    getPlaylists,
-    getPlaylistDetails,
     readPlaylist,
     savePlaylist,
     removePlaylist,

@@ -63,7 +63,6 @@ export const ConvertToSpotifyPlaylistButton = memo(
               state: undefined,
               token,
             });
-            console.log("on success", result);
             if (result.converted && result.playlistUrl) {
               setSpotifyPlaylistUrl(result.playlistUrl);
               toast({
@@ -76,8 +75,7 @@ export const ConvertToSpotifyPlaylistButton = memo(
                 description: "Failed to convert to Spotify playlist",
               });
             }
-          } catch (error) {
-            console.log(error);
+          } catch {
             toast({
               title: "Error",
               description: "Failed to convert to Spotify playlist",
@@ -176,7 +174,6 @@ export const ConvertToYoutubePlaylistButton = memo(
               state: undefined,
               token,
             });
-            console.log("on success", result);
             if (result.converted && result.playlistUrl) {
               setYoutubePlaylistUrl(result.playlistUrl);
               toast({
@@ -189,8 +186,7 @@ export const ConvertToYoutubePlaylistButton = memo(
                 description: "Failed to convert to Youtube playlist",
               });
             }
-          } catch (error) {
-            console.error(error);
+          } catch {
             toast({
               title: "Error",
               description: "Failed to convert to Youtube playlist",

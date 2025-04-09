@@ -59,7 +59,7 @@ export default function NewPlaylistPage() {
   };
 
   return (
-    <main className="container mx-auto px-4 py-8">
+    <>
       <header className="relative inline-flex items-center gap-4 pb-2">
         {user && (
           <Button
@@ -133,6 +133,6 @@ export default function NewPlaylistPage() {
           </section>
         </>
       )}
-    </main>
+    </>
   );
 }

@@ -1,4 +1,5 @@
 import Navbar from "@/components/nav-bar";
+import ApolloProvider from "@/providers/apollo-provider";
 
 export default function MyPageLayout({
   children,
@@ -7,8 +8,10 @@ export default function MyPageLayout({
 }) {
   return (
     <>
-      <Navbar />
-      <main className="container mx-auto max-w-2xl px-4 py-8">{children}</main>
+      <ApolloProvider>
+        <Navbar />
+        <main className="container mx-auto px-4 py-8">{children}</main>
+      </ApolloProvider>
     </>
   );
 }
