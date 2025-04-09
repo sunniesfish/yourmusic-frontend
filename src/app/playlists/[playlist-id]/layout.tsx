@@ -6,8 +6,6 @@ export default function PlaylistDetailLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="space-y-6 w-full">{children}</div>
-    </div>
+    <main className="container mx-auto px-4 py-8 space-y-6">{children}</main>
   );
 }

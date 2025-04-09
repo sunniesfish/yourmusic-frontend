@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { Plus } from "lucide-react";
 import { useAuthStore } from "@/store/auth-store";
@@ -15,11 +15,13 @@ import { Pagination } from "@/components/ui/pagination";
 import Loader from "@/components/loader";
 import { useGetPlaylistsPageQuery } from "@/graphql/hooks";
 import { useHydration } from "@/hooks/use-hydration";
-import { PlaylistsItem } from "./playlistsItem";
+import PlaylistsItem from "./playlistsItem";
 import { DeletePlaylistDialog } from "./delete-playlist-modal";
 
 export function Playlists() {
+  console.log("playlists");
   const { user, token } = useAuthStore();
+  console.log("token", token);
   const isHydrated = useHydration();
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [playlistToDelete, setPlaylistToDelete] = useState<number | null>(null);
@@ -69,63 +71,64 @@ export function Playlists() {
     });
   };
 
-  const handleDelete = async (id: number) => {
-    if (token) {
-      setPlaylistToDelete(id);
-      setIsDeleteModalOpen(true);
-    }
-  };
+  const handleDelete = useCallback(
+    async (id: number) => {
+      if (token) {
+        setPlaylistToDelete(id);
+        setIsDeleteModalOpen(true);
+      }
+    },
+    [token]
+  );
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-semibold tracking-tight">
-            {user?.name} &apos;s Playlists
-          </h1>
-          <div className="flex items-center gap-4">
-            <Select
-              value={sortType}
-              onValueChange={(value) =>
-                handleSortChange(value as "name" | "createdAt")
-              }
-            >
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Sort by" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="name">Sort by Name</SelectItem>
-                <SelectItem value="createdAt">Sort by Date</SelectItem>
-              </SelectContent>
-            </Select>
-            <Link href="/playlists/newplaylist">
-              <Button className="gap-2">
-                <Plus className="h-4 w-4" />
-                New Playlist
-              </Button>
-            </Link>
-          </div>
+    <main className="container mx-auto px-4 py-8 space-y-6">
+      <header className="flex items-center justify-between">
+        <h1 className="text-2xl font-semibold tracking-tight">
+          {user?.name} &apos;s Playlists
+        </h1>
+        <div className="flex items-center gap-4">
+          <Select
+            value={sortType}
+            onValueChange={(value) =>
+              handleSortChange(value as "name" | "createdAt")
+            }
+          >
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Sort by" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="name">Sort by Name</SelectItem>
+              <SelectItem value="createdAt">Sort by Date</SelectItem>
+            </SelectContent>
+          </Select>
+          <Link href="/playlists/newplaylist">
+            <Button className="gap-2">
+              <Plus className="h-4 w-4" />
+              New Playlist
+            </Button>
+          </Link>
         </div>
-        {loading ? (
-          <Loader />
-        ) : (
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {data?.playlistsPage.playlists.map((playlist) => (
-              <PlaylistsItem
-                playlist={playlist}
-                onDelete={handleDelete}
-                key={playlist.id}
-              />
-            ))}
-          </div>
-        )}
+      </header>
+      {loading ? (
+        <Loader />
+      ) : (
+        <section className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {data?.playlistsPage.playlists.map((playlist) => (
+            <PlaylistsItem
+              playlist={playlist}
+              onDelete={handleDelete}
+              key={playlist.id}
+            />
+          ))}
+        </section>
+      )}
 
-        <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={handlePageChange}
-        />
-      </div>
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={handlePageChange}
+      />
 
       {isDeleteModalOpen && token && (
         <DeletePlaylistDialog
@@ -136,6 +139,6 @@ export function Playlists() {
           fetchMore={() => fetchMore({ variables: { page: currentPage } })}
         />
       )}
-    </div>
+    </main>
   );
 }

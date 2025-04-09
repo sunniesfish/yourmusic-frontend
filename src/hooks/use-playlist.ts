@@ -48,8 +48,7 @@ const usePlaylistQuery = () => {
         return data.playlistsPage;
       }
       return null;
-    } catch (err) {
-      console.log(err);
+    } catch {
       toast({
         title: "Error",
         description: "Failed to fetch playlists",
@@ -71,8 +70,7 @@ const usePlaylistQuery = () => {
         context: { headers: { Authorization: `Bearer ${token}` } },
       });
       return data || null;
-    } catch (err) {
-      console.log(err);
+    } catch {
       toast({
         title: "Error",
         description: "Failed to fetch playlist",
@@ -104,12 +102,10 @@ const usePlaylistMutation = () => {
       const { data } = await readPlaylistMutate({
         variables: { link },
       });
-      console.log("readPlaylist", data);
       if (!data || !data.readPlaylist) throw Error("Failed to read playlist");
 
       return data.readPlaylist;
-    } catch (err) {
-      console.log(err);
+    } catch {
       toast({
         title: "Error",
         description: "Failed to read playlist",
@@ -147,7 +143,6 @@ const usePlaylistMutation = () => {
 
       return Boolean(result.data?.savePlaylist);
     } catch (err) {
-      console.log(err);
       if (err instanceof Error && "graphQLErrors" in err) {
         toast({
           title: "Error",
@@ -201,7 +196,6 @@ const usePlaylistMutation = () => {
       const result = await updatePlaylistMutate(input);
       return Boolean(result.data?.updatePlaylist);
     } catch (err) {
-      console.log(err);
       if (err instanceof Error && "graphQLErrors" in err) {
         toast({
           title: "Error",
@@ -256,8 +250,7 @@ const usePlaylistMutation = () => {
             },
           });
         },
-        onError: (error) => {
-          console.log(error);
+        onError: () => {
           toast({
             title: "Error",
             description: "Failed to remove playlist",
@@ -266,8 +259,7 @@ const usePlaylistMutation = () => {
       });
 
       return !!data?.removePlaylist;
-    } catch (err) {
-      console.log(err);
+    } catch {
       toast({
         title: "Error",
         description: "Failed to remove playlist",
@@ -333,7 +325,6 @@ const usePlaylistConverter = () => {
       }
       throw new Error("Failed to convert to YouTube playlist");
     } catch (err) {
-      console.log(err);
       toast({
         title: "Error",
         description: "Failed to convert to YouTube playlist",
@@ -374,7 +365,6 @@ const usePlaylistConverter = () => {
       }
       throw new Error("Failed to convert to Spotify playlist");
     } catch (err) {
-      console.log(err);
       toast({
         title: "Error",
         description: "Failed to convert to Spotify playlist",
