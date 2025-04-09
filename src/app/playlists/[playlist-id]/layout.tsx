@@ -1,5 +1,3 @@
-import ApolloProvider from "@/providers/apollo-provider";
-
 export default function PlaylistDetailLayout({
   children,
 }: {

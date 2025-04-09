@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * Removes __typename field from GraphQL data (Server-side version)
  * @template T - Type of the data to sanitize

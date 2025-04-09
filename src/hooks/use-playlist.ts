@@ -13,7 +13,6 @@ import { PlaylistMutationParams } from "@/types/playlist";
 import { PlaylistJson } from "@/graphql/types";
 import { omit } from "lodash";
 import { useToast } from "@/hooks/use-toast";
-import { useSanitizedData } from "./use-sanitizedata";
 import { ApolloCache } from "@apollo/client/cache/core/cache";
 
 /**
@@ -105,17 +104,20 @@ const usePlaylistMutation = () => {
     playlistJson,
   }: PlaylistMutationParams): Promise<boolean> => {
     if (!playlistTitle || !playlistId) return false;
-    const sanitizedPlaylistJson = useSanitizedData(playlistJson);
+    const cleanedPlaylistJson = playlistJson?.map((item) =>
+      omit(item, ["__typename"])
+    );
     try {
       const input = {
         variables: {
           mutatePlaylistInput: {
             id: playlistId,
             name: playlistTitle,
-            listJson: sanitizedPlaylistJson,
+            listJson: cleanedPlaylistJson,
           },
         },
         context: { headers: { Authorization: `Bearer ${token}` } },
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         update: async (cache: ApolloCache<any>) => {
           cache.evict({
             fieldName: "playlist",
