@@ -4,11 +4,18 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
 import { redirect } from "next/navigation";
-import ChangePasswordModal from "./_components/changepwd-modal";
 import { useHydration } from "@/hooks/use-hydration";
 import Name from "./_components/name";
 import Id from "./_components/id";
+import dynamic from "next/dynamic";
 import ProfileImg from "./_components/profileImg";
+
+const ChangePasswordModal = dynamic(
+  () => import("./_components/changepwd-modal").then((mod) => mod.default),
+  {
+    ssr: false,
+  }
+);
 
 export default function MyPage() {
   const { isLoggedIn } = useAuth();

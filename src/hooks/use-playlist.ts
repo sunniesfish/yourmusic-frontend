@@ -11,7 +11,7 @@ import {
 } from "@/graphql/hooks";
 import { PlaylistMutationParams } from "@/types/playlist";
 import { PlaylistJson } from "@/graphql/types";
-import { omit } from "lodash";
+import omit from "lodash/omit";
 import { useToast } from "@/hooks/use-toast";
 import { ApolloCache } from "@apollo/client/cache/core/cache";
 

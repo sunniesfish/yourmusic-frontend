@@ -4,8 +4,8 @@ import { useEffect } from "react";
 import { useAuthStore } from "@/store/auth-store";
 import { useStatistic } from "@/hooks/use-statistic";
 import { redirect } from "next/navigation";
-import { RankCard } from "../../components/rank-card";
 import { useHydration } from "@/hooks/use-hydration";
+import { RankCard } from "@/components/rank-card";
 
 export default function StatisticsPage() {
   const { user } = useAuthStore();

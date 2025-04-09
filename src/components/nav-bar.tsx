@@ -128,7 +128,6 @@ export default function Navbar() {
                     width={24}
                     height={24}
                     className="rounded-full"
-                    priority
                   />
                 ) : (
                   <svg
