@@ -165,8 +165,7 @@ export const useStatistic = (
       });
 
       setCalculatedStatistic(statisticInput);
-    } catch (err) {
-      console.log(err);
+    } catch {
       setCalculatedStatistic(null);
     } finally {
       setIsCalculating(false);

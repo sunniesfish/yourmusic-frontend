@@ -11,8 +11,8 @@ interface PlaylistsItemProps {
   playlist: Partial<Playlist>;
   onDelete: (id: number) => void;
 }
+
 function PlaylistsItem({ playlist, onDelete }: PlaylistsItemProps) {
-  console.log("playlist item", playlist.id);
   const handleDelete = () => {
     if (!playlist.id) return;
     onDelete(Number(playlist.id));

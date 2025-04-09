@@ -19,9 +19,7 @@ import PlaylistsItem from "./playlistsItem";
 import { DeletePlaylistDialog } from "./delete-playlist-modal";
 
 export function Playlists() {
-  console.log("playlists");
   const { user, token } = useAuthStore();
-  console.log("token", token);
   const isHydrated = useHydration();
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [playlistToDelete, setPlaylistToDelete] = useState<number | null>(null);
@@ -53,23 +51,29 @@ export function Playlists() {
     }
   }, [data]);
 
-  const handlePageChange = (newPage: number) => {
-    setCurrentPage(newPage);
-    fetchMore({
-      variables: {
-        page: newPage,
-      },
-    });
-  };
+  const handlePageChange = useCallback(
+    (newPage: number) => {
+      setCurrentPage(newPage);
+      fetchMore({
+        variables: {
+          page: newPage,
+        },
+      });
+    },
+    [fetchMore]
+  );
 
-  const handleSortChange = (newSortType: "name" | "createdAt") => {
-    setSortType(newSortType);
-    fetchMore({
-      variables: {
-        orderBy: newSortType,
-      },
-    });
-  };
+  const handleSortChange = useCallback(
+    (newSortType: "name" | "createdAt") => {
+      setSortType(newSortType);
+      fetchMore({
+        variables: {
+          orderBy: newSortType,
+        },
+      });
+    },
+    [fetchMore]
+  );
 
   const handleDelete = useCallback(
     async (id: number) => {
