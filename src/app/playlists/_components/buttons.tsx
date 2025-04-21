@@ -12,6 +12,12 @@ import { useApolloClient } from "@apollo/client/react/hooks/useApolloClient";
 import { ArrowRight, Check, Copy, Loader2 } from "lucide-react";
 import { useState, memo } from "react";
 import { v4 as uuidv4 } from "uuid";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export function GetListButton({
   isLoading,
@@ -229,17 +235,21 @@ export const ConvertToYoutubePlaylistButton = memo(
 
     return (
       <div className="flex w-full gap-2">
-        <div
-          title="YoutubeData API OAuth2 검증 이슈로 일시 비활성화"
-          className="inline-flex cursor-not-allowed"
-        >
-          <Button variant="youtube" disabled={true} size="convert">
-            <>
-              Convert to Youtube
-              <ArrowRight className="h-4 w-4" />
-            </>
-          </Button>
-        </div>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button variant="youtube" disabled={true} size="convert">
+                <>
+                  Convert to Youtube
+                  <ArrowRight className="h-4 w-4" />
+                </>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>현재 사용할 수 없음</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
         <Input
           className="grow text-center"
           type="text"
