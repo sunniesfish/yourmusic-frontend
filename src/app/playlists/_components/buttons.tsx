@@ -144,13 +144,14 @@ export const ConvertToSpotifyPlaylistButton = memo(
 );
 
 export const ConvertToYoutubePlaylistButton = memo(
-  function ConvertToYoutubePlaylistButton({
-    playlistData,
-    token,
-  }: {
+  function ConvertToYoutubePlaylistButton({}: // playlistData,
+  // token,
+  {
     playlistData: PlaylistJson[];
     token: string | undefined;
-  }) {
+  }): JSX.Element {
+    /* 
+    // YoutubeData API 이슈로 인해 일시 비활성화
     const { convertToYoutube } = usePlaylist();
     const { toast } = useToast();
     const [isLoading, setIsLoading] = useState(false);
@@ -224,29 +225,28 @@ export const ConvertToYoutubePlaylistButton = memo(
         window.open(result.authUrl, "oauth_popup", "width=500,height=600");
       }
     };
+    */
+
     return (
       <div className="flex w-full gap-2">
         <Button
           variant="youtube"
-          onClick={handleClick}
-          disabled={isLoading}
+          disabled={true}
           size="convert"
+          title="YoutubeData API OAuth2 검증 이슈로 일시 비활성화"
         >
-          {isLoading ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
-          ) : (
-            <>
-              Convert to Youtube
-              <ArrowRight className=" h-4 w-4" />
-            </>
-          )}
+          <>
+            Convert to Youtube
+            <ArrowRight className="h-4 w-4" />
+          </>
         </Button>
         <Input
           className="grow text-center"
           type="text"
           placeholder="Youtube playlist URL"
-          value={youtubePlaylistUrl}
+          value=""
           readOnly
+          disabled
         />
       </div>
     );
