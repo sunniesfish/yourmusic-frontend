@@ -229,17 +229,17 @@ export const ConvertToYoutubePlaylistButton = memo(
 
     return (
       <div className="flex w-full gap-2">
-        <Button
-          variant="youtube"
-          disabled={true}
-          size="convert"
+        <div
           title="YoutubeData API OAuth2 검증 이슈로 일시 비활성화"
+          className="inline-flex cursor-not-allowed"
         >
-          <>
-            Convert to Youtube
-            <ArrowRight className="h-4 w-4" />
-          </>
-        </Button>
+          <Button variant="youtube" disabled={true} size="convert">
+            <>
+              Convert to Youtube
+              <ArrowRight className="h-4 w-4" />
+            </>
+          </Button>
+        </div>
         <Input
           className="grow text-center"
           type="text"
