@@ -1,3 +1,5 @@
+export const revalidate = 3600;
+
 import { getClient } from "@/lib/apollo-client";
 import { GetPlaylistDocument } from "@/graphql/hooks";
 import { GetPlaylistQuery } from "@/graphql/operations";

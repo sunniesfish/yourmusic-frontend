@@ -18,6 +18,12 @@ import { useApolloClient } from "@apollo/client/react/hooks/useApolloClient";
 import { ArrowRight, Check, Copy, Loader2 } from "lucide-react";
 import { useState, memo } from "react";
 import { v4 as uuidv4 } from "uuid";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export function GetListButton({
   isLoading,
