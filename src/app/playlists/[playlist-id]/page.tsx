@@ -1,5 +1,4 @@
 export const revalidate = 3600;
-export const dynamic = "force-static";
 
 import { getClient } from "@/lib/apollo-client";
 import { GetPlaylistDocument } from "@/graphql/hooks";
