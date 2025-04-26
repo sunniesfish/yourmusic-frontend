@@ -38,6 +38,13 @@ export function Title({
       token,
     });
     if (res) {
+      await fetch("/api/revalidate/playlist", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ playlistId }),
+      });
       setTitle(data.name);
       toast({
         title: "Playlist title updated",

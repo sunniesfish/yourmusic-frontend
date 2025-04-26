@@ -12,6 +12,12 @@ import { useApolloClient } from "@apollo/client/react/hooks/useApolloClient";
 import { ArrowRight, Check, Copy, Loader2 } from "lucide-react";
 import { useState, memo } from "react";
 import { v4 as uuidv4 } from "uuid";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export function GetListButton({
   isLoading,
@@ -144,13 +150,14 @@ export const ConvertToSpotifyPlaylistButton = memo(
 );
 
 export const ConvertToYoutubePlaylistButton = memo(
-  function ConvertToYoutubePlaylistButton({
-    playlistData,
-    token,
-  }: {
+  function ConvertToYoutubePlaylistButton({}: // playlistData,
+  // token,
+  {
     playlistData: PlaylistJson[];
     token: string | undefined;
-  }) {
+  }): JSX.Element {
+    /* 
+    // YoutubeData API 이슈로 인해 일시 비활성화
     const { convertToYoutube } = usePlaylist();
     const { toast } = useToast();
     const [isLoading, setIsLoading] = useState(false);
@@ -224,29 +231,32 @@ export const ConvertToYoutubePlaylistButton = memo(
         window.open(result.authUrl, "oauth_popup", "width=500,height=600");
       }
     };
+    */
+
     return (
       <div className="flex w-full gap-2">
-        <Button
-          variant="youtube"
-          onClick={handleClick}
-          disabled={isLoading}
-          size="convert"
-        >
-          {isLoading ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
-          ) : (
-            <>
-              Convert to Youtube
-              <ArrowRight className=" h-4 w-4" />
-            </>
-          )}
-        </Button>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button variant="youtube" disabled={true} size="convert">
+                <>
+                  Convert to Youtube
+                  <ArrowRight className="h-4 w-4" />
+                </>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>현재 사용할 수 없음</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
         <Input
           className="grow text-center"
           type="text"
           placeholder="Youtube playlist URL"
-          value={youtubePlaylistUrl}
+          value=""
           readOnly
+          disabled
         />
       </div>
     );

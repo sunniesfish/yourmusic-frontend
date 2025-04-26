@@ -1,12 +1,13 @@
+export const revalidate = 3600;
+
 import { getClient } from "@/lib/apollo-client";
-import PlaylistDetail from "./_components/playlist";
 import { GetPlaylistDocument } from "@/graphql/hooks";
 import { GetPlaylistQuery } from "@/graphql/operations";
 import NotFound from "@/app/not-found";
 import ApolloProvider from "@/providers/apollo-provider";
 import { sanitizeData } from "@/lib/sanitize-data";
 import { SongTable } from "../_components/song-table";
-
+import PlaylistDetail from "./_components/playlist";
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export default async function PlaylistDetailPage(props: any) {
   const playlistId = props.params["playlist-id"];
