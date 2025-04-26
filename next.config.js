@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const config = {
+  productionBrowserSourceMaps: process.env.ANALYZE === "true",
   redirects: async () => [
     {
       source: "/",
@@ -23,7 +24,11 @@ const applyBundleAnalyzer = async () => {
     const { default: withBundleAnalyzer } = await import(
       "@next/bundle-analyzer"
     );
-    return withBundleAnalyzer({ enabled: true })(config);
+    return withBundleAnalyzer({
+      enabled: true,
+      openAnalyzer: true,
+      analyzerMode: "static",
+    })(config);
   }
   return config;
 };
