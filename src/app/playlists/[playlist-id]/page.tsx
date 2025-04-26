@@ -1,18 +1,24 @@
-import { getClient } from "@/lib/apollo-client";
+"use client";
+// import { getClient } from "@/lib/apollo-client";
 import PlaylistDetail from "./_components/playlist";
-import { GetPlaylistDocument } from "@/graphql/hooks";
-import { GetPlaylistQuery } from "@/graphql/operations";
+import { useGetPlaylistQuery } from "@/graphql/hooks";
+// import { GetPlaylistQuery } from "@/graphql/operations";
 import NotFound from "@/app/not-found";
-import ApolloProvider from "@/providers/apollo-provider";
+// import ApolloProvider from "@/providers/apollo-provider";
 import { sanitizeData } from "@/lib/sanitize-data";
 import { SongTable } from "../_components/song-table";
+import { useParams } from "next/navigation";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
-export default async function PlaylistDetailPage(props: any) {
-  const playlistId = props.params["playlist-id"];
-  const client = getClient();
-  const { data, error } = await client.query<GetPlaylistQuery>({
-    query: GetPlaylistDocument,
+export default function PlaylistDetailPage() {
+  const params = useParams<{ "playlist-id": string }>();
+  const playlistId = params["playlist-id"];
+  // const client = getClient();
+  // const { data, error } = await client.query<GetPlaylistQuery>({
+  //   query: GetPlaylistDocument,
+  //   variables: { id: parseInt(playlistId) },
+  // });
+  const { data, error } = useGetPlaylistQuery({
     variables: { id: parseInt(playlistId) },
   });
   const sanitizedData = sanitizeData(data?.playlist.listJson);
@@ -23,14 +29,14 @@ export default async function PlaylistDetailPage(props: any) {
 
   return (
     <>
-      <ApolloProvider>
-        <PlaylistDetail
-          playlistId={playlistId}
-          userId={data?.playlist.userId}
-          playlistData={sanitizedData || []}
-          playlistName={data?.playlist.name}
-        />
-      </ApolloProvider>
+      {/* <ApolloProvider> */}
+      <PlaylistDetail
+        playlistId={playlistId}
+        userId={data?.playlist.userId}
+        playlistData={sanitizedData || []}
+        playlistName={data?.playlist.name || ""}
+      />
+      {/* </ApolloProvider> */}
       <SongTable songs={sanitizedData || []} />
     </>
   );
