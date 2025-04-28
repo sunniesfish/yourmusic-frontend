@@ -9,7 +9,7 @@ import { SongTable } from "../_components/song-table";
 import PlaylistDetail from "./_components/playlist";
 import { useParams } from "next/navigation";
 /* eslint-disable @typescript-eslint/no-explicit-any */
-export default async function PlaylistDetailPage() {
+export default function PlaylistDetailPage() {
   const params = useParams<{ "playlist-id": string }>();
   const playlistId = params["playlist-id"];
   const { data, error } = useGetPlaylistQuery({
