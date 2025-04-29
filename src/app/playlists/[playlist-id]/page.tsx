@@ -30,12 +30,14 @@ export default function PlaylistDetailPage() {
   return (
     <>
       <ApolloProvider>
-        <PlaylistDetail
-          playlistId={playlistId}
-          userId={data?.playlist.userId}
-          playlistData={sanitizedData || []}
-          playlistName={data?.playlist.name || ""}
-        />
+        {data && (
+          <PlaylistDetail
+            playlistId={playlistId}
+            userId={data?.playlist.userId}
+            playlistData={sanitizedData || []}
+            playlistName={data?.playlist.name}
+          />
+        )}
       </ApolloProvider>
       <SongTable songs={sanitizedData || []} />
     </>
