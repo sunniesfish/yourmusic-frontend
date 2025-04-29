@@ -1,12 +1,11 @@
 // export const revalidate = 3600;
 
-import { GetPlaylistDocument, useGetPlaylistQuery } from "@/graphql/hooks";
+import { GetPlaylistDocument } from "@/graphql/hooks";
 import NotFound from "@/app/not-found";
 import ApolloProvider from "@/providers/apollo-provider";
 import { sanitizeData } from "@/lib/sanitize-data";
 import { SongTable } from "../_components/song-table";
 import PlaylistDetail from "./_components/playlist";
-import { useParams } from "next/navigation";
 import { GetPlaylistQuery } from "@/graphql/operations";
 import { getClient } from "@/lib/apollo-client";
 /* eslint-disable @typescript-eslint/no-explicit-any */
