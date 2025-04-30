@@ -5,7 +5,7 @@ interface PlaylistsLayoutProps {
   children: React.ReactNode;
 }
 
-export default async function PlaylistsLayout({
+export default function PlaylistsLayout({
   children,
 }: PlaylistsLayoutProps) {
   return (
