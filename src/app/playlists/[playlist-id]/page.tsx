@@ -1,4 +1,4 @@
-// export const revalidate = 3600;
+export const revalidate = 3600;
 
 import { GetPlaylistDocument } from "@/graphql/hooks";
 import NotFound from "@/app/not-found";
