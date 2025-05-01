@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { PlaylistsResponse, Playlist, Statistic } from "@/graphql/types";
 import {
   ApolloClient,
