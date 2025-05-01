@@ -1,4 +1,4 @@
-export const revalidate = 7200;
+export const revalidate = 4000;
 
 import { GetPlaylistDocument } from "@/graphql/hooks";
 import NotFound from "@/app/not-found";
@@ -16,13 +16,6 @@ export default async function PlaylistDetailPage(props: any) {
   const { data, error } = await client.query<GetPlaylistQuery>({
     query: GetPlaylistDocument,
     variables: { id: parseInt(playlistId) },
-    context: {
-      fetchOptions: {
-        next: {
-          revalidate: 7200,
-        },
-      },
-    },
   });
   const sanitizedData = sanitizeData(data?.playlist.listJson);
 
