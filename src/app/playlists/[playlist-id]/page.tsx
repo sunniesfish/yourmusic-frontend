@@ -11,7 +11,7 @@ import { GetPlaylistQuery } from "@/graphql/operations";
 import { notFound } from "next/navigation";
 
 export async function generateStaticParams() {
-  return [];
+  return [{ "playlist-id": "1" }];
 }
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
