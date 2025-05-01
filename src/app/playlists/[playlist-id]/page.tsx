@@ -8,18 +8,36 @@ import { SongTable } from "../_components/song-table";
 import PlaylistDetail from "./_components/playlist";
 import { getClient } from "@/lib/apollo-client";
 import { GetPlaylistQuery } from "@/graphql/operations";
+import { notFound } from "next/navigation";
+
+// Define props type
+interface PlaylistDetailPageProps {
+  params: { "playlist-id": string };
+}
 
 export async function generateStaticParams() {
   return [];
 }
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
-export default async function PlaylistDetailPage(props: any) {
-  const playlistId = props.params["playlist-id"];
+export default async function PlaylistDetailPage({
+  params,
+}: PlaylistDetailPageProps) {
+  const playlistId = params["playlist-id"];
+
+  // Validate playlistId
+  const numericPlaylistId = parseInt(playlistId);
+  if (isNaN(numericPlaylistId)) {
+    console.error(
+      `[ISR Error] Invalid playlistId received: ${playlistId}. Rendering notFound.`
+    );
+    notFound(); // Return notFound if ID is not a number
+  }
+
   const client = getClient();
   const { data, error } = await client.query<GetPlaylistQuery>({
     query: GetPlaylistDocument,
-    variables: { id: parseInt(playlistId) },
+    variables: { id: numericPlaylistId },
     context: {
       fetchOptions: {
         next: {
