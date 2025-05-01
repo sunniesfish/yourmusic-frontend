@@ -1,5 +1,4 @@
 export const revalidate = 4000;
-export const dynamic = "auto";
 
 import { GetPlaylistDocument } from "@/graphql/hooks";
 import NotFound from "@/app/not-found";
@@ -13,8 +12,6 @@ import { GetPlaylistQuery } from "@/graphql/operations";
 export async function generateStaticParams() {
   return [];
 }
-
-export const dynamicParams = true;
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export default async function PlaylistDetailPage(props: any) {
