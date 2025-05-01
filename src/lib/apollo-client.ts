@@ -1,4 +1,3 @@
-// lib/apollo-client-server.ts (또는 공유 클라이언트 설정 파일)
 import { PlaylistsResponse, Playlist, Statistic } from "@/graphql/types";
 import {
   ApolloClient,
@@ -6,7 +5,6 @@ import {
   createHttpLink,
   from,
   NormalizedCacheObject,
-  Operation,
 } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
 import { OperationTypeNode } from "graphql";
