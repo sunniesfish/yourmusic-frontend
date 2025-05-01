@@ -104,7 +104,8 @@ function createApolloClient() {
         },
       },
     }),
-    link: from([credentialsLink, httpLink]),
+    // link: from([credentialsLink, httpLink]),
+    link: httpLink,
     defaultOptions: {
       watchQuery: {
         fetchPolicy: "cache-and-network",

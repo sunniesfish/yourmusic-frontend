@@ -3,10 +3,10 @@ export const dynamic = "auto";
 
 import { GetPlaylistDocument } from "@/graphql/hooks";
 import NotFound from "@/app/not-found";
-// import ApolloProvider from "@/providers/apollo-provider";
-// import { sanitizeData } from "@/lib/sanitize-data";
-// import { SongTable } from "../_components/song-table";
-// import PlaylistDetail from "./_components/playlist";
+import ApolloProvider from "@/providers/apollo-provider";
+import { sanitizeData } from "@/lib/sanitize-data";
+import { SongTable } from "../_components/song-table";
+import PlaylistDetail from "./_components/playlist";
 import { getClient } from "@/lib/apollo-client";
 import { GetPlaylistQuery } from "@/graphql/operations";
 
@@ -20,11 +20,11 @@ export const dynamicParams = true;
 export default async function PlaylistDetailPage(props: any) {
   const playlistId = props.params["playlist-id"];
   const client = getClient();
-  const { error } = await client.query<GetPlaylistQuery>({
+  const { data, error } = await client.query<GetPlaylistQuery>({
     query: GetPlaylistDocument,
     variables: { id: parseInt(playlistId) },
   });
-  // const sanitizedData = sanitizeData(data?.playlist.listJson);
+  const sanitizedData = sanitizeData(data?.playlist.listJson);
 
   if (error) {
     return <NotFound />;
@@ -32,7 +32,7 @@ export default async function PlaylistDetailPage(props: any) {
 
   return (
     <>
-      {/* <ApolloProvider>
+      <ApolloProvider>
         <PlaylistDetail
           playlistId={playlistId}
           userId={data?.playlist.userId}
@@ -40,7 +40,7 @@ export default async function PlaylistDetailPage(props: any) {
           playlistName={data?.playlist.name}
         />
       </ApolloProvider>
-      <SongTable songs={sanitizedData || []} /> */}
+      <SongTable songs={sanitizedData || []} />
     </>
   );
 }
