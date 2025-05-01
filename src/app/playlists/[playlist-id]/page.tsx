@@ -1,4 +1,5 @@
 export const revalidate = 7200;
+export const dynamicParams = true;
 
 import { GetPlaylistDocument } from "@/graphql/hooks";
 import NotFound from "@/app/not-found";
