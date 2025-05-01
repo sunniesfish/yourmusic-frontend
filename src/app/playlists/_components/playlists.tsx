@@ -36,7 +36,10 @@ export function Playlists() {
       orderBy: sortType,
       includeListJson: false,
     },
-    context: { headers: { Authorization: `Bearer ${token}` } },
+    context: {
+      headers: { Authorization: `Bearer ${token}` },
+      includeCredentials: true,
+    },
     fetchPolicy: "cache-first",
     skip: !token,
   });

@@ -53,6 +53,7 @@ export const useStatistic = (
       variables: { userId },
       skip: !userId || userId === "",
       fetchPolicy: "cache-first",
+      context: { includeCredentials: true },
     });
 
   const { data: playlistData, loading: playlistLoading } =
@@ -63,7 +64,10 @@ export const useStatistic = (
         page: 1,
         includeListJson: true,
       },
-      context: { headers: { Authorization: `Bearer ${token}` } },
+      context: {
+        headers: { Authorization: `Bearer ${token}` },
+        includeCredentials: true,
+      },
       skip:
         !userId ||
         userId === "" ||
