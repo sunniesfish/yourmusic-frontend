@@ -1,3 +1,4 @@
+// lib/apollo-client-server.ts (또는 공유 클라이언트 설정 파일)
 import { PlaylistsResponse, Playlist, Statistic } from "@/graphql/types";
 import {
   ApolloClient,
@@ -5,10 +6,10 @@ import {
   createHttpLink,
   from,
   NormalizedCacheObject,
+  Operation,
 } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
-
-// Apollo Client의 context 타입 확장
+import { OperationTypeNode } from "graphql";
 declare module "@apollo/client" {
   export interface DefaultContext {
     includeCredentials?: boolean;
@@ -18,24 +19,42 @@ declare module "@apollo/client" {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 let apolloClient: ApolloClient<NormalizedCacheObject> | undefined;
 
+function shouldIncludeCredentials(operation: any, context: any): boolean {
+  if (context?.includeCredentials) {
+    return true;
+  }
+
+  const definition = operation.query.definitions.find(
+    (def: any) => def.kind === "OperationDefinition"
+  );
+  if (definition?.operation === OperationTypeNode.MUTATION) {
+    return true;
+  }
+
+  return false;
+}
+
 function createApolloClient() {
-  // HTTP 링크 생성 (credentials 없이)
   const httpLink = createHttpLink({
-    uri: process.env.NEXT_PUBLIC_API_URL,
+    uri: process.env.NEXT_PUBLIC_API_URL, // credentials: "include" 여기서 제거
   });
 
-  // credentials 컨텍스트 추가 링크
   const credentialsLink = setContext((operation, prevContext) => {
-    const { headers } = prevContext;
-    // mutation은 항상 credentials 포함
-    // context에서 명시적으로 includeCredentials가 설정되었는지 확인
-    const isMutation = operation.operationName === "mutation";
-    const shouldIncludeCredentials =
-      prevContext.includeCredentials || isMutation;
+    const { headers, fetchOptions: prevFetchOptions, ...rest } = prevContext;
+
+    const shouldIncludeCreds = shouldIncludeCredentials(operation, prevContext);
+
+    const newFetchOptions: RequestInit = shouldIncludeCreds
+      ? { credentials: "include" }
+      : { credentials: "omit" };
 
     return {
       headers,
-      credentials: shouldIncludeCredentials ? "include" : "omit",
+      ...rest,
+      fetchOptions: {
+        ...prevFetchOptions,
+        ...newFetchOptions,
+      },
     };
   });
 
@@ -48,8 +67,7 @@ function createApolloClient() {
               keyArgs: ["orderBy"],
               merge(
                 existing: PlaylistsResponse | undefined,
-                incoming: PlaylistsResponse,
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                incoming: PlaylistsResponse, // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 { args }: any
               ) {
                 if (!existing || !args?.page || args.page === 1) {
@@ -115,10 +133,3 @@ export function getClient() {
 
   return apolloClient;
 }
-
-// 쿼리 호출 시 credentials 포함 예시:
-// client.query({
-//   query: GET_DATA,
-//   variables: { id: 1 },
-//   context: { includeCredentials: true }
-// });
