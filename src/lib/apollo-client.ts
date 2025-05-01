@@ -37,7 +37,7 @@ function shouldIncludeCredentials(operation: any, context: any): boolean {
 
 function createApolloClient() {
   const httpLink = createHttpLink({
-    uri: process.env.NEXT_PUBLIC_API_URL, // credentials: "include" 여기서 제거
+    uri: process.env.NEXT_PUBLIC_API_URL,
   });
 
   const credentialsLink = setContext((operation, prevContext) => {

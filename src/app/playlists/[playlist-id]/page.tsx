@@ -23,6 +23,13 @@ export default async function PlaylistDetailPage(props: any) {
   const { data, error } = await client.query<GetPlaylistQuery>({
     query: GetPlaylistDocument,
     variables: { id: parseInt(playlistId) },
+    context: {
+      fetchOptions: {
+        next: {
+          revalidate: 4000,
+        },
+      },
+    },
   });
   const sanitizedData = sanitizeData(data?.playlist.listJson);
 
