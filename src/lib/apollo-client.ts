@@ -24,6 +24,7 @@ function shouldIncludeCredentials(operation: any, context: any): boolean {
   }
 
   const definition = operation.query.definitions.find(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (def: any) => def.kind === "OperationDefinition"
   );
   if (definition?.operation === OperationTypeNode.MUTATION) {
