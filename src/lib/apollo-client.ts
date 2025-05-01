@@ -17,6 +17,7 @@ declare module "@apollo/client" {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 let apolloClient: ApolloClient<NormalizedCacheObject> | undefined;
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function shouldIncludeCredentials(operation: any, context: any): boolean {
   if (context?.includeCredentials) {
     return true;
