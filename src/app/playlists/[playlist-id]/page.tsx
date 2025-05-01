@@ -3,10 +3,10 @@ export const dynamic = "auto";
 
 import { GetPlaylistDocument } from "@/graphql/hooks";
 import NotFound from "@/app/not-found";
-import ApolloProvider from "@/providers/apollo-provider";
+// import ApolloProvider from "@/providers/apollo-provider";
 import { sanitizeData } from "@/lib/sanitize-data";
 import { SongTable } from "../_components/song-table";
-import PlaylistDetail from "./_components/playlist";
+// import PlaylistDetail from "./_components/playlist";
 import { getClient } from "@/lib/apollo-client";
 import { GetPlaylistQuery } from "@/graphql/operations";
 
@@ -32,14 +32,14 @@ export default async function PlaylistDetailPage(props: any) {
 
   return (
     <>
-      <ApolloProvider>
+      {/* <ApolloProvider>
         <PlaylistDetail
           playlistId={playlistId}
           userId={data?.playlist.userId}
           playlistData={sanitizedData || []}
           playlistName={data?.playlist.name}
         />
-      </ApolloProvider>
+      </ApolloProvider> */}
       <SongTable songs={sanitizedData || []} />
     </>
   );
