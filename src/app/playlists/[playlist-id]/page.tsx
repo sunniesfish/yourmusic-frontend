@@ -16,7 +16,12 @@ export async function generateStaticParams() {
     query: GetPlaylistDocument,
     variables: { id: 8 },
   });
-  return [data?.playlist.id];
+
+  if (data?.playlist?.id) {
+    return [{ "playlist-id": String(data.playlist.id) }];
+  } else {
+    return [];
+  }
 }
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
