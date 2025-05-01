@@ -10,9 +10,9 @@ import PlaylistDetail from "./_components/playlist";
 import { getClient } from "@/lib/apollo-client";
 import { GetPlaylistQuery } from "@/graphql/operations";
 
-// export async function generateStaticParams() {
-//   return [];
-// }
+export async function getStaticParams() {
+  return [];
+}
 
 export const dynamicParams = true;
 
@@ -23,13 +23,6 @@ export default async function PlaylistDetailPage(props: any) {
   const { data, error } = await client.query<GetPlaylistQuery>({
     query: GetPlaylistDocument,
     variables: { id: parseInt(playlistId) },
-    context: {
-      fetchOptions: {
-        next: {
-          revalidate: 4000,
-        },
-      },
-    },
   });
   const sanitizedData = sanitizeData(data?.playlist.listJson);
 
