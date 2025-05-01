@@ -1,4 +1,5 @@
 export const revalidate = 4000;
+export const dynamic = "force-static";
 
 import { GetPlaylistDocument } from "@/graphql/hooks";
 import NotFound from "@/app/not-found";
