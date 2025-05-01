@@ -11,16 +11,16 @@ import { GetPlaylistQuery } from "@/graphql/operations";
 import { notFound } from "next/navigation";
 
 export async function generateStaticParams() {
-  return [{ "playlist-id": "1" }];
+  return [{ playlistId: "1" }];
 }
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export default async function PlaylistDetailPage({
   params,
 }: {
-  params: Promise<{ "playlist-id": string }>;
+  params: Promise<{ playlistId: string }>;
 }) {
-  const { "playlist-id": playlistId } = await params;
+  const { playlistId } = await params;
 
   // Validate playlistId
   const numericPlaylistId = parseInt(playlistId);
