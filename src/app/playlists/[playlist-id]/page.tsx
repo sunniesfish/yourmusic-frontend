@@ -1,5 +1,4 @@
 export const revalidate = 7200;
-export const dynamicParams = true;
 
 import { GetPlaylistDocument } from "@/graphql/hooks";
 import NotFound from "@/app/not-found";
@@ -9,20 +8,6 @@ import { SongTable } from "../_components/song-table";
 import PlaylistDetail from "./_components/playlist";
 import { getClient } from "@/lib/apollo-client";
 import { GetPlaylistQuery } from "@/graphql/operations";
-
-export async function generateStaticParams() {
-  const client = getClient();
-  const { data } = await client.query<GetPlaylistQuery>({
-    query: GetPlaylistDocument,
-    variables: { id: 8 },
-  });
-
-  if (data?.playlist?.id) {
-    return [{ "playlist-id": String(data.playlist.id) }];
-  } else {
-    return [];
-  }
-}
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export default async function PlaylistDetailPage(props: any) {
