@@ -14,12 +14,13 @@ export async function generateStaticParams() {
   return [];
 }
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
-export default async function PlaylistDetailPage({
-  params,
-}: {
+type PageProps = {
   params: { "playlist-id": string };
-}) {
+  searchParams?: { [key: string]: string | string[] | undefined };
+};
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
+export default async function PlaylistDetailPage({ params }: PageProps) {
   const playlistId = params["playlist-id"];
 
   // Validate playlistId
