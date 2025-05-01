@@ -14,14 +14,13 @@ export async function generateStaticParams() {
   return [];
 }
 
-type PageProps = {
-  params: { "playlist-id": string };
-  searchParams?: { [key: string]: string | string[] | undefined };
-};
-
 /* eslint-disable @typescript-eslint/no-explicit-any */
-export default async function PlaylistDetailPage({ params }: PageProps) {
-  const playlistId = params["playlist-id"];
+export default async function PlaylistDetailPage({
+  params,
+}: {
+  params: Promise<{ "playlist-id": string }>;
+}) {
+  const { "playlist-id": playlistId } = await params;
 
   // Validate playlistId
   const numericPlaylistId = parseInt(playlistId);
