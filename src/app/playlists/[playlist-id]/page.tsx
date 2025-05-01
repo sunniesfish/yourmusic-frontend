@@ -1,5 +1,5 @@
 export const revalidate = 4000;
-export const dynamic = "force-static";
+export const dynamic = "auto";
 
 import { GetPlaylistDocument } from "@/graphql/hooks";
 import NotFound from "@/app/not-found";
@@ -9,6 +9,12 @@ import { SongTable } from "../_components/song-table";
 import PlaylistDetail from "./_components/playlist";
 import { getClient } from "@/lib/apollo-client";
 import { GetPlaylistQuery } from "@/graphql/operations";
+
+export async function generateStaticParams() {
+  return [];
+}
+
+export const dynamicParams = true;
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export default async function PlaylistDetailPage(props: any) {
