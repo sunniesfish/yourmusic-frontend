@@ -10,11 +10,6 @@ import { getClient } from "@/lib/apollo-client";
 import { GetPlaylistQuery } from "@/graphql/operations";
 import { notFound } from "next/navigation";
 
-// Define props type
-interface PlaylistDetailPageProps {
-  params: { "playlist-id": string };
-}
-
 export async function generateStaticParams() {
   return [];
 }
@@ -22,7 +17,9 @@ export async function generateStaticParams() {
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export default async function PlaylistDetailPage({
   params,
-}: PlaylistDetailPageProps) {
+}: {
+  params: { "playlist-id": string };
+}) {
   const playlistId = params["playlist-id"];
 
   // Validate playlistId
