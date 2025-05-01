@@ -9,6 +9,16 @@ import { SongTable } from "../_components/song-table";
 import PlaylistDetail from "./_components/playlist";
 import { getClient } from "@/lib/apollo-client";
 import { GetPlaylistQuery } from "@/graphql/operations";
+
+export async function generateStaticParams() {
+  const client = getClient();
+  const { data } = await client.query<GetPlaylistQuery>({
+    query: GetPlaylistDocument,
+    variables: { id: 8 },
+  });
+  return data?.playlist.id;
+}
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export default async function PlaylistDetailPage(props: any) {
   const playlistId = props.params["playlist-id"];
