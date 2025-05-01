@@ -10,9 +10,9 @@ import PlaylistDetail from "./_components/playlist";
 import { getClient } from "@/lib/apollo-client";
 import { GetPlaylistQuery } from "@/graphql/operations";
 
-export async function generateStaticParams() {
-  return [];
-}
+// export async function generateStaticParams() {
+//   return [];
+// }
 
 export const dynamicParams = true;
 
