@@ -10,7 +10,7 @@ import PlaylistDetail from "./_components/playlist";
 import { getClient } from "@/lib/apollo-client";
 import { GetPlaylistQuery } from "@/graphql/operations";
 
-export async function getStaticParams() {
+export async function generateStaticParams() {
   return [];
 }
 
