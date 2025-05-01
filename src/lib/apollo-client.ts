@@ -1,4 +1,3 @@
-/* eslint-disable */
 import { PlaylistsResponse, Playlist, Statistic } from "@/graphql/types";
 import {
   ApolloClient,
@@ -105,8 +104,7 @@ function createApolloClient() {
         },
       },
     }),
-    // link: from([credentialsLink, httpLink]),
-    link: httpLink,
+    link: from([credentialsLink, httpLink]),
     defaultOptions: {
       watchQuery: {
         fetchPolicy: "cache-and-network",

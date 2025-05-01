@@ -22,13 +22,12 @@ export default async function PlaylistDetailPage({
 }) {
   const { playlistId } = await params;
 
-  // Validate playlistId
   const numericPlaylistId = parseInt(playlistId);
   if (isNaN(numericPlaylistId)) {
     console.error(
       `[ISR Error] Invalid playlistId received: ${playlistId}. Rendering notFound.`
     );
-    notFound(); // Return notFound if ID is not a number
+    notFound();
   }
 
   const client = getClient();
@@ -45,17 +44,7 @@ export default async function PlaylistDetailPage({
   });
   const sanitizedData = sanitizeData(data?.playlist.listJson);
 
-  // Add logging for ISR debugging
-  console.log(`[ISR Build/Revalidate] playlistId: ${playlistId}`);
-  console.log("[ISR Build/Revalidate] Error:", JSON.stringify(error, null, 2));
-  console.log("[ISR Build/Revalidate] Data Exists:", !!data);
-  console.log(
-    "[ISR Build/Revalidate] Sanitized Data Length:",
-    sanitizedData?.length ?? 0
-  );
-
   if (error) {
-    console.error("[ISR Build/Revalidate] Rendering NotFound due to error.");
     return <NotFound />;
   }
 
