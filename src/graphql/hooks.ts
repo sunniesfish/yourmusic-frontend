@@ -1,7 +1,7 @@
-import { gql } from "@apollo/client";
-import * as Apollo from "@apollo/client";
 import * as Operations from "./operations";
 
+import { gql } from "@apollo/client";
+import * as Apollo from "@apollo/client";
 const defaultOptions = {} as const;
 
 export const SignUpDocument = gql`
@@ -55,7 +55,7 @@ export const SignInDocument = gql`
     signIn(signInInput: $signInInput) {
       accessToken
       user {
-        id
+        userId
         name
         profileImg
       }
@@ -151,7 +151,7 @@ export type SignOutMutationOptions = Apollo.BaseMutationOptions<
 export const ChangePasswordDocument = gql`
   mutation ChangePassword($input: ChangePasswordInput!) {
     changePassword(input: $input) {
-      id
+      userId
       name
       profileImg
     }
@@ -249,8 +249,8 @@ export type SavePlaylistMutationOptions = Apollo.BaseMutationOptions<
   Operations.SavePlaylistMutationVariables
 >;
 export const RemovePlaylistDocument = gql`
-  mutation RemovePlaylist($id: Int!) {
-    removePlaylist(id: $id)
+  mutation RemovePlaylist($playlistId: String!) {
+    removePlaylist(playlistId: $playlistId)
   }
 `;
 export type RemovePlaylistMutationFn = Apollo.MutationFunction<
@@ -271,7 +271,7 @@ export type RemovePlaylistMutationFn = Apollo.MutationFunction<
  * @example
  * const [removePlaylistMutation, { data, loading, error }] = useRemovePlaylistMutation({
  *   variables: {
- *      id: // value for 'id'
+ *      playlistId: // value for 'playlistId'
  *   },
  * });
  */
@@ -594,7 +594,6 @@ export type SaveStatisticMutationOptions = Apollo.BaseMutationOptions<
 export const UpdateStatisticDocument = gql`
   mutation UpdateStatistic($updateStatisticInput: MutateStatisticInput!) {
     updateStatistic(updateStatisticInput: $updateStatisticInput) {
-      userId
       albumRankJson {
         first
         second
@@ -659,25 +658,7 @@ export type UpdateStatisticMutationOptions = Apollo.BaseMutationOptions<
 >;
 export const RemoveStatisticDocument = gql`
   mutation RemoveStatistic($userId: ID!) {
-    removeStatistic(userId: $userId) {
-      userId
-      albumRankJson {
-        first
-        second
-        third
-      }
-      artistRankJson {
-        first
-        second
-        third
-      }
-      titleRankJson {
-        first
-        second
-        third
-      }
-      updatedAt
-    }
+    removeStatistic(userId: $userId)
   }
 `;
 export type RemoveStatisticMutationFn = Apollo.MutationFunction<
@@ -868,7 +849,7 @@ export type UpdatePlaylistMutationOptions = Apollo.BaseMutationOptions<
 export const GetUserDocument = gql`
   query GetUser {
     user {
-      id
+      userId
       name
       profileImg
     }
@@ -878,7 +859,7 @@ export const GetUserDocument = gql`
 /**
  * __useGetUserQuery__
  *
- * To run a query within a React component, call `useGetUserQuery` and pass it any options that fit your needs.
+ * To run a query within a React component, call `useGetUserQuery` and pass it any options that fif your needs.
  * When your component renders, `useGetUserQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
@@ -941,9 +922,9 @@ export type GetUserQueryResult = Apollo.QueryResult<
   Operations.GetUserQueryVariables
 >;
 export const GetPlaylistDocument = gql`
-  query GetPlaylist($id: Int!) {
-    playlist(id: $id) {
-      id
+  query GetPlaylist($playlistId: String!) {
+    playlist(playlistId: $playlistId) {
+      playlistId
       name
       createdAt
       thumbnail
@@ -970,7 +951,7 @@ export const GetPlaylistDocument = gql`
  * @example
  * const { data, loading, error } = useGetPlaylistQuery({
  *   variables: {
- *      id: // value for 'id'
+ *      playlistId: // value for 'playlistId'
  *   },
  * });
  */
@@ -1030,85 +1011,99 @@ export type GetPlaylistQueryResult = Apollo.QueryResult<
   Operations.GetPlaylistQuery,
   Operations.GetPlaylistQueryVariables
 >;
-export const GetPlaylistsPageDocument = gql`
-  query GetPlaylistsPage(
-    $page: Int!
+export const GetPlaylistsByUserDocument = gql`
+  query GetPlaylistsByUser(
+    $after: String!
     $limit: Int!
     $orderBy: String!
-    $includeListJson: Boolean = false
+    $userId: String!
   ) {
-    playlistsPage(page: $page, limit: $limit, orderBy: $orderBy) {
-      playlists {
-        id
-        name
-        createdAt
-        thumbnail
-        userId
-        listJson @include(if: $includeListJson) {
-          title
-          artist
-          album
+    playlistsByUser(
+      after: $after
+      limit: $limit
+      orderBy: $orderBy
+      userId: $userId
+    ) {
+      edges {
+        cursor
+        node {
+          playlistId
+          name
+          createdAt
           thumbnail
+          userId
+          listJson {
+            title
+            artist
+            album
+            thumbnail
+          }
         }
       }
-      totalPages
+      pageInfo {
+        endCursor
+        hasNextPage
+      }
     }
   }
 `;
 
 /**
- * __useGetPlaylistsPageQuery__
+ * __useGetPlaylistsByUserQuery__
  *
- * To run a query within a React component, call `useGetPlaylistsPageQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetPlaylistsPageQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * To run a query within a React component, call `useGetPlaylistsByUserQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetPlaylistsByUserQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useGetPlaylistsPageQuery({
+ * const { data, loading, error } = useGetPlaylistsByUserQuery({
  *   variables: {
- *      page: // value for 'page'
+ *      after: // value for 'after'
  *      limit: // value for 'limit'
  *      orderBy: // value for 'orderBy'
- *      includeListJson: // value for 'includeListJson'
+ *      userId: // value for 'userId'
  *   },
  * });
  */
-export function useGetPlaylistsPageQuery(
+export function useGetPlaylistsByUserQuery(
   baseOptions: Apollo.QueryHookOptions<
-    Operations.GetPlaylistsPageQuery,
-    Operations.GetPlaylistsPageQueryVariables
+    Operations.GetPlaylistsByUserQuery,
+    Operations.GetPlaylistsByUserQueryVariables
   > &
     (
-      | { variables: Operations.GetPlaylistsPageQueryVariables; skip?: boolean }
+      | {
+          variables: Operations.GetPlaylistsByUserQueryVariables;
+          skip?: boolean;
+        }
       | { skip: boolean }
     )
 ) {
   const options = { ...defaultOptions, ...baseOptions };
   return Apollo.useQuery<
-    Operations.GetPlaylistsPageQuery,
-    Operations.GetPlaylistsPageQueryVariables
-  >(GetPlaylistsPageDocument, options);
+    Operations.GetPlaylistsByUserQuery,
+    Operations.GetPlaylistsByUserQueryVariables
+  >(GetPlaylistsByUserDocument, options);
 }
-export function useGetPlaylistsPageLazyQuery(
+export function useGetPlaylistsByUserLazyQuery(
   baseOptions?: Apollo.LazyQueryHookOptions<
-    Operations.GetPlaylistsPageQuery,
-    Operations.GetPlaylistsPageQueryVariables
+    Operations.GetPlaylistsByUserQuery,
+    Operations.GetPlaylistsByUserQueryVariables
   >
 ) {
   const options = { ...defaultOptions, ...baseOptions };
   return Apollo.useLazyQuery<
-    Operations.GetPlaylistsPageQuery,
-    Operations.GetPlaylistsPageQueryVariables
-  >(GetPlaylistsPageDocument, options);
+    Operations.GetPlaylistsByUserQuery,
+    Operations.GetPlaylistsByUserQueryVariables
+  >(GetPlaylistsByUserDocument, options);
 }
-export function useGetPlaylistsPageSuspenseQuery(
+export function useGetPlaylistsByUserSuspenseQuery(
   baseOptions?:
     | Apollo.SkipToken
     | Apollo.SuspenseQueryHookOptions<
-        Operations.GetPlaylistsPageQuery,
-        Operations.GetPlaylistsPageQueryVariables
+        Operations.GetPlaylistsByUserQuery,
+        Operations.GetPlaylistsByUserQueryVariables
       >
 ) {
   const options =
@@ -1116,27 +1111,26 @@ export function useGetPlaylistsPageSuspenseQuery(
       ? baseOptions
       : { ...defaultOptions, ...baseOptions };
   return Apollo.useSuspenseQuery<
-    Operations.GetPlaylistsPageQuery,
-    Operations.GetPlaylistsPageQueryVariables
-  >(GetPlaylistsPageDocument, options);
+    Operations.GetPlaylistsByUserQuery,
+    Operations.GetPlaylistsByUserQueryVariables
+  >(GetPlaylistsByUserDocument, options);
 }
-export type GetPlaylistsPageQueryHookResult = ReturnType<
-  typeof useGetPlaylistsPageQuery
+export type GetPlaylistsByUserQueryHookResult = ReturnType<
+  typeof useGetPlaylistsByUserQuery
 >;
-export type GetPlaylistsPageLazyQueryHookResult = ReturnType<
-  typeof useGetPlaylistsPageLazyQuery
+export type GetPlaylistsByUserLazyQueryHookResult = ReturnType<
+  typeof useGetPlaylistsByUserLazyQuery
 >;
-export type GetPlaylistsPageSuspenseQueryHookResult = ReturnType<
-  typeof useGetPlaylistsPageSuspenseQuery
+export type GetPlaylistsByUserSuspenseQueryHookResult = ReturnType<
+  typeof useGetPlaylistsByUserSuspenseQuery
 >;
-export type GetPlaylistsPageQueryResult = Apollo.QueryResult<
-  Operations.GetPlaylistsPageQuery,
-  Operations.GetPlaylistsPageQueryVariables
+export type GetPlaylistsByUserQueryResult = Apollo.QueryResult<
+  Operations.GetPlaylistsByUserQuery,
+  Operations.GetPlaylistsByUserQueryVariables
 >;
 export const GetStatisticDocument = gql`
   query GetStatistic($userId: ID!) {
     statistic(userId: $userId) {
-      userId
       albumRankJson {
         first
         second

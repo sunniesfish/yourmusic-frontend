@@ -6,7 +6,7 @@ mutation SignIn($signInInput: SignInInput!) {
   signIn(signInInput: $signInInput) {
     accessToken
     user {
-      id
+      userId
       name
       profileImg
     }
@@ -19,7 +19,7 @@ mutation SignOut {
 
 mutation ChangePassword($input: ChangePasswordInput!) {
   changePassword(input: $input) {
-    id
+    userId
     name
     profileImg
   }
@@ -29,8 +29,8 @@ mutation SavePlaylist($mutatePlaylistInput: MutatePlaylistInput!) {
   savePlaylist(mutatePlaylistInput: $mutatePlaylistInput)
 }
 
-mutation RemovePlaylist($id: Int!) {
-  removePlaylist(id: $id)
+mutation RemovePlaylist($playlistId: String!) {
+  removePlaylist(playlistId: $playlistId)
 }
 
 mutation ReadPlaylist($link: String!) {
@@ -104,7 +104,6 @@ mutation SaveStatistic($saveStatisticInput: MutateStatisticInput!) {
 
 mutation UpdateStatistic($updateStatisticInput: MutateStatisticInput!) {
   updateStatistic(updateStatisticInput: $updateStatisticInput) {
-    userId
     albumRankJson {
       first
       second
@@ -125,25 +124,7 @@ mutation UpdateStatistic($updateStatisticInput: MutateStatisticInput!) {
 }
 
 mutation RemoveStatistic($userId: ID!) {
-  removeStatistic(userId: $userId) {
-    userId
-    albumRankJson {
-      first
-      second
-      third
-    }
-    artistRankJson {
-      first
-      second
-      third
-    }
-    titleRankJson {
-      first
-      second
-      third
-    }
-    updatedAt
-  }
+  removeStatistic(userId: $userId)
 }
 
 mutation CheckId($id: String!) {

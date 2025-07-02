@@ -1,14 +1,14 @@
 query GetUser {
   user {
-    id
+    userId
     name
     profileImg
   }
 }
 
-query GetPlaylist($id: Int!) {
-  playlist(id: $id) {
-    id
+query GetPlaylist($playlistId: String!) {
+  playlist(playlistId: $playlistId) {
+    playlistId
     name
     createdAt
     thumbnail
@@ -22,33 +22,43 @@ query GetPlaylist($id: Int!) {
   }
 }
 
-query GetPlaylistsPage(
-  $page: Int!
+query GetPlaylistsByUser(
+  $after: String!
   $limit: Int!
   $orderBy: String!
-  $includeListJson: Boolean = false
+  $userId: String!
 ) {
-  playlistsPage(page: $page, limit: $limit, orderBy: $orderBy) {
-    playlists {
-      id
-      name
-      createdAt
-      thumbnail
-      userId
-      listJson @include(if: $includeListJson) {
-        title
-        artist
-        album
+  playlistsByUser(
+    after: $after
+    limit: $limit
+    orderBy: $orderBy
+    userId: $userId
+  ) {
+    edges {
+      cursor
+      node {
+        playlistId
+        name
+        createdAt
         thumbnail
+        userId
+        listJson {
+          title
+          artist
+          album
+          thumbnail
+        }
       }
     }
-    totalPages
+    pageInfo {
+      endCursor
+      hasNextPage
+    }
   }
 }
 
 query GetStatistic($userId: ID!) {
   statistic(userId: $userId) {
-    userId
     albumRankJson {
       first
       second
