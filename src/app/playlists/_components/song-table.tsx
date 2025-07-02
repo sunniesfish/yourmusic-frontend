@@ -35,6 +35,8 @@ export const SongTable = ({ songs }: SongTableProps) => {
                       alt={song.title || ""}
                       fill
                       className="rounded object-cover"
+                      loading="lazy"
+                      placeholder="blur"
                     />
                   ) : (
                     <svg

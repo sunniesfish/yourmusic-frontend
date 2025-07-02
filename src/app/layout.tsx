@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   description: "Convert your playlist to other platforms",
 };
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;

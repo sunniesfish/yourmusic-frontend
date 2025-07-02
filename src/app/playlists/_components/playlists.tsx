@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { Plus } from "lucide-react";
@@ -34,7 +36,10 @@ export function Playlists() {
       orderBy: sortType,
       includeListJson: false,
     },
-    context: { headers: { Authorization: `Bearer ${token}` } },
+    context: {
+      headers: { Authorization: `Bearer ${token}` },
+      includeCredentials: true,
+    },
     fetchPolicy: "cache-first",
     skip: !token,
   });

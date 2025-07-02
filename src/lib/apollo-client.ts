@@ -1,10 +1,63 @@
 import { PlaylistsResponse, Playlist, Statistic } from "@/graphql/types";
-import { ApolloClient, InMemoryCache, createHttpLink } from "@apollo/client";
+import {
+  ApolloClient,
+  InMemoryCache,
+  createHttpLink,
+  from,
+  NormalizedCacheObject,
+} from "@apollo/client";
+import { setContext } from "@apollo/client/link/context";
+import { OperationTypeNode } from "graphql";
+declare module "@apollo/client" {
+  export interface DefaultContext {
+    includeCredentials?: boolean;
+  }
+}
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-let apolloClient: ApolloClient<any> | undefined;
+let apolloClient: ApolloClient<NormalizedCacheObject> | undefined;
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function shouldIncludeCredentials(operation: any, context: any): boolean {
+  if (context?.includeCredentials) {
+    return true;
+  }
+
+  const definition = operation.query.definitions.find(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (def: any) => def.kind === "OperationDefinition"
+  );
+  if (definition?.operation === OperationTypeNode.MUTATION) {
+    return true;
+  }
+
+  return false;
+}
 
 function createApolloClient() {
+  const httpLink = createHttpLink({
+    uri: process.env.NEXT_PUBLIC_API_URL,
+  });
+
+  const credentialsLink = setContext((operation, prevContext) => {
+    const { headers, fetchOptions: prevFetchOptions, ...rest } = prevContext;
+
+    const shouldIncludeCreds = shouldIncludeCredentials(operation, prevContext);
+
+    const newFetchOptions: RequestInit = shouldIncludeCreds
+      ? { credentials: "include" }
+      : { credentials: "omit" };
+
+    return {
+      headers,
+      ...rest,
+      fetchOptions: {
+        ...prevFetchOptions,
+        ...newFetchOptions,
+      },
+    };
+  });
+
   return new ApolloClient({
     cache: new InMemoryCache({
       typePolicies: {
@@ -14,8 +67,7 @@ function createApolloClient() {
               keyArgs: ["orderBy"],
               merge(
                 existing: PlaylistsResponse | undefined,
-                incoming: PlaylistsResponse,
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                incoming: PlaylistsResponse, // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 { args }: any
               ) {
                 if (!existing || !args?.page || args.page === 1) {
@@ -52,10 +104,7 @@ function createApolloClient() {
         },
       },
     }),
-    link: createHttpLink({
-      uri: process.env.NEXT_PUBLIC_API_URL,
-      credentials: "include",
-    }),
+    link: from([credentialsLink, httpLink]),
     defaultOptions: {
       watchQuery: {
         fetchPolicy: "cache-and-network",
