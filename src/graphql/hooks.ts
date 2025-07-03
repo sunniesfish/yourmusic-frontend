@@ -1013,7 +1013,7 @@ export type GetPlaylistQueryResult = Apollo.QueryResult<
 >;
 export const GetPlaylistsByUserDocument = gql`
   query GetPlaylistsByUser(
-    $after: String!
+    $after: String
     $limit: Int!
     $orderBy: String!
     $userId: String!
@@ -1038,6 +1038,35 @@ export const GetPlaylistsByUserDocument = gql`
             album
             thumbnail
           }
+        }
+      }
+      pageInfo {
+        endCursor
+        hasNextPage
+      }
+    }
+  }
+`;
+export const GetPlaylistsPageDocument = gql`
+  query GetPlaylistsPage(
+    $after: String
+    $limit: Int!
+    $orderBy: String!
+    $userId: String!
+  ) {
+    playlistsByUser(
+      after: $after
+      limit: $limit
+      orderBy: $orderBy
+      userId: $userId
+    ) {
+      edges {
+        cursor
+        node {
+          playlistId
+          name
+          createdAt
+          thumbnail
         }
       }
       pageInfo {

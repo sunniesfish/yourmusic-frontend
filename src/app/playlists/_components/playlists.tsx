@@ -15,10 +15,10 @@ import {
 } from "@/components/ui/select";
 import { Pagination } from "@/components/ui/pagination";
 import Loader from "@/components/loader";
-import { useGetPlaylistsPageQuery } from "@/graphql/hooks";
 import { useHydration } from "@/hooks/use-hydration";
 import PlaylistsItem from "./playlistsItem";
 import { DeletePlaylistDialog } from "./delete-playlist-modal";
+import { useGetPlaylistsByUserQuery } from "@/graphql/hooks";
 
 export function Playlists() {
   const { user, token } = useAuthStore();
@@ -29,12 +29,12 @@ export function Playlists() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
-  const { data, loading, fetchMore } = useGetPlaylistsPageQuery({
+  const { data, loading, fetchMore } = useGetPlaylistsByUserQuery({
     variables: {
-      page: currentPage,
+      after: "",
       limit: 10,
       orderBy: sortType,
-      includeListJson: false,
+      userId: user?.id ?? "",
     },
     context: {
       headers: { Authorization: `Bearer ${token}` },

@@ -1,5 +1,5 @@
 import {
-  useGetPlaylistsPageQuery,
+  useGetPlaylistsByUserQuery,
   useGetStatisticQuery,
   useSaveStatisticMutation,
 } from "@/graphql/hooks";
@@ -57,12 +57,12 @@ export const useStatistic = (
     });
 
   const { data: playlistData, loading: playlistLoading } =
-    useGetPlaylistsPageQuery({
+    useGetPlaylistsByUserQuery({
       variables: {
         limit: 1000,
         orderBy: "createdAt",
-        page: 1,
-        includeListJson: true,
+        userId,
+        after: "",
       },
       context: {
         headers: { Authorization: `Bearer ${token}` },
@@ -72,7 +72,7 @@ export const useStatistic = (
         !userId ||
         userId === "" ||
         (statisticData?.statistic &&
-          !isStatisticOutdated(statisticData.statistic)),
+          !isStatisticOutdated(statisticData.statistic.updatedAt)),
       fetchPolicy: "cache-first",
     });
   const [saveStatistic] = useSaveStatisticMutation();
@@ -121,13 +121,13 @@ export const useStatistic = (
     try {
       if (
         statisticData?.statistic &&
-        !isStatisticOutdated(statisticData.statistic)
+        !isStatisticOutdated(statisticData.statistic.updatedAt)
       ) {
         setCalculatedStatistic(statisticData.statistic);
         return;
       }
 
-      if (!playlistData?.playlistsPage?.playlists) {
+      if (!playlistData?.playlistsByUser?.edges) {
         throw createStatisticError(
           ERROR_CODES.FETCH_ERROR,
           "Fail to fetch playlist data"
@@ -135,7 +135,7 @@ export const useStatistic = (
       }
 
       const topRanks = await calculateStatisticWithWorker(
-        playlistData.playlistsPage.playlists
+        playlistData.playlistsByUser.edges.map((edge) => edge.node)
       );
       if (topRanks.titleRank.length === 0) {
         throw createStatisticError(
@@ -194,9 +194,9 @@ export const useStatistic = (
   return result;
 };
 
-function isStatisticOutdated(statistic: { updatedAt: string }): boolean {
+function isStatisticOutdated(updatedAt: string): boolean {
   const today = new Date();
-  const updatedDate = new Date(statistic.updatedAt);
+  const updatedDate = new Date(updatedAt);
 
   return updatedDate.toDateString() !== today.toDateString();
 }

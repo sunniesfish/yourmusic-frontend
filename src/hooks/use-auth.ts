@@ -37,10 +37,10 @@ export const useAuth = (): AuthHookResult => {
    * @param {string} password - User password
    * @returns {Promise<boolean>} Success status
    */
-  const signIn = async (id: string, password: string): Promise<boolean> => {
+  const signIn = async (userId: string, password: string): Promise<boolean> => {
     try {
       const response = await signInMutation({
-        variables: { signInInput: { id, password } },
+        variables: { signInInput: { userId, password } },
       });
 
       if (response.errors) {
@@ -68,9 +68,9 @@ export const useAuth = (): AuthHookResult => {
    * @param {string} password - User password
    * @returns {Promise<boolean>} Success status
    */
-  const signUp = async (id: string, username: string, password: string) => {
+  const signUp = async (userId: string, name: string, password: string) => {
     const { data } = await signUpMutation({
-      variables: { signUpInput: { id, name: username, password } },
+      variables: { signUpInput: { userId, name, password } },
     });
     return data?.signUp ? true : false;
   };
@@ -96,9 +96,9 @@ export const useAuth = (): AuthHookResult => {
    * @param {string} id - User ID to check
    * @returns {Promise<boolean>} True if ID is available, false if already taken
    */
-  const checkIdAvailability = async (id: string) => {
+  const checkIdAvailability = async (userId: string) => {
     const { data } = await checkIdMutation({
-      variables: { id },
+      variables: { id: userId },
     });
     return data?.checkId ? false : true;
   };

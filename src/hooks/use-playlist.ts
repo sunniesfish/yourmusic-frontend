@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  GetPlaylistsByUserDocument,
   GetPlaylistsPageDocument,
   useConvertToSpotifyPlaylistMutation,
   useConvertToYoutubePlaylistMutation,
@@ -14,7 +15,6 @@ import { PlaylistJson } from "@/graphql/types";
 import { omit } from "lodash";
 import { useToast } from "@/hooks/use-toast";
 import { ApolloCache } from "@apollo/client/cache/core/cache";
-
 /**
  * Hook for handling playlist mutations
  * @returns Object containing playlist mutation methods
@@ -111,7 +111,7 @@ const usePlaylistMutation = () => {
       const input = {
         variables: {
           mutatePlaylistInput: {
-            id: playlistId,
+            playlistId: playlistId,
             name: playlistTitle,
             listJson: cleanedPlaylistJson,
           },
@@ -121,7 +121,7 @@ const usePlaylistMutation = () => {
         update: async (cache: ApolloCache<any>) => {
           cache.evict({
             fieldName: "playlist",
-            args: { id: playlistId },
+            args: { playlistId: playlistId },
           });
           cache.gc();
         },
@@ -157,16 +157,14 @@ const usePlaylistMutation = () => {
     if (!playlistId) return false;
     try {
       const { data } = await removePlaylistMutate({
-        variables: { id: playlistId },
+        variables: { playlistId },
         context: { headers: { Authorization: `Bearer ${token}` } },
         refetchQueries: [
           {
             query: GetPlaylistsPageDocument,
             variables: {
-              page: 1,
               limit: 10,
               orderBy: "createdAt",
-              includeListJson: false,
             },
           },
         ],

@@ -12,7 +12,7 @@ export interface PlaylistMutationParams {
   token: string;
   playlistTitle?: string;
   playlistJson?: PlaylistJson[];
-  playlistId?: number;
+  playlistId?: string;
 }
 
 export interface Song {
