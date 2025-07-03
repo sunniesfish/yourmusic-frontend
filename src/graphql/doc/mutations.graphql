@@ -43,13 +43,13 @@ mutation ReadPlaylist($link: String!) {
 }
 
 mutation ConvertToYoutubePlaylist(
-  $listJSON: [PlaylistJSONInput!]!
   $authorizationCode: String
+  $listJSON: [PlaylistJSONInput!]!
   $state: String
 ) {
   convertToYoutubePlaylist(
-    listJSON: $listJSON
     authorizationCode: $authorizationCode
+    listJSON: $listJSON
     state: $state
   ) {
     __typename
@@ -69,13 +69,13 @@ mutation ConvertToYoutubePlaylist(
 }
 
 mutation ConvertToSpotifyPlaylist(
-  $listJSON: [PlaylistJSONInput!]!
   $authorizationCode: String
+  $listJSON: [PlaylistJSONInput!]!
   $state: String
 ) {
   convertToSpotifyPlaylist(
-    listJSON: $listJSON
     authorizationCode: $authorizationCode
+    listJSON: $listJSON
     state: $state
   ) {
     __typename

@@ -48,8 +48,8 @@ export type ReadPlaylistMutationVariables = Types.Exact<{
 export type ReadPlaylistMutation = { __typename?: 'Mutation', readPlaylist: Array<{ __typename?: 'PlaylistJSON', title?: string | null, artist?: string | null, album?: string | null, thumbnail?: string | null }> };
 
 export type ConvertToYoutubePlaylistMutationVariables = Types.Exact<{
-  listJSON: Array<Types.PlaylistJsonInput> | Types.PlaylistJsonInput;
   authorizationCode?: Types.InputMaybe<Types.Scalars['String']['input']>;
+  listJSON: Array<Types.PlaylistJsonInput> | Types.PlaylistJsonInput;
   state?: Types.InputMaybe<Types.Scalars['String']['input']>;
 }>;
 
@@ -57,8 +57,8 @@ export type ConvertToYoutubePlaylistMutationVariables = Types.Exact<{
 export type ConvertToYoutubePlaylistMutation = { __typename?: 'Mutation', convertToYoutubePlaylist: { __typename: 'AuthRequiredResponse', needsAuth: boolean, authUrl: string, apiDomain: Types.ApiDomain } | { __typename: 'ConvertedPlaylist', success: boolean, message: string, playlistId?: string | null, playlistName?: string | null, playlistUrl?: string | null } };
 
 export type ConvertToSpotifyPlaylistMutationVariables = Types.Exact<{
-  listJSON: Array<Types.PlaylistJsonInput> | Types.PlaylistJsonInput;
   authorizationCode?: Types.InputMaybe<Types.Scalars['String']['input']>;
+  listJSON: Array<Types.PlaylistJsonInput> | Types.PlaylistJsonInput;
   state?: Types.InputMaybe<Types.Scalars['String']['input']>;
 }>;
 
@@ -127,7 +127,7 @@ export type GetPlaylistQueryVariables = Types.Exact<{
 export type GetPlaylistQuery = { __typename?: 'Query', playlist: { __typename?: 'Playlist', playlistId?: string | null, name?: string | null, createdAt?: any | null, thumbnail?: string | null, userId?: string | null, listJson?: Array<{ __typename?: 'PlaylistJSON', title?: string | null, artist?: string | null, album?: string | null, thumbnail?: string | null }> | null } };
 
 export type GetPlaylistsByUserQueryVariables = Types.Exact<{
-  after: Types.Scalars['String']['input'];
+  after?: Types.InputMaybe<Types.Scalars['String']['input']>;
   limit: Types.Scalars['Int']['input'];
   orderBy: Types.Scalars['String']['input'];
   userId: Types.Scalars['String']['input'];

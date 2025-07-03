@@ -18,8 +18,7 @@ import Loader from "@/components/loader";
 import { useHydration } from "@/hooks/use-hydration";
 import PlaylistsItem from "./playlistsItem";
 import { DeletePlaylistDialog } from "./delete-playlist-modal";
-import { useGetPlaylistsByUserQuery } from "@/graphql/hooks";
-
+import { usePlaylistsPageNation } from "@/hooks/use-playlist";
 export function Playlists() {
   const { user, token } = useAuthStore();
   const isHydrated = useHydration();
@@ -29,20 +28,17 @@ export function Playlists() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
-  const { data, loading, fetchMore } = useGetPlaylistsByUserQuery({
-    variables: {
-      after: "",
-      limit: 10,
-      orderBy: sortType,
-      userId: user?.id ?? "",
-    },
-    context: {
-      headers: { Authorization: `Bearer ${token}` },
-      includeCredentials: true,
-    },
-    fetchPolicy: "cache-first",
-    skip: !token,
-  });
+  const {
+    playlists,
+    loading,
+    hasNextPage,
+    loadMore,
+    isLoadingMore,
+    error,
+    refetch,
+    reset,
+    totalLoaded,
+  } = usePlaylistsPageNation(user?.id ?? "", sortType, 10, !!token);
 
   useEffect(() => {
     if (!user && isHydrated) {

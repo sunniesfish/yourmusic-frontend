@@ -1,5 +1,4 @@
-import * as Operations from "./operations";
-
+import * as Operations from "@/graphql/operations";
 import { gql } from "@apollo/client";
 import * as Apollo from "@apollo/client";
 const defaultOptions = {} as const;
@@ -351,13 +350,13 @@ export type ReadPlaylistMutationOptions = Apollo.BaseMutationOptions<
 >;
 export const ConvertToYoutubePlaylistDocument = gql`
   mutation ConvertToYoutubePlaylist(
-    $listJSON: [PlaylistJSONInput!]!
     $authorizationCode: String
+    $listJSON: [PlaylistJSONInput!]!
     $state: String
   ) {
     convertToYoutubePlaylist(
-      listJSON: $listJSON
       authorizationCode: $authorizationCode
+      listJSON: $listJSON
       state: $state
     ) {
       __typename
@@ -394,8 +393,8 @@ export type ConvertToYoutubePlaylistMutationFn = Apollo.MutationFunction<
  * @example
  * const [convertToYoutubePlaylistMutation, { data, loading, error }] = useConvertToYoutubePlaylistMutation({
  *   variables: {
- *      listJSON: // value for 'listJSON'
  *      authorizationCode: // value for 'authorizationCode'
+ *      listJSON: // value for 'listJSON'
  *      state: // value for 'state'
  *   },
  * });
@@ -424,13 +423,13 @@ export type ConvertToYoutubePlaylistMutationOptions =
   >;
 export const ConvertToSpotifyPlaylistDocument = gql`
   mutation ConvertToSpotifyPlaylist(
-    $listJSON: [PlaylistJSONInput!]!
     $authorizationCode: String
+    $listJSON: [PlaylistJSONInput!]!
     $state: String
   ) {
     convertToSpotifyPlaylist(
-      listJSON: $listJSON
       authorizationCode: $authorizationCode
+      listJSON: $listJSON
       state: $state
     ) {
       __typename
@@ -467,8 +466,8 @@ export type ConvertToSpotifyPlaylistMutationFn = Apollo.MutationFunction<
  * @example
  * const [convertToSpotifyPlaylistMutation, { data, loading, error }] = useConvertToSpotifyPlaylistMutation({
  *   variables: {
- *      listJSON: // value for 'listJSON'
  *      authorizationCode: // value for 'authorizationCode'
+ *      listJSON: // value for 'listJSON'
  *      state: // value for 'state'
  *   },
  * });
@@ -859,7 +858,7 @@ export const GetUserDocument = gql`
 /**
  * __useGetUserQuery__
  *
- * To run a query within a React component, call `useGetUserQuery` and pass it any options that fif your needs.
+ * To run a query within a React component, call `useGetUserQuery` and pass it any options that fit your needs.
  * When your component renders, `useGetUserQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
@@ -1047,6 +1046,7 @@ export const GetPlaylistsByUserDocument = gql`
     }
   }
 `;
+
 export const GetPlaylistsPageDocument = gql`
   query GetPlaylistsPage(
     $after: String

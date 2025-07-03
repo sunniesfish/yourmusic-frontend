@@ -1,20 +1,22 @@
 "use client";
 
 import {
-  GetPlaylistsByUserDocument,
   GetPlaylistsPageDocument,
   useConvertToSpotifyPlaylistMutation,
   useConvertToYoutubePlaylistMutation,
+  useGetPlaylistsByUserQuery,
   useReadPlaylistMutation,
   useRemovePlaylistMutation,
   useSavePlaylistMutation,
   useUpdatePlaylistMutation,
 } from "@/graphql/hooks";
-import { PlaylistMutationParams } from "@/types/playlist";
+import { PlaylistMutationParams, PlaylistNode } from "@/types/playlist";
 import { PlaylistJson } from "@/graphql/types";
 import { omit } from "lodash";
 import { useToast } from "@/hooks/use-toast";
 import { ApolloCache } from "@apollo/client/cache/core/cache";
+import { useCallback, useState } from "react";
+import { useSanitizedData } from "./use-sanitizedata";
 /**
  * Hook for handling playlist mutations
  * @returns Object containing playlist mutation methods
@@ -323,5 +325,92 @@ export const usePlaylist = () => {
     updatePlaylist,
     convertToYoutube,
     convertToSpotify,
+  };
+};
+
+export const usePlaylistsPageNation = (
+  userId: string,
+  orderBy: "createdAt" | "name" = "createdAt",
+  limit: number = 10,
+  enabled: boolean = true
+) => {
+  const [allPlaylists, setAllPlaylists] = useState<PlaylistNode[]>([]);
+  const [currentCursor, setCurrentCursor] = useState<string | null>(null);
+
+  const {
+    data,
+    loading,
+    fetchMore,
+    error,
+    refetch: refetchPlaylists,
+  } = useGetPlaylistsByUserQuery({
+    variables: {
+      userId,
+      orderBy,
+      limit,
+      after: currentCursor,
+    },
+    skip: !enabled,
+    notifyOnNetworkStatusChange: true,
+    onCompleted: (data) => {
+      if (data?.playlistsByUser && currentCursor === null) {
+        const newPlaylists = data.playlistsByUser.edges.map(
+          (edge) => edge.node
+        );
+        const sanitizedPlaylists = useSanitizedData(newPlaylists);
+        setAllPlaylists(sanitizedPlaylists as PlaylistNode[]);
+      }
+    },
+  });
+
+  const loadMore = useCallback(async () => {
+    if (!data?.playlistsByUser.pageInfo.hasNextPage) return;
+
+    const nextCursor = data.playlistsByUser.pageInfo.endCursor;
+    if (!nextCursor) return;
+
+    try {
+      const result = await fetchMore({
+        variables: {
+          after: nextCursor,
+        },
+      });
+
+      if (result.data?.playlistsByUser) {
+        const newPlaylists = result.data.playlistsByUser.edges.map(
+          (edge) => edge.node
+        );
+        const sanitizedPlaylists = useSanitizedData(newPlaylists);
+        setAllPlaylists((prev) => [
+          ...prev,
+          ...(sanitizedPlaylists as PlaylistNode[]),
+        ]);
+        setCurrentCursor(nextCursor);
+      }
+    } catch (error) {
+      console.error("Error loading more playlists:", error);
+    }
+  }, [data, fetchMore, currentCursor]);
+
+  const refetch = useCallback(async () => {
+    setCurrentCursor(null);
+    await refetchPlaylists();
+  }, [refetchPlaylists]);
+
+  const reset = useCallback(() => {
+    setAllPlaylists([]);
+    setCurrentCursor(null);
+  }, []);
+
+  return {
+    playlists: allPlaylists,
+    loading,
+    error,
+    hasNextPage: data?.playlistsByUser.pageInfo.hasNextPage || false,
+    loadMore,
+    refetch,
+    reset,
+    totalLoaded: allPlaylists.length,
+    isLoadingMore: loading && currentCursor !== null,
   };
 };

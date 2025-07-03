@@ -1,18 +1,21 @@
-import { Playlist } from "@/graphql/types";
+import { PlaylistEdge } from "@/types/playlist";
+import { CursorLinkedList } from "@/lib/cursor-linked-list";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-interface PlaylistsState {
-  playlists: Playlist[];
-  setPlaylists: (playlists: Playlist[]) => void;
+interface PlaylistState {
+  listData: ReturnType<CursorLinkedList<PlaylistEdge>["serialize"]>;
+  setList: (data: CursorLinkedList<PlaylistEdge>) => void;
 }
 
-export const usePlaylistsStore = create<PlaylistsState>()(
+export const usePlaylistStore = create<PlaylistState>()(
   persist(
     (set) => ({
-      playlists: [],
-      setPlaylists: (playlists) => set({ playlists }),
+      listData: new CursorLinkedList<PlaylistEdge>().serialize(),
+      setList: (list) => set({ listData: list.serialize() }),
     }),
-    { name: "playlists-store" }
+    {
+      name: "playlist-list",
+    }
   )
 );

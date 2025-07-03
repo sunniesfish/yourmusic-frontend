@@ -23,7 +23,7 @@ query GetPlaylist($playlistId: String!) {
 }
 
 query GetPlaylistsByUser(
-  $after: String!
+  $after: String
   $limit: Int!
   $orderBy: String!
   $userId: String!

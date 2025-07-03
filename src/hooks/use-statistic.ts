@@ -62,7 +62,6 @@ export const useStatistic = (
         limit: 1000,
         orderBy: "createdAt",
         userId,
-        after: "",
       },
       context: {
         headers: { Authorization: `Bearer ${token}` },
