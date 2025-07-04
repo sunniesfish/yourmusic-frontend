@@ -11,12 +11,14 @@ import {
   useUpdatePlaylistMutation,
 } from "@/graphql/hooks";
 import { PlaylistMutationParams, PlaylistNode } from "@/types/playlist";
-import { PlaylistJson } from "@/graphql/types";
+import { PlaylistEdge, PlaylistJson } from "@/graphql/types";
 import { omit } from "lodash";
 import { useToast } from "@/hooks/use-toast";
 import { ApolloCache } from "@apollo/client/cache/core/cache";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useSanitizedData } from "./use-sanitizedata";
+import { usePlaylistStore } from "@/store/playlist-store";
+import { useShallow } from "zustand/react/shallow";
 /**
  * Hook for handling playlist mutations
  * @returns Object containing playlist mutation methods
@@ -331,86 +333,126 @@ export const usePlaylist = () => {
 export const usePlaylistsPageNation = (
   userId: string,
   orderBy: "createdAt" | "name" = "createdAt",
-  limit: number = 10,
-  enabled: boolean = true
+  limit: number = 10
 ) => {
-  const [allPlaylists, setAllPlaylists] = useState<PlaylistNode[]>([]);
-  const [currentCursor, setCurrentCursor] = useState<string | null>(null);
+  const [shouldSkip, setShouldSkip] = useState(true);
 
   const {
-    data,
-    loading,
-    fetchMore,
-    error,
-    refetch: refetchPlaylists,
-  } = useGetPlaylistsByUserQuery({
+    cursorList,
+    playlistMap,
+    orderBy: orderByState,
+    setOrderBy,
+    addPlaylist,
+    setPlaylists,
+    firstCursor,
+    lastCursor,
+    setFirstCursor,
+    setLastCursor,
+    getNextEdge,
+    getPrevEdge,
+    getHeadEdge,
+    getTailEdge,
+  } = usePlaylistStore(useShallow((state) => state));
+  const [thisPlaylistEdges, setThisPlaylistEdges] = useState<PlaylistEdge[]>(
+    []
+  );
+
+  const { data, loading, fetchMore, error } = useGetPlaylistsByUserQuery({
     variables: {
       userId,
       orderBy,
       limit,
-      after: currentCursor,
+      after: lastCursor,
     },
-    skip: !enabled,
+    skip: shouldSkip,
     notifyOnNetworkStatusChange: true,
     onCompleted: (data) => {
-      if (data?.playlistsByUser && currentCursor === null) {
-        const newPlaylists = data.playlistsByUser.edges.map(
-          (edge) => edge.node
-        );
-        const sanitizedPlaylists = useSanitizedData(newPlaylists);
-        setAllPlaylists(sanitizedPlaylists as PlaylistNode[]);
+      if (data.playlistsByUser.edges.length > 0) {
+        for (const edge of data.playlistsByUser.edges) {
+          addPlaylist(edge);
+        }
       }
+    },
+    onError: (error) => {
+      console.error(error);
     },
   });
 
-  const loadMore = useCallback(async () => {
-    if (!data?.playlistsByUser.pageInfo.hasNextPage) return;
-
-    const nextCursor = data.playlistsByUser.pageInfo.endCursor;
-    if (!nextCursor) return;
-
-    try {
-      const result = await fetchMore({
-        variables: {
-          after: nextCursor,
-        },
-      });
-
-      if (result.data?.playlistsByUser) {
-        const newPlaylists = result.data.playlistsByUser.edges.map(
-          (edge) => edge.node
-        );
-        const sanitizedPlaylists = useSanitizedData(newPlaylists);
-        setAllPlaylists((prev) => [
-          ...prev,
-          ...(sanitizedPlaylists as PlaylistNode[]),
-        ]);
-        setCurrentCursor(nextCursor);
-      }
-    } catch (error) {
-      console.error("Error loading more playlists:", error);
+  useEffect(() => {
+    if (!firstCursor || orderByState !== orderBy) {
+      setShouldSkip(false);
+      setOrderBy(orderBy);
     }
-  }, [data, fetchMore, currentCursor]);
+    getThisPlaylistEdges(lastCursor, limit);
+  }, [firstCursor, orderByState, orderBy]);
 
-  const refetch = useCallback(async () => {
-    setCurrentCursor(null);
-    await refetchPlaylists();
-  }, [refetchPlaylists]);
+  const getThisPlaylistEdges = async (
+    endCursor: string | null,
+    limit: number
+  ) => {
+    const arr: PlaylistEdge[] = [];
+    let cursor = endCursor;
+    while (arr.length < limit) {
+      const playlistEdge = cursor ? getNextEdge(cursor) : null;
+      if (playlistEdge) {
+        arr.push(playlistEdge);
+        cursor = playlistEdge.cursor;
+      } else {
+        await fetchMore({
+          variables: {
+            userId,
+            orderBy,
+            limit,
+            after: cursor,
+          },
+        });
+        const playlistEdge = cursor ? getHeadEdge() : null;
+        if (playlistEdge) {
+          arr.push(playlistEdge);
+          cursor = playlistEdge.cursor;
+        } else {
+          break;
+        }
+      }
+    }
+    setThisPlaylistEdges(arr);
+  };
+  const hasNext = useMemo(() => {}, []);
 
-  const reset = useCallback(() => {
-    setAllPlaylists([]);
-    setCurrentCursor(null);
-  }, []);
+  const hasPrev = useMemo(() => {}, []);
+
+  const getNext = useCallback(async () => {}, []);
+
+  const getPrev = useCallback(() => {
+    if (!firstCursor) return;
+    let itemCount = 0;
+    let arr: PlaylistEdge[] = [];
+    let currentCursor = firstCursor;
+    while (itemCount < limit) {
+      const prevCursor = cursorList.getPrevNode(currentCursor);
+      if (!prevCursor) break;
+      const playlistEdge = playlistMap[prevCursor.payload];
+      if (playlistEdge) {
+        arr.push(playlistEdge);
+        itemCount++;
+        currentCursor = prevCursor.payload;
+      } else {
+        break;
+      }
+    }
+    arr.reverse();
+    setThisPlaylistEdges(arr);
+    setFirstCursor(arr[0]?.cursor || null);
+    setLastCursor(arr[arr.length - 1]?.cursor || null);
+  }, [firstCursor, limit, cursorList, playlistMap]);
 
   return {
-    playlists: allPlaylists,
+    playlists: thisPlaylistEdges,
     loading,
+    hasNext,
+    hasPrev,
+    getNext,
+    getPrev,
     error,
-    hasNextPage: data?.playlistsByUser.pageInfo.hasNextPage || false,
-    loadMore,
-    refetch,
-    reset,
-    totalLoaded: allPlaylists.length,
-    isLoadingMore: loading && currentCursor !== null,
   };
 };

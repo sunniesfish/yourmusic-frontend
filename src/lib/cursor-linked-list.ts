@@ -27,10 +27,18 @@ export class LinkedList<T> {
 
   insertFirst(item: T, key?: string): void {
     if (this.size === 0) {
-      this._initInsert(item);
+      this._initInsert(item, key);
       return;
     }
     const nodeKey = key || this.createKey();
+
+    // 중복 키 검사
+    if (this.nodeMap.has(nodeKey)) {
+      throw new Error(
+        `Duplicate key: ${nodeKey}. Key already exists in the linked list.`
+      );
+    }
+
     const nodeValue: LinkedListNode<T> = {
       payload: item,
       prevKey: null,
@@ -49,10 +57,18 @@ export class LinkedList<T> {
 
   insertLast(item: T, key?: string): void {
     if (this.size === 0) {
-      this._initInsert(item);
+      this._initInsert(item, key);
       return;
     }
     const nodeKey = key || this.createKey();
+
+    // 중복 키 검사
+    if (this.nodeMap.has(nodeKey)) {
+      throw new Error(
+        `Duplicate key: ${nodeKey}. Key already exists in the linked list.`
+      );
+    }
+
     const nodeValue: LinkedListNode<T> = {
       payload: item,
       prevKey: this.nodeTail![0],
@@ -74,32 +90,40 @@ export class LinkedList<T> {
       throw new Error(`Index ${idx} out of bounds. Size: ${this.size}`);
     }
     if (idx === 0) {
-      this.insertFirst(item);
+      this.insertFirst(item, key);
       return;
     }
     if (idx === this.size) {
-      this.insertLast(item);
+      this.insertLast(item, key);
       return;
+    }
+
+    const nodeKey = key || this.createKey();
+
+    // 중복 키 검사
+    if (this.nodeMap.has(nodeKey)) {
+      throw new Error(
+        `Duplicate key: ${nodeKey}. Key already exists in the linked list.`
+      );
     }
 
     const thisKey = this._getKeyAt(idx);
     const thisValue = this.nodeMap.get(thisKey)!;
     const prevKey = thisValue.prevKey!;
     const prevValue = this.nodeMap.get(prevKey)!;
-    const newKey = key || this.createKey();
 
     const newNode: LinkedListNode<T> = {
       payload: item,
       prevKey: prevKey,
       nextKey: thisKey,
-      key: newKey,
+      key: nodeKey,
     };
 
-    prevValue.nextKey = newKey;
-    thisValue.prevKey = newKey;
+    prevValue.nextKey = nodeKey;
+    thisValue.prevKey = nodeKey;
 
     this.nodeMap.set(prevKey, prevValue);
-    this.nodeMap.set(newKey, newNode);
+    this.nodeMap.set(nodeKey, newNode);
     this.nodeMap.set(thisKey, thisValue);
 
     this.size++;
@@ -184,25 +208,60 @@ export class LinkedList<T> {
   }
 
   getNextNode(key: string): LinkedListNode<T> | undefined {
+    if (!this.nodeMap.has(key)) {
+      throw new Error(`Node with key ${key} not found.`);
+    }
     return this.nodeMap.get(key)!.nextKey
       ? this.nodeMap.get(this.nodeMap.get(key)!.nextKey!)
       : undefined;
   }
 
   getPrevNode(key: string): LinkedListNode<T> | undefined {
+    if (!this.nodeMap.has(key)) {
+      throw new Error(`Node with key ${key} not found.`);
+    }
     return this.nodeMap.get(key)!.prevKey
       ? this.nodeMap.get(this.nodeMap.get(key)!.prevKey!)
       : undefined;
   }
 
   deleteNode(key: string): void {
+    if (!this.nodeMap.has(key)) {
+      throw new Error(`Node with key ${key} not found.`);
+    }
+    if (this.size === 1) {
+      this.clear();
+      return;
+    }
     const prevKey = this.nodeMap.get(key)!.prevKey;
     const nextKey = this.nodeMap.get(key)!.nextKey;
     if (prevKey) {
-      this.nodeMap.get(prevKey)!.nextKey = nextKey;
+      const prevNode = this.nodeMap.get(prevKey)!;
+      prevNode.nextKey = nextKey;
+      this.nodeMap.set(prevKey, prevNode);
     }
     if (nextKey) {
-      this.nodeMap.get(nextKey)!.prevKey = prevKey;
+      const nextNode = this.nodeMap.get(nextKey)!;
+      nextNode.prevKey = prevKey;
+      this.nodeMap.set(nextKey, nextNode);
+    }
+
+    if (this.nodeHead && this.nodeHead[0] === key) {
+      if (nextKey) {
+        const newHeadNode = this.nodeMap.get(nextKey)!;
+        this.nodeHead = [nextKey, newHeadNode];
+      } else {
+        this.nodeHead = null;
+      }
+    }
+
+    if (this.nodeTail && this.nodeTail[0] === key) {
+      if (prevKey) {
+        const newTailNode = this.nodeMap.get(prevKey)!;
+        this.nodeTail = [prevKey, newTailNode];
+      } else {
+        this.nodeTail = null;
+      }
     }
     this.nodeMap.delete(key);
     this.size--;
@@ -273,8 +332,16 @@ export class LinkedList<T> {
     return list;
   }
 
-  private _initInsert(item: T): void {
-    const nodeKey = this.createKey();
+  private _initInsert(item: T, key?: string): void {
+    const nodeKey = key || this.createKey();
+
+    // 중복 키 검사 (빈 리스트에서도 안전하게)
+    if (this.nodeMap.has(nodeKey)) {
+      throw new Error(
+        `Duplicate key: ${nodeKey}. Key already exists in the linked list.`
+      );
+    }
+
     const nodeValue: LinkedListNode<T> = {
       payload: item,
       prevKey: null,

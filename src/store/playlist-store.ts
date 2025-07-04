@@ -1,4 +1,4 @@
-import { PlaylistEdge } from "@/types/playlist";
+import { PlaylistEdge } from "@/graphql/types";
 import {
   LinkedList,
   SerializableLinkedListData,
@@ -9,12 +9,20 @@ import { persist } from "zustand/middleware";
 interface PlaylistsState {
   cursorList: LinkedList<string>;
   playlistMap: Record<string, PlaylistEdge>;
-  setPlaylists: (playlists: PlaylistEdge[]) => void;
-  addPlaylist: (playlist: PlaylistEdge) => void;
+  lastCursor: string | null;
+  firstCursor: string | null;
+  orderBy: "createdAt" | "name";
+  setOrderBy: (orderBy: "createdAt" | "name") => void;
+  setLastCursor: (cursor: string | null) => void;
+  setFirstCursor: (cursor: string | null) => void;
+  setPlaylists: (playlistEdges: PlaylistEdge[]) => void;
+  addPlaylist: (playlistEdge: PlaylistEdge) => void;
   removePlaylist: (cursor: string) => void;
   clearPlaylists: () => void;
   getNextEdge: (key: string) => PlaylistEdge | undefined;
   getPrevEdge: (key: string) => PlaylistEdge | undefined;
+  getHeadEdge: () => PlaylistEdge | undefined;
+  getTailEdge: () => PlaylistEdge | undefined;
 }
 
 export const usePlaylistStore = create<PlaylistsState>()(
@@ -22,15 +30,25 @@ export const usePlaylistStore = create<PlaylistsState>()(
     (set, get) => ({
       cursorList: new LinkedList<string>(),
       playlistMap: {},
-      setPlaylists: (playlists) => {
-        playlists.forEach((playlist) => {
-          get().cursorList.insertLast(playlist.cursor);
-          get().playlistMap[playlist.cursor] = playlist;
+      lastCursor: null,
+      firstCursor: null,
+      orderBy: "createdAt",
+      setOrderBy: (orderBy) => set({ orderBy }),
+      setLastCursor: (cursor) => set({ lastCursor: cursor }),
+      setFirstCursor: (cursor) => set({ firstCursor: cursor }),
+      setPlaylists: (playlistEdges) => {
+        playlistEdges.forEach((playlistEdge) => {
+          get().cursorList.insertLast(playlistEdge.cursor, playlistEdge.cursor);
+          get().playlistMap[playlistEdge.cursor] = playlistEdge;
         });
       },
-      addPlaylist: (playlist) => {
-        get().cursorList.insertLast(playlist.cursor);
-        get().playlistMap[playlist.cursor] = playlist;
+      addPlaylist: (playlistEdge) => {
+        if (get().playlistMap[playlistEdge.cursor]) {
+          get().cursorList.deleteNode(playlistEdge.cursor);
+          delete get().playlistMap[playlistEdge.cursor];
+        }
+        get().cursorList.insertLast(playlistEdge.cursor, playlistEdge.cursor);
+        get().playlistMap[playlistEdge.cursor] = playlistEdge;
       },
       removePlaylist: (cursor) => {
         get().cursorList.deleteNode(cursor);
@@ -49,6 +67,16 @@ export const usePlaylistStore = create<PlaylistsState>()(
         const prevNode = get().cursorList.getPrevNode(key);
         if (!prevNode) return undefined;
         return get().playlistMap[prevNode.payload];
+      },
+      getHeadEdge: () => {
+        const headNode = get().cursorList.head;
+        if (!headNode) return undefined;
+        return get().playlistMap[headNode.payload];
+      },
+      getTailEdge: () => {
+        const tailNode = get().cursorList.tail;
+        if (!tailNode) return undefined;
+        return get().playlistMap[tailNode.payload];
       },
     }),
     {
